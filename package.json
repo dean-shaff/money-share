@@ -1,0 +1,19 @@
+{
+  "name": "money-share",
+  "version": "0.1.0",
+  "description": "Money Share Web App",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/dean-shaff/money-share.git"
+  },
+  "author": "Dean Shaff",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dean-shaff/money-share/issues"
+  },
+  "homepage": "https://github.com/dean-shaff/money-share#readme"
+}
