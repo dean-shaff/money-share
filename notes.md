@@ -16,6 +16,18 @@ Ugh. This user authentication shit is super confusing.
 
 Gonna go slam some muni and then come back. I want to look through [this](https://auth0.com/blog/hapijs-authentication-secure-your-api-with-json-web-tokens/) tutorial on using JWT with hapijs.
 
+I think I finally understand what the fuck is going on here. I'm going to stick with this JWT thing.
+
+Now I understand how to create a token and send it back to the client.
+
+Because I'm using React router, I think I want to be doing the verification in the client?
+
+I need to create a test suite for the UI:
+
+- If we try to create a user with duplicate username, then we return an error.
+- If we try to create a user with duplicate email, then return an error.
+- If we enter wrong password, indicate as such. 
+
 ### 09/09/2020
 
 The staging site is due September 22.

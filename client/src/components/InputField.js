@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import LoginRegisterContainer from "./LoginRegisterContainer.js"
 
 
-const Field = (props) => {
+const InputField = (props) => {
   let propsCopy = Object.assign({}, props)
   let className = "control"
   let iconElem = null
@@ -29,4 +29,4 @@ const Field = (props) => {
 }
 
 
-export default Field
+export default InputField

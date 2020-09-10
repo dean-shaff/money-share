@@ -10,13 +10,15 @@ const Login = ({ history }) => {
 
   const onSubmitHandler = (evt) => {
     evt.preventDefault()
-    const dataForm = new FormData(evt.target)
+    const formData = new FormData(evt.target)
     fetch('/login', {
       method: 'POST',
-      body: dataForm,
-    }).then(resp => {
-      console.log(resp)
-      // history.push('/dashboard')
+      body: formData,
+    })
+    .then(resp => resp.json())
+    .then(data => {
+      localStorage.setItem('token', data.id_token)
+      history.push('/dashboard')
     })
   }
 

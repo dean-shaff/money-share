@@ -6,6 +6,7 @@ require("dotenv").config()
 module.exports = {
   port: process.env.PORT || 8000,
   env: process.env.NODE_ENV || "development",
+  jwt_key: process.env.JWT_KEY || null, 
   development: {
     db: {
       dialect: "sqlite",

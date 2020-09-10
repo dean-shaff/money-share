@@ -30,7 +30,7 @@ describe("user", () => {
   test("POST /user", async () => {
     const res = await server.inject({
       method: "POST",
-      url: "/user",
+      url: "/api/user",
       payload: {
         username: "firstlast",
         name: "first last",
@@ -43,7 +43,7 @@ describe("user", () => {
   test("GET /user/{id}", async () => {
     const res = await server.inject({
       method: "GET",
-      url: `/user/${newUser.dataValues.id}`
+      url: `/api/user/${newUser.dataValues.id}`
     })
     expect(res.result.name === "Dean Shaff")
   })
@@ -51,7 +51,7 @@ describe("user", () => {
   test("PUT /user/{id}", async () => {
     const res = await server.inject({
       method: "GET",
-      url: `/user/${newUser.dataValues.id}`,
+      url: `/api/user/${newUser.dataValues.id}`,
       payload: {
         name: "sruti"
       }
@@ -62,7 +62,7 @@ describe("user", () => {
   test("DELETE /user/{id}", async () => {
     const res = await server.inject({
       method: "DELETE",
-      url: `/user/${newUser.dataValues.id}`
+      url: `/api/user/${newUser.dataValues.id}`
     })
     expect(res.statusCode).to.equal(204);
   })
