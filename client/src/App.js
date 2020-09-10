@@ -7,16 +7,27 @@ import {
 } from "react-router-dom";
 
 
+import Home from "./components/Home.js"
 import Login from "./components/Login.js"
 import Register from "./components/Register.js"
-import Home from "./components/Home.js"
+import Dashboard from "./components/Dashboard.js"
+
+
+// <Route exact path="/" component={Home}  />
 
 const App = ({ children }) => (
   <Router>
   <Switch>
-    <Route exact path="/" component={Home}  />
+    <Route exact path="/" render={() => (
+      isLoggedIn() ? (
+        <Redirect to="/dashboard"/>
+      ) : (
+        <Home />
+      )
+    )}/>
     <Route path="/login" component={Login} />
     <Route path="/register" component={Register} />
+    <Route path="/dashboard" component={Dashboard} />
   </Switch>
   </Router>
 );

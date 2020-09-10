@@ -1,3 +1,21 @@
+### 10/09/2020
+
+I was surprisingly successful yesterday. I built initial implementations of the Landing, Login, and Registration pages. I even got the SVG icons plugged in.
+
+Here's what I want to do today:
+
+- Build a small test dataset, similar to what I did with the Cacophony app.
+  - For today I think I just want this to include users.
+- Figure out how to do authentication
+  - Figure out how to do user sessions, ie redirect a user who has already signed in to the dashboard.
+  - What does my database entry need to look like?
+  - I'm going to try to follow the [tutorial](https://hapi.dev/tutorials/auth/?lang=en_US)
+- Stretch Objective: Build Dashboard page.
+
+Ugh. This user authentication shit is super confusing.
+
+Gonna go slam some muni and then come back. I want to look through [this](https://auth0.com/blog/hapijs-authentication-secure-your-api-with-json-web-tokens/) tutorial on using JWT with hapijs.
+
 ### 09/09/2020
 
 The staging site is due September 22.
@@ -18,7 +36,7 @@ Here's what I want to accomplish today:
 
 Questions to resolve:
 - I'm building a multipage app. How can I use React to accomplish this?
-  - There appears to be something called `react-router` and `reach-router`. I'm going to use the latter. I'm going ahead with reach-router. Then I can use React for the whole front end. 
+  - There appears to be something called `react-router` and `reach-router`. I'm going to use the latter. I'm going ahead with reach-router. Then I can use React for the whole front end.
 - Can I have optional fields in Hapi database entries?
 - How do I do user authentication?
 - How do I do cookies so a user can stay logged in?
