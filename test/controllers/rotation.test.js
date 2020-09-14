@@ -91,4 +91,11 @@ describe("rotation", () => {
       params: { id: rotation.id }
     })
   })
+
+  test('rotation.getUserRotations', async () => {
+    const rotations = await controllers.rotation.getUserRotations({
+      params: { id: manager.id }
+    })
+  })
+
 })

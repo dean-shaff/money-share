@@ -6,7 +6,7 @@ const controllers = require("./../lib/controllers")
 
 const dbFilePath = path.join(__dirname, "..", "db", "db.sqlite")
 
-const users = [
+let users = [
   {
     name: "Dean Shaff",
     username: "deanshaff",
@@ -21,6 +21,15 @@ const users = [
   }
 ]
 
+for (let idx=0; idx<10; idx++) {
+  users.push({
+    name: `name_${idx}`,
+    username: `username_${idx}`,
+    email: `${idx}@address.com`,
+    password: 'password'
+  })
+}
+
 
 
 const main = async () => {
@@ -30,12 +39,19 @@ const main = async () => {
 
   let server = await init();
 
-  for (let idx=0; idx<users.length; idx++) {
-    let user = users[idx]
-    await controllers.user.create({
-      payload: user
-    })
-  }
+  users = await Promise.all(users.map(user => {
+    return controllers.user.create({ payload: user })
+  }))
+
+  controllers.rotation.create({
+    payload: {
+      name: "My Rotation",
+      cycleAmount: 100,
+      cycleDuration: 14,
+      managerId: users[0].id,
+      memberIds: users.map(user => user.id)
+    }
+  })
 
   await server.stop();
 }

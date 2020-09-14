@@ -8,7 +8,8 @@ class Dashboard extends React.Component {
   constructor(props){
     super(props)
     this.state = {
-      username: null
+      username: null,
+      rotations: null
     }
     this.onLogoutHandler = this.onLogoutHandler.bind(this)
   }
@@ -18,6 +19,14 @@ class Dashboard extends React.Component {
     this.setState({
       'username': tokenUserInfo.username
     })
+    fetch(`/api/user/${tokenUserInfo.id}/rotations`)
+      .then(resp => resp.json())
+      .then(data => {
+        console.log(data)
+        this.setState({
+          'rotations': data[0].name
+        })
+      })
   }
 
   onLogoutHandler (evt) {
@@ -49,6 +58,7 @@ class Dashboard extends React.Component {
       <section className="section">
         <div className="container">
           <h1 className="title is-1">Hello {this.state.username}</h1>
+          <h1 className="title is-1">Rotations {this.state.rotations}</h1>
         </div>
       </section>
       </div>
