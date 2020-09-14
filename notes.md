@@ -1,7 +1,17 @@
 ### 14/09/2020
 
 Back at it. I'm going to be working on the stuff I was doing on Friday of last week.
-I'm going to start by spending some time setting up Jest and Puppeteer test suite. 
+I'm going to start by spending some time setting up Jest and Puppeteer test suite.
+
+I got `jest-puppeteer` tests up and running.
+
+I also made it such that if the user tries to create an account with an existing username/email it will return 400 status code error. I also added corresponding tests.
+
+I'm going to add some error reporting to the Login/Register page so users know if they've entered an existing username/email or if the password is incorrect. This is implemented!
+
+`Boom.badRequest` is a little annoying, but its all good...
+
+Finally onto Rotation Model.
 
 
 ### 11/09/2020

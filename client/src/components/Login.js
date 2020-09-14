@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 
 import { faUser, faLock } from '@fortawesome/free-solid-svg-icons'
 
@@ -7,6 +7,8 @@ import LoginRegisterContainer from "./LoginRegisterContainer.js"
 
 
 const Login = ({ history }) => {
+
+  const [msg, setMsg] = useState('')
 
   const onSubmitHandler = (evt) => {
     evt.preventDefault()
@@ -17,8 +19,14 @@ const Login = ({ history }) => {
     })
     .then(resp => resp.json())
     .then(data => {
-      localStorage.setItem('token', data.id_token)
-      history.push('/dashboard')
+      if ('message' in data) {
+        setMsg(data.message)
+        return
+      }
+      if (data.id_token !== undefined) {
+        localStorage.setItem('token', data.id_token)
+        history.push('/dashboard')
+      }
     })
   }
 
@@ -33,6 +41,7 @@ const Login = ({ history }) => {
           <button type="submit" className="button is-link is-fullwidth">Login</button>
         </div>
       </div>
+      <div className='has-text-danger'>{msg}</div>
       </form>
     </LoginRegisterContainer>
   )
