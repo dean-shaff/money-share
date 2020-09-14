@@ -27,10 +27,8 @@ describe("user", () => {
     await server.stop();
   });
 
-  test("POST /user", async () => {
-    const res = await server.inject({
-      method: "POST",
-      url: "/api/user",
+  test("user.create", async () => {
+    const res = await user.create({
       payload: {
         username: "firstlast",
         name: "first last",
@@ -40,7 +38,7 @@ describe("user", () => {
     })
   })
 
-  test("POST /user with same email", async () => {
+  test("user.create with same email", async () => {
     const res = await server.inject({
       method: "POST",
       url: "/api/user",
