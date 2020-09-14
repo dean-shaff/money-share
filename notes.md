@@ -1,3 +1,47 @@
+### 14/09/2020
+
+Back at it. I'm going to be working on the stuff I was doing on Friday of last week.
+I'm going to start by spending some time setting up Jest and Puppeteer test suite. 
+
+
+### 11/09/2020
+
+I somehow managed to get the user authentication stuff (mostly) figured out.
+
+Today I want to:
+- figure out how to do automated testing with Jest and Puppeteer.
+- Setup Rotation model.
+  - rotation name
+  - rotation manager
+  - I need to be able to list users
+    - Users can either be fellow members of the site, or just people with names and emails.
+    - Each user needs a history -- have they paid this cycle, and what is their payment history.
+  - need a flag to indicate whether the rotation is started
+  - Rotation start date
+  - Cycle $ amount
+  - Cycle period
+  - Number of people getting paid out each month
+    - Right now the total number of people has to be an integer multiple of the number of people getting paid out each month.
+  - Number of cycles at the bottom who don't pay.
+  - User order
+- Add a rotation test.
+- Add a rotation to `populate_dev_db.js`
+- Start setting up Dashboard UI
+
+
+How do I handle the following potential conflict:
+- As a rotation manager, I might add some folks by name + email or by name + phone number. What if the person associated with that email goes to create an account?
+  - I guess what would happen is that on the backend, we would see that the person already exists, and we would simply update their database entry with a username and password!
+
+
+
+Longer Term:
+- I need to figure out password recovery.
+- I need to figure out username/name conflicts.
+- Automated emails, generally.
+- I want import from .txt/.csv file in the Rotation Configuration page.
+
+
 ### 10/09/2020
 
 I was surprisingly successful yesterday. I built initial implementations of the Landing, Login, and Registration pages. I even got the SVG icons plugged in.
@@ -26,7 +70,13 @@ I need to create a test suite for the UI:
 
 - If we try to create a user with duplicate username, then we return an error.
 - If we try to create a user with duplicate email, then return an error.
-- If we enter wrong password, indicate as such. 
+- If we enter wrong password, indicate as such.
+
+Testing:
+- It looks like I may be able to get away with using Jest + JSDOM.
+- Now that I'm thinking about this, I need to be able to start up my server, serve up my HTML and js, and test the whole stack. Maybe I should just use pupeteer?
+- [this](https://spin.atomicobject.com/2020/04/22/jest-test-express-react/)
+- [jest-puppeteer](https://github.com/smooth-code/jest-puppeteer)
 
 ### 09/09/2020
 

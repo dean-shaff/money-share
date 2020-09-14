@@ -10,7 +10,7 @@ class Dashboard extends React.Component {
     this.state = {
       username: null
     }
-    this.onLogoutHandler = this.onLogoutHandler.bind(this )
+    this.onLogoutHandler = this.onLogoutHandler.bind(this)
   }
 
   componentDidMount() {
