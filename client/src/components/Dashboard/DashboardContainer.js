@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 import render from "react-dom"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlusCircle, faAngleDown } from '@fortawesome/free-solid-svg-icons'
@@ -9,10 +9,11 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
-import Moment from 'moment'
 
-import User from "./User.js"
-import { getTokenUserInfo } from "./../util.js"
+import User from "./../User.js"
+import Dashboard from "./Dashboard.js"
+import Configuration from "./Configuration.js"
+import { getTokenUserInfo } from "./../../util.js"
 
 import './DashboardContainer.css'
 
@@ -46,44 +47,16 @@ const HighlightedTab = ({ children }) => {
 }
 
 
-const Configuration = () => {
-  return <div>Hello from Configuration</div>
+
+const Members = () => {
+  return <div>Hello from Members</div>
 }
 
-const Dashboard = ({rotation, members, onStart}) => {
-
-  const [timeRemaining, setTimeRemaining] = useState(null)
-
-  if (rotation === null) {
-    return null
-  }
-
-  if (rotation.started === null || ! rotation.started) {
-    return (
-      <div>
-        <button className="button is-primary" onClick={onStart}>Start Rotation!</button>
-      </div>
-    )
-  } else {
-    let startDate = rotation.dateStarted
-    let today = Moment()
-    // setTimeRemaining()
-    return (
-      <div className="columns">
-        <div className="column is-one-third">
-          <div className="box">
-            {timeRemaining} days left in cycle
-          </div>
-          <div className="box">
-            Receiving money this cycle
-          </div>
-        </div>
-        <div className="column is-two-thirds">
-        </div>
-      </div>
-    )
-  }
+const Queue = () => {
+  return <div>Hello from Queue</div>
 }
+
+
 
 
 class DashboardContainer extends React.Component {
@@ -233,6 +206,16 @@ class DashboardContainer extends React.Component {
             <Route path="/configuration">
               <HighlightedTab>
                 <Configuration/>
+              </HighlightedTab>
+            </Route>
+            <Route path="/members">
+              <HighlightedTab>
+                <Members/>
+              </HighlightedTab>
+            </Route>
+            <Route path="/queue">
+              <HighlightedTab>
+                <Queue/>
               </HighlightedTab>
             </Route>
           </Switch>

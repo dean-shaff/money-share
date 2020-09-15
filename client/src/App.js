@@ -11,7 +11,7 @@ import {
 import Home from "./components/Home.js"
 import Login from "./components/Login.js"
 import Register from "./components/Register.js"
-import DashboardContainer from "./components/DashboardContainer.js"
+import DashboardContainer from "./components/Dashboard/DashboardContainer.js"
 import PrivateRoute from "./components/PrivateRoute.js"
 import { isLoggedIn } from "./util.js"
 
