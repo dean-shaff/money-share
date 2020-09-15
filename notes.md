@@ -1,3 +1,9 @@
+### 15/09/2020
+
+- Don't ever send password back in response!!!!
+- I need to make (most) API routes authenticated routes only... this will happen later 
+
+
 ### 14/09/2020
 
 Back at it. I'm going to be working on the stuff I was doing on Friday of last week.
