@@ -1,7 +1,27 @@
+TODO:
+- Don't ever send password back in response!!!!
+- I need to make (most) API routes authenticated routes only... this will happen later
+
+
+
+### 16/09/2020
+
+Okay, yesterday I got a good chunk of the Dashboard page set up. I'm not at the point where I need to be thinking about the following:
+- rotation member order; how can we modify this? what if I want a shuffle in the configuration page?
+- keeping track of who has paid and not in a given cycle?
+
+I think I can use `sequelize` to do this, by playing around with the intermediary field the interfaces between `Rotation` and `User`.
+
+I'm looking at the advanced many-to-many guide [here](https://sequelize.org/master/manual/advanced-many-to-many.html)
+
+I'm going to create a custom through model, with two extra fields: `rotationIndex` (DataTypes.INTEGER) and `cyclePaid` (DataTypes.BOOLEAN).
+
+I think it makes sense to have another model, sort of like a comment, that will keep track of a user's cycle history. Maybe I could call it `CycleNote` with `datePaid`, `amountPaid`, `rotationId`, and `notes`. Have a `hasmany` relationship with users.
+
+
+
 ### 15/09/2020
 
-- Don't ever send password back in response!!!!
-- I need to make (most) API routes authenticated routes only... this will happen later 
 
 
 ### 14/09/2020
