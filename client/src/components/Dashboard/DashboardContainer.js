@@ -196,6 +196,7 @@ class DashboardContainer extends React.Component {
             <Route path="/dashboard" >
               <HighlightedTab>
                 <Dashboard
+                  tilesPerRow={4}
                   onStart={this.onStart}
                   rotation={this.state.currentRotation}
                   members={this.state.currentRotationMembers}/>

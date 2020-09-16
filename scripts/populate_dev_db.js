@@ -54,6 +54,8 @@ const main = async () => {
       name: "My Rotation",
       cycleAmount: 100,
       cycleDuration: 14,
+      nonPayingCycles: 2,
+      membersPerCycle: 1,
       started: true,
       'dateStarted': dateStarted,
       managerId: users[0].id,

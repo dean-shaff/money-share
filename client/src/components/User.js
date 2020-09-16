@@ -2,10 +2,9 @@ import React from 'react'
 
 const User = (props) => {
   return (
-    <div className="card">
-      <div className="card-content">
-        <p>{props.name}</p>
-      </div>
+    <div className="box">
+      <p className="title">{props.user.name}</p>
+      <p>{props.user.username}</p>
     </div>
   )
 }
