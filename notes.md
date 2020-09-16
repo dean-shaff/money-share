@@ -1,8 +1,9 @@
 TODO:
 - Don't ever send password back in response!!!!
 - I need to make (most) API routes authenticated routes only... this will happen later
-- fix daysRemaining function -- it is currently not working correctly 
-
+- fix daysRemaining function -- it is currently not working correctly
+- I'd like to fix data flow from `DashboardContainer` to `Dashboard` and other downstream elements
+- Can I use `settings.js` in my client code? 
 
 ### 16/09/2020
 

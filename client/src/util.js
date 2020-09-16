@@ -2,7 +2,10 @@ import jwtDecode from 'jwt-decode'
 
 import moment from 'moment'
 
-const dateFormat = "MMMM Do, YYYY"
+import settings from './settings.js'
+
+const dateFormat = settings.dateFormat
+
 
 export const isLoggedIn = function () {
   const token = localStorage.getItem('token')

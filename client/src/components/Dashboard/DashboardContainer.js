@@ -15,10 +15,11 @@ import User from "./../User.js"
 import Dashboard from "./Dashboard.js"
 import Configuration from "./Configuration.js"
 import { getTokenUserInfo, getCycleNumberTotalCycles } from "./../../util.js"
+import settings from './../../settings.js'
 
 import './DashboardContainer.css'
 
-const dateFormat = "MMMM Do, YYYY"
+const dateFormat = settings.dateFormat
 
 
 const getLiClassNameFactory = (highlightPathName) => {

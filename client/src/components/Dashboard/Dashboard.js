@@ -5,8 +5,9 @@ import { faSearch, faSort } from '@fortawesome/free-solid-svg-icons'
 
 import User from './../User.js'
 import { roll, getCycleNumberTotalCycles } from './../../util.js'
+import settings from './../../settings.js'
 
-const dateFormat = "MMMM Do, YYYY"
+const dateFormat = settings.dateFormat
 
 const BlueHighlight = ({text}) => {
   return <span className="blue-highlight">{text}</span>
@@ -86,8 +87,6 @@ class Dashboard extends React.Component {
     return delta
   }
 
-
-
   reOrderMembers (rotation) {
 
     let members = rotation.members.slice()
@@ -113,8 +112,6 @@ class Dashboard extends React.Component {
 
   render () {
     const rotation = this.props.rotation
-    console.log(this.props.membersPaid)
-
     // console.log(`Dashboard.render: rotation=${JSON.stringify(rotation, null, 2)}`)
     let nonPayingCycles = rotation.nonPayingCycles
     let daysRemaining = this.getDaysRemaining(
