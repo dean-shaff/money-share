@@ -152,6 +152,23 @@ class DashboardContainer extends React.Component {
         }
       })
     }
+    let dashboard = null
+
+    if (this.state.currentRotation !== null) {
+      if (this.state.currentRotation.started === null || ! this.state.currentRotation.started) {
+        dashboard = (
+          <div>
+            <button className="button is-primary" onClick={this.onStart}>Start Rotation!</button>
+          </div>
+        )
+      } else {
+        dashboard = (
+          <Dashboard
+            tilesPerRow={4}
+            rotation={this.state.currentRotation}/>
+        )
+      }
+    }
     // let DashboardTab = <HighlightedTab component={Dashboard} path="/dashboard"/>
     return (
     <Router>
@@ -195,11 +212,7 @@ class DashboardContainer extends React.Component {
           <Switch>
             <Route path="/dashboard" >
               <HighlightedTab>
-                <Dashboard
-                  tilesPerRow={4}
-                  onStart={this.onStart}
-                  rotation={this.state.currentRotation}
-                  members={this.state.currentRotationMembers}/>
+                {dashboard}
               </HighlightedTab>
             </Route>
             <Route path="/configuration">

@@ -22,3 +22,9 @@ export const getTokenUserInfo = function () {
   const parsed = jwtDecode(token)
   return parsed
 }
+
+export const roll = function (arr, places) {
+  for (let idx = 0; idx < places; idx++) {
+    arr.unshift(arr.pop());
+  }
+}
