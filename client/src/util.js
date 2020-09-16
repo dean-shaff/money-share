@@ -1,5 +1,9 @@
 import jwtDecode from 'jwt-decode'
 
+import moment from 'moment'
+
+const dateFormat = "MMMM Do, YYYY"
+
 export const isLoggedIn = function () {
   const token = localStorage.getItem('token')
   if (!token) {
@@ -27,4 +31,21 @@ export const roll = function (arr, places) {
   for (let idx = 0; idx < places; idx++) {
     arr.unshift(arr.pop());
   }
+}
+
+export const getCycleNumberTotalCycles = function (rotation) {
+  let dateStarted = rotation.dateStarted
+  let membersPerCycle = rotation.membersPerCycle
+  let totalMembers = rotation.members.length
+  let cycleDuration = rotation.cycleDuration
+
+  let totalCycles = totalMembers / membersPerCycle
+
+  let dateStartedObj = moment(dateStarted, dateFormat)
+  let today = moment()
+
+  let daysSinceStart = today.diff(dateStartedObj, 'days')
+  let cycleNumber = Math.floor(daysSinceStart/cycleDuration)
+
+  return [cycleNumber, totalCycles]
 }

@@ -1,10 +1,13 @@
 import React from 'react'
 
 const User = (props) => {
+
+  let isPaidText = props.user.paid ? 'Paid!' : 'Not Paid!'
+
   return (
     <div className="box">
       <p className="title">{props.user.name}</p>
-      <p>{props.user.username}</p>
+      <p>{isPaidText}</p>
     </div>
   )
 }

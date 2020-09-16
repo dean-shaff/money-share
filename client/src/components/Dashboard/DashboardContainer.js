@@ -9,13 +9,16 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
+import moment from 'moment'
 
 import User from "./../User.js"
 import Dashboard from "./Dashboard.js"
 import Configuration from "./Configuration.js"
-import { getTokenUserInfo } from "./../../util.js"
+import { getTokenUserInfo, getCycleNumberTotalCycles } from "./../../util.js"
 
 import './DashboardContainer.css'
+
+const dateFormat = "MMMM Do, YYYY"
 
 
 const getLiClassNameFactory = (highlightPathName) => {
@@ -67,7 +70,7 @@ class DashboardContainer extends React.Component {
       username: null,
       rotations: null,
       currentRotation: null,
-      currentRotationMembers: null,
+      currentRotationMembersPaid: null,
       rotationNames: null,
       currentRotationName: null,
     }
@@ -84,33 +87,77 @@ class DashboardContainer extends React.Component {
     fetch(`/api/user/${tokenUserInfo.id}/rotations`)
       .then(resp => resp.json())
       .then(data => {
+
+        let currentRotation = this.computeMembersPaid(data[0])
+
         this.setState({
           'rotations': data,
-          'currentRotation': data[0],
-          'currentRotationName': data[0].name,
+          'currentRotation': currentRotation,
+          'currentRotationName': currentRotation.name,
           'rotationNames': data.map(d => d.name)
         })
-        let memberIds = data[0].members.map(member => member.id)
-        return this.setCurrentRotationUsers(memberIds)
+
+        // let memberIds = data[0].members.map(member => member.id)
+        // return this.setCurrentRotationUsers(memberIds)
       })
   }
 
-  setCurrentRotationUsers (memberIds) {
-    return fetch(`/api/users`, {
-      method: 'POST',
-      body: JSON.stringify({ids: memberIds}),
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    })
-    .then(resp => resp.json())
-    .then(data => {
-      this.setState({
-        'currentRotationMembers': data.users
-      })
-    })
-  }
+  // setCurrentRotationUsers (memberIds) {
+  //   return fetch(`/api/users`, {
+  //     method: 'POST',
+  //     body: JSON.stringify({ids: memberIds}),
+  //     headers: {
+  //       'Content-Type': 'application/json'
+  //     },
+  //   })
+  //   .then(resp => resp.json())
+  //   .then(data => {
+  //     this.setState({
+  //       'currentRotationMembers': data.users
+  //     })
+  //   })
+  // }
 
+  computeMembersPaid (rotation) {
+    if (! rotation.started) {
+      return {}
+    }
+
+
+    const dateCompare = (a, b) => {
+      let dateA = moment(a.datePaid, dateFormat)
+      let dateB = moment(b.datePaid, dateFormat)
+      let diff = dateA.diff(dateB)
+      if (diff > 0) {
+        return 1
+      } else if (diff === 0) {
+        return 0
+      } else {
+        return -1
+      }
+    }
+
+    let dateStarted = moment(rotation.dateStarted, dateFormat)
+    let [cycleNumber, totalCycles] = getCycleNumberTotalCycles(rotation)
+    let thisCycleStartDate = dateStarted.add(cycleNumber*rotation.cycleDuration, 'days')
+
+    const members = rotation.members
+    for (let idx=0; idx<members.length; idx++) {
+      let member = members[idx]
+      let notes = member.CycleNotes
+      rotation.members[idx].paid = false
+      if (notes.length > 0) {
+        notes.sort(dateCompare)
+        let mostRecent = notes[notes.length - 1]
+        let mostRecentPaid = moment(mostRecent.datePaid, dateFormat)
+        if (mostRecentPaid.isSameOrAfter(thisCycleStartDate)) {
+          rotation.members[idx].paid = true
+        }
+      }
+    }
+
+    return rotation
+  }
 
   onLogoutHandler (evt) {
     localStorage.removeItem('token')

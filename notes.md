@@ -1,7 +1,7 @@
 TODO:
 - Don't ever send password back in response!!!!
 - I need to make (most) API routes authenticated routes only... this will happen later
-
+- fix daysRemaining function -- it is currently not working correctly 
 
 
 ### 16/09/2020
