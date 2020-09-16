@@ -5,6 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "jest ./test/**/*.test.js",
+    "test-server": "jest ./test/server/**/*.test.js",
+    "test-client": "jest ./test/client/**/*.test.js",
     "build": "./node_modules/.bin/webpack --config webpack.config.js",
     "watch": "./node_modules/.bin/webpack --watch --config webpack.config.js"
   },
