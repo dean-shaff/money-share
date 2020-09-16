@@ -24,9 +24,10 @@ class Dashboard extends React.Component {
     return delta
   }
 
-  render () {
 
+  render () {
     const rotation = this.props.rotation
+    console.log(`Dashboard.render: rotation=${JSON.stringify(rotation, null, 2)}`)
     if (rotation === null) {
       return null
     }
@@ -34,7 +35,7 @@ class Dashboard extends React.Component {
     if (rotation.started === null || ! rotation.started) {
       return (
         <div>
-          <button className="button is-primary" onClick={onStart}>Start Rotation!</button>
+          <button className="button is-primary" onClick={this.props.onStart}>Start Rotation!</button>
         </div>
       )
     } else {

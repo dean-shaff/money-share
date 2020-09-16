@@ -85,8 +85,6 @@ class DashboardContainer extends React.Component {
       .then(resp => resp.json())
       .then(data => {
         this.setState({
-        })
-        this.setState({
           'rotations': data,
           'currentRotation': data[0],
           'currentRotationName': data[0].name,

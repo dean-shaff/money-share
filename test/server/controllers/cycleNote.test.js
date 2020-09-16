@@ -74,7 +74,7 @@ describe("cycleNote", () => {
     expect(res.statusCode).to.equal(200)
     expect(res.result.amountPaid).to.equal(100.0)
   })
-  //
+  
   test("PUT /user/{id}", async () => {
     const res = await server.inject({
       method: "PUT",

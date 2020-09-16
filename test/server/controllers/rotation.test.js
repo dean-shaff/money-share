@@ -1,7 +1,7 @@
 "use strict"
 
 const { expect } = require('@hapi/code');
-const { init } = require("./../../lib/server.js")
+const { init } = require("./../../../lib/server.js")
 
 const controllers = require("./../../../lib/controllers/")
 const models = require("./../../../lib/models/")
@@ -70,7 +70,7 @@ describe("rotation", () => {
       params: { id: rotation.id }
     })
 
-    expect((await rotationUpdated.getMembers()).length).to.equal(11)
+    expect((await rotationUpdated.countMembers())).to.equal(11)
     expect(rotationUpdated.name).to.equal("My Modified Rotation")
     expect(rotationUpdated.cycleAmount).to.equal(200)
     expect(rotationUpdated.cycleDuration).to.equal(28)
@@ -94,7 +94,7 @@ describe("rotation", () => {
 
   test('rotation.getUserRotations', async () => {
     const rotations = await controllers.rotation.getUserRotations({
-      params: { id: manager.id }
+      params: { userId: manager.id }
     })
   })
 
