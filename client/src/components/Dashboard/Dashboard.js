@@ -51,6 +51,7 @@ class Dashboard extends React.Component {
       "All",
       "Paid",
       "Unpaid",
+      "Paying",
       "Not paying"
     ]
     this.state = {
@@ -97,7 +98,9 @@ class Dashboard extends React.Component {
       } else if (selectedSort === this.sortOptions[2]) {
         return ! mem.paid
       } else if (selectedSort === this.sortOptions[3]) {
-        return true
+        return ! mem.nonPaying
+      } else if (selectedSort === this.sortOptions[4]) {
+        return  mem.nonPaying
       }
     })
   }

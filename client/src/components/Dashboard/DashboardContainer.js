@@ -14,7 +14,7 @@ import { DateTime } from 'luxon'
 import User from "./../User.js"
 import Dashboard from "./Dashboard.js"
 import Configuration from "./Configuration.js"
-import { getTokenUserInfo, getRotationCycleInfo, deleteNote, createNote } from "./../../util.js"
+import { getTokenUserInfo, getRotationCycleInfo, deleteNote, createNote, roll } from "./../../util.js"
 import settings from './../../settings.js'
 
 import './DashboardContainer.css'
@@ -199,14 +199,35 @@ class DashboardContainer extends React.Component {
       }
     }
 
+    const rotationIndexCompare = (a, b) => {
+      let idxA = a.MemberRotation.rotationIndex
+      let idxB = b.MemberRotation.rotationIndex
+      if (idxA > idxB) {
+        return 1
+      } else if (idxA === idxB) {
+        return 0
+      } else {
+        return -1
+      }
+    }
+
     let dateStarted = DateTime.fromISO(rotation.dateStarted)
     let {cycleNumber, totalCycles, daysRemaining, cycleStartDate} = getRotationCycleInfo(rotation)
+    rotation.members.sort(rotationIndexCompare)
+    roll(rotation.members, cycleNumber*rotation.membersPerCycle)
 
-    const members = rotation.members
-    for (let idx=0; idx<members.length; idx++) {
-      let member = members[idx]
-      let notes = member.CycleNotes
+    let notPayingThresh = rotation.members.length - rotation.membersPerCycle*rotation.nonPayingCycles
+
+    for (let idx=0; idx<rotation.members.length; idx++) {
+      if (idx >= notPayingThresh) {
+        rotation.members[idx].nonPaying = true
+      } else {
+        rotation.members[idx].nonPaying = false
+      }
+
+      let notes = rotation.members[idx].CycleNotes
       rotation.members[idx].paid = false
+
       if (notes.length > 0) {
         notes.sort(dateCompare)
         let mostRecent = notes[notes.length - 1]

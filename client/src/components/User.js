@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { faCheckCircle, faTimesCircle, faStopCircle } from '@fortawesome/free-solid-svg-icons'
 
 import "./User.css"
 
@@ -42,9 +42,9 @@ class User extends React.Component  {
 
   constructor(props) {
     super(props)
-    if (this.props.user.name === 'Dean Shaff') {
-      console.log(`User.constructor: paid=${this.props.user.paid}`)
-    }
+    // if (this.props.user.name === 'Dean Shaff') {
+    //   console.log(`User.constructor: paid=${this.props.user.paid}`)
+    // }
     this.state = {
       showButtons: false,
       waiting: false
@@ -73,15 +73,18 @@ class User extends React.Component  {
   }
 
   render () {
-    if (this.props.user.name === 'Dean Shaff') {
-      console.log(`User.render: paid=${this.props.user.paid} waiting=${this.state.waiting}, showButtons=${this.state.showButtons}`)
-    }
+    // if (this.props.user.name === 'Dean Shaff') {
+    //   console.log(`User.render: paid=${this.props.user.paid} waiting=${this.state.waiting}, showButtons=${this.state.showButtons}`)
+    // }
 
     let isPaid = (
       <span className="icon is-right has-text-success">
         <FontAwesomeIcon icon={faCheckCircle}/>
       </span>
     )
+
+    let userClass = 'user'
+
     if (! this.props.user.paid) {
       isPaid = (
         <span className="icon is-right has-text-danger">
@@ -89,13 +92,22 @@ class User extends React.Component  {
         </span>
       )
     }
+    if (this.props.user.nonPaying) {
+      isPaid = (
+        <span className="icon is-right">
+          <FontAwesomeIcon icon={faStopCircle}/>
+        </span>
+      )
+      userClass = ''
+    }
+
     let userButtons = null
-    if (this.state.showButtons) {
+    if (this.state.showButtons && ! this.props.user.nonPaying) {
       userButtons = <UserButtons paid={this.props.user.paid} waiting={this.state.waiting} onClick={this.onToggleClick} />
     }
 
     return (
-      <div className="user box" onClick={this.onClick}>
+      <div className={`${userClass} box`} onClick={this.onClick}>
         <div className="level">
           <div className="level-left">
             <div className="level-item">
