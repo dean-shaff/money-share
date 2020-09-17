@@ -41,7 +41,7 @@ const HighlightedTab = ({ children }) => {
   const getLiClassName = getLiClassNameFactory(location.pathname)
   return (
     <div className="container">
-      <div className="tabs">
+      <div className="tabs is-medium is-boxed">
         <ul>
           <li className={getLiClassName("/dashboard")}><Link to="/dashboard">Dashboard</Link></li>
           <li className={getLiClassName("/configuration")}><Link to="/configuration">Configuration</Link></li>
@@ -51,6 +51,17 @@ const HighlightedTab = ({ children }) => {
     </div>
   )
 }
+
+// const HighlightedMenu = ({ children }) => {
+//   const location = useLocation()
+//   const getLiClassName = getLiClassNameFactory(location.pathname)
+//   return (
+//     <ul>
+//       <li className={getLiClassName("/dashboard")}><Link to="/dashboard">Dashboard</Link></li>
+//       <li className={getLiClassName("/configuration")}><Link to="/configuration">Configuration</Link></li>
+//     </ul>
+//   )
+// }
 
 
 //
@@ -94,6 +105,7 @@ class DashboardContainer extends React.Component {
     this.onPlusCircleClick = this.onPlusCircleClick.bind(this)
     this.onStart = this.onStart.bind(this)
     this.onUserPaidChange = this.onUserPaidChange.bind(this)
+    this.onSelectRotationFactory = this.onSelectRotationFactory.bind(this)
   }
 
   componentDidMount() {
@@ -105,22 +117,29 @@ class DashboardContainer extends React.Component {
       .then(resp => resp.json())
       .then(data => {
 
-        let {rotation, cycleNumber, totalCycles, daysRemaining, cycleStartDate} = this.computeMembersPaid(data[0])
-
         this.setState({
           'rotations': data,
-          'currentRotation': rotation,
-          'currentRotationName': rotation.name,
-          'cycleNumber': cycleNumber,
-          'totalCycles': totalCycles,
-          'daysRemaining': daysRemaining,
-          'cycleStartDate': cycleStartDate,
           'rotationNames': data.map(d => d.name)
         })
+
+        this.setRotation(data[0])
 
         // let memberIds = data[0].members.map(member => member.id)
         // return this.setCurrentRotationUsers(memberIds)
       })
+  }
+
+  setRotation(newRotation) {
+    let {rotation, cycleNumber, totalCycles, daysRemaining, cycleStartDate} = this.computeMembersPaid(newRotation)
+
+    this.setState({
+      'currentRotation': rotation,
+      'currentRotationName': rotation.name,
+      'cycleNumber': cycleNumber,
+      'totalCycles': totalCycles,
+      'daysRemaining': daysRemaining,
+      'cycleStartDate': cycleStartDate
+    })
   }
 
   // setCurrentRotationUsers (memberIds) {
@@ -247,6 +266,14 @@ class DashboardContainer extends React.Component {
     this.props.history.push('/')
   }
 
+  onSelectRotationFactory (idx) {
+    return (evt) => {
+      if (this.state.currentRotation.id !== this.state.rotations[idx].id) {
+        this.setRotation(this.state.rotations[idx])
+      }
+    }
+  }
+
   onPlusCircleClick (evt) {
     console.log('click')
   }
@@ -273,13 +300,22 @@ class DashboardContainer extends React.Component {
 
   render () {
     let rotationDropDown = null
+    // let rotationMenu = null
     if (this.state.rotationNames !== null) {
+      // rotationMenu = this.state.rotationNames.map((name, idx) => {
+      //   if (name === this.state.currentRotationName) {
+      //     <li>
+      //       <a className="is-active">Manage Your Team</a>
+      //
+      //     </li>
+      //   }
+      // })
       rotationDropDown = this.state.rotationNames.map((name, idx) => {
-        if (name !== this.state.currentRotationName) {
-          return (<div className="navbar-dropdown" key={idx}>
-            <a className="navbar-item">{name}</a>
-          </div>)
+        let className = 'navbar-item'
+        if (name === this.state.currentRotationName) {
+          className = `${className} is-active`
         }
+        return <a key={name} className={className} onClick={this.onSelectRotationFactory(idx)}>{name}</a>
       })
     }
     let dashboard = null
@@ -325,16 +361,19 @@ class DashboardContainer extends React.Component {
             </div>
             <div className="navbar-item has-dropdown is-hoverable">
               <a className="navbar-link">{this.state.username}</a>
-              <div className="navbar-dropdown">
+              <div className="navbar-dropdown is-right">
+                {rotationDropDown}
+                <hr className="navbar-divider"/>
                 <a className="navbar-item" onClick={this.onLogoutHandler}>Logout</a>
               </div>
             </div>
           </div>
         </div>
       </nav>
+
       <section className="section top-section">
         <div className="container">
-          <nav className="navbar">
+          {/*<nav className="navbar">
             <div className="navbar-menu">
               <div className="navbar-start">
                 <div className="navbar-item has-dropdown is-hoverable">
@@ -343,7 +382,7 @@ class DashboardContainer extends React.Component {
                 </div>
               </div>
             </div>
-          </nav>
+          </nav>*/}
           <Switch>
             <Route path="/dashboard" >
               <HighlightedTab>
@@ -352,7 +391,7 @@ class DashboardContainer extends React.Component {
             </Route>
             <Route path="/configuration">
               <HighlightedTab>
-                <Configuration/>
+                {this.state.currentRotation !== null ? <Configuration rotation={this.state.currentRotation} totalCycles={this.state.totalCycles}/>: null}
               </HighlightedTab>
             </Route>
           </Switch>

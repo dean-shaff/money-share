@@ -8,6 +8,10 @@ const controllers = require("./../lib/controllers")
 
 const dbFilePath = path.join(__dirname, "..", "db", "db.sqlite")
 
+const now = DateTime.local()
+// let dateStarted = now.minus({ days: 7 })
+
+
 let users = [
   {
     name: "Dean Shaff",
@@ -32,6 +36,27 @@ for (let idx=0; idx<10; idx++) {
   })
 }
 
+let rotationParams = [
+  {
+    name: "My Rotation",
+    cycleAmount: 100,
+    cycleDuration: 14,
+    nonPayingCycles: 2,
+    membersPerCycle: 1,
+    started: true,
+    dateStarted: now.minus({days: 7})
+  },
+  {
+    name: "My Second Rotation",
+    cycleAmount: 200,
+    cycleDuration: 28,
+    nonPayingCycles: 2,
+    membersPerCycle: 2,
+    started: true,
+    dateStarted: now.minus({days: 54}),
+  }
+]
+
 
 const main = async () => {
   if (fs.existsSync(dbFilePath)) {
@@ -39,44 +64,38 @@ const main = async () => {
   }
   let server = await init();
 
-  let now = DateTime.local()
-
-  // let's say the rotation started a week ago
-  let dateStarted = now.minus({ days: 7 })
 
   users = await Promise.all(users.map(user => {
     return controllers.user.create({ payload: user })
   }))
 
+  const basePayload = {
+    managerId: users[0].id,
+    memberIds: users.map(user => user.id)
+  }
 
-  let rotation = await controllers.rotation.create({
-    payload: {
-      name: "My Rotation",
-      cycleAmount: 100,
-      cycleDuration: 14,
-      nonPayingCycles: 2,
-      membersPerCycle: 1,
-      started: true,
-      'dateStarted': dateStarted,
-      managerId: users[0].id,
-      memberIds: users.map(user => user.id)
-    }
-  })
+  for (let idx=0; idx<rotationParams.length; idx++) {
+    let params = rotationParams[idx]
+    let rotation = await controllers.rotation.create({
+      payload: Object.assign(basePayload, params)
+    })
 
-  await Promise.all(users.map((user, idx) => {
-    if (idx % 2 == 0) {
-      const userId = user.id
-      const randomDay = Math.floor(Math.random()*6) + 1
-      return controllers.cycleNote.create({
-        params: { 'userId': userId },
-        payload: {
-          amountPaid: 100.0,
-          datePaid: dateStarted.plus({ days: randomDay }),
-          rotationId: rotation.id
-        }
-      })
-    }
-  }))
+    await Promise.all(users.map((user, idx) => {
+      if (idx % 2 == 0) {
+        const userId = user.id
+        const randomDay = Math.floor(Math.random()*(params.cycleDuration-1)) + 1
+        return controllers.cycleNote.create({
+          params: { 'userId': userId },
+          payload: {
+            amountPaid: params.cycleAmount,
+            datePaid: params.dateStarted.plus({ days: randomDay }),
+            rotationId: rotation.id
+          }
+        })
+      }
+    }))
+  }
+
 
   await server.stop();
 }
