@@ -20,7 +20,6 @@ const ActivityGridElement = (props) => {
   )
 }
 
-
 const ActivityGridRow = (props) =>  {
   return (
     <div className="tile is-ancestor">
@@ -35,13 +34,12 @@ const ActivityGrid = (props) => {
   const members = props.members
   const tilesPerRow = props.tilesPerRow
   const nRows = Math.ceil(members.length / tilesPerRow)
-  let grid = []
-  for (let irow=0; irow<nRows; irow++) {
+  return [...Array(nRows).keys()].map(irow => {
     let [start, end] = [irow*tilesPerRow, (irow + 1)*tilesPerRow]
-    grid.push(<ActivityGridRow key={`row-${start}-${end}`} members={members.slice(start, end)} onClick={props.onClick} />)
-  }
-  return grid
+    return (<ActivityGridRow key={`row-${start}-${end}`} members={members.slice(start, end)} onClick={props.onClick} />)
+  })
 }
+
 
 
 class Dashboard extends React.Component {
@@ -49,25 +47,28 @@ class Dashboard extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      'filteredMembers': this.props.rotation.members
+      'searchText': ''
     }
     this.onSearch = this.onSearch.bind(this)
   }
 
   onSearch (evt) {
     const val = evt.currentTarget.value.toLowerCase()
-    let filteredMembers = this.props.rotation.members.filter(mem => {
+    this.setState({
+      'searchText': val
+    })
+  }
+
+  filterMembers (text, members) {
+    let filteredMembers = members.filter(mem => {
       let name = mem.name.toLowerCase()
-      if (name.includes(val)) {
+      if (name.includes(text)) {
         return true
       }
       return false
     })
-    this.setState({
-      'filteredMembers': filteredMembers
-    })
+    return filteredMembers
   }
-
 
   reOrderMembers (rotation, totalCycles, cycleNumber) {
 
@@ -102,6 +103,8 @@ class Dashboard extends React.Component {
 
     let cycleRecipients = this.createMemberElements(reOrderedMembers[0])
     let cycleNotPaying = this.createMemberElements(reOrderedMembers.slice(-nonPayingCycles).flat())
+    let filteredMembers = this.filterMembers(this.state.searchText, rotation.members)
+
     // let cycleRecipients = null
     // let cycleNotPaying = null
 
@@ -158,7 +161,7 @@ class Dashboard extends React.Component {
               </div>
             </nav>
             <div className="container top-container">
-              {/*<ActivityGrid members={this.state.filteredMembers} tilesPerRow={this.props.tilesPerRow} onClick={this.props.onUserPaidChange}/>*/}
+              <ActivityGrid members={filteredMembers} tilesPerRow={this.props.tilesPerRow} onClick={this.props.onUserPaidChange}/>
             </div>
           </div>
         </div>
