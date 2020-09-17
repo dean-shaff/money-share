@@ -1,10 +1,11 @@
 import React from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSearch, faSort } from '@fortawesome/free-solid-svg-icons'
+import { faSearch, faSort, faAngleDown } from '@fortawesome/free-solid-svg-icons'
 
 import User from './../User.js'
 import { roll } from './../../util.js'
 
+import "./Dashboard.css"
 
 const BlueHighlight = ({text}) => {
   return <span className="has-text-primary">{text}</span>
@@ -46,10 +47,18 @@ class Dashboard extends React.Component {
 
   constructor(props) {
     super(props)
+    this.sortOptions = [
+      "All",
+      "Paid",
+      "Unpaid",
+      "Not paying"
+    ]
     this.state = {
-      'searchText': ''
+      'searchText': '',
+      'selectedSort': this.sortOptions[0]
     }
     this.onSearch = this.onSearch.bind(this)
+    this.onSort = this.onSort.bind(this)
   }
 
   onSearch (evt) {
@@ -59,7 +68,15 @@ class Dashboard extends React.Component {
     })
   }
 
-  filterMembers (text, members) {
+  onSort (evt) {
+    const selected = evt.target.options[evt.target.selectedIndex].text
+    console.log(`onSort: selected=${selected}`)
+    this.setState({
+      'selectedSort': selected
+    })
+  }
+
+  filterMembersBySearch (text, members) {
     let filteredMembers = members.filter(mem => {
       let name = mem.name.toLowerCase()
       if (name.includes(text)) {
@@ -68,6 +85,21 @@ class Dashboard extends React.Component {
       return false
     })
     return filteredMembers
+  }
+
+  filterMembersBySort (selectedSort, members) {
+    if (selectedSort === "All") {
+      return members
+    }
+    return members.filter(mem => {
+      if (selectedSort === this.sortOptions[1]) {
+        return mem.paid
+      } else if (selectedSort === this.sortOptions[2]) {
+        return ! mem.paid
+      } else if (selectedSort === this.sortOptions[3]) {
+        return true
+      }
+    })
   }
 
   reOrderMembers (rotation, totalCycles, cycleNumber) {
@@ -103,8 +135,8 @@ class Dashboard extends React.Component {
 
     let cycleRecipients = this.createMemberElements(reOrderedMembers[0])
     let cycleNotPaying = this.createMemberElements(reOrderedMembers.slice(-nonPayingCycles).flat())
-    let filteredMembers = this.filterMembers(this.state.searchText, rotation.members)
-
+    let filteredMembers = this.filterMembersBySearch(this.state.searchText, rotation.members)
+    filteredMembers = this.filterMembersBySort(this.state.selectedSort, filteredMembers)
     // let cycleRecipients = null
     // let cycleNotPaying = null
 
@@ -154,9 +186,23 @@ class Dashboard extends React.Component {
                 </p>
                 </div>
                 <div className="navbar-item">
-                  <span className="icon">
-                    <FontAwesomeIcon icon={faSort}/>
-                  </span>
+                  <div className="field is-horizontal">
+                    {/*<div className="field-label is-small">
+                      <label className="label is-small">Sort By</label>
+                    </div>*/}
+                    <div className="field-label is-small sort-by">
+                      <label className="label">Sort By:</label>
+                    </div>
+                    <div className="field-body">
+                      <div className="control">
+                        <div className="select is-small" onChange={this.onSort}>
+                          <select>
+                            {this.sortOptions.map(op => <option key={op}>{op}</option>)}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </nav>
