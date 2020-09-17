@@ -11,9 +11,11 @@ import {
 } from "react-router-dom";
 import { DateTime } from 'luxon'
 
+import AppTitle from "./../AppTitle.js"
 import User from "./../User.js"
 import Dashboard from "./Dashboard.js"
 import Configuration from "./Configuration.js"
+import CreateRotation from "./CreateRotation.js"
 import { getTokenUserInfo, getRotationCycleInfo, deleteNote, createNote, roll } from "./../../util.js"
 import settings from './../../settings.js'
 
@@ -33,9 +35,6 @@ const getLiClassNameFactory = (highlightPathName) => {
   }
 }
 
-// <li className={getLiClassName("/members")}><Link to="/members">Members</Link></li>
-// <li className={getLiClassName("/queue")}><Link to="/queue">Queue</Link></li>
-
 const HighlightedTab = ({ children }) => {
   const location = useLocation()
   const getLiClassName = getLiClassNameFactory(location.pathname)
@@ -51,40 +50,6 @@ const HighlightedTab = ({ children }) => {
     </div>
   )
 }
-
-// const HighlightedMenu = ({ children }) => {
-//   const location = useLocation()
-//   const getLiClassName = getLiClassNameFactory(location.pathname)
-//   return (
-//     <ul>
-//       <li className={getLiClassName("/dashboard")}><Link to="/dashboard">Dashboard</Link></li>
-//       <li className={getLiClassName("/configuration")}><Link to="/configuration">Configuration</Link></li>
-//     </ul>
-//   )
-// }
-
-
-//
-// const Members = () => {
-//   return <div>Hello from Members</div>
-// }
-//
-// const Queue = () => {
-//   return <div>Hello from Queue</div>
-// }
-// <Route path="/members">
-//   <HighlightedTab>
-//     <Members/>
-//   </HighlightedTab>
-// </Route>
-// <Route path="/queue">
-//   <HighlightedTab>
-//     <Queue/>
-//   </HighlightedTab>
-// </Route>
-//
-
-
 
 class DashboardContainer extends React.Component {
 
@@ -300,22 +265,13 @@ class DashboardContainer extends React.Component {
 
   render () {
     let rotationDropDown = null
-    // let rotationMenu = null
     if (this.state.rotationNames !== null) {
-      // rotationMenu = this.state.rotationNames.map((name, idx) => {
-      //   if (name === this.state.currentRotationName) {
-      //     <li>
-      //       <a className="is-active">Manage Your Team</a>
-      //
-      //     </li>
-      //   }
-      // })
       rotationDropDown = this.state.rotationNames.map((name, idx) => {
         let className = 'navbar-item'
         if (name === this.state.currentRotationName) {
           className = `${className} is-active`
         }
-        return <a key={name} className={className} onClick={this.onSelectRotationFactory(idx)}>{name}</a>
+        return <Link to="/dashboard" key={name} className={className} onClick={this.onSelectRotationFactory(idx)}>{name}</Link>
       })
     }
     let dashboard = null
@@ -348,21 +304,23 @@ class DashboardContainer extends React.Component {
         <div className="container">
           <div className="navbar-brand">
             <a href="/" className="navbar-item">
-              <h1 className="title is-1">Money Share App</h1>
+              <AppTitle/>
             </a>
           </div>
         </div>
         <div className="navbar-menu">
           <div className="navbar-end">
-            <div className="navbar-item">
+            {/*<div className="navbar-item">
             <span className="icon is-small is-left" onClick={this.onPlusCircleClick}>
               <FontAwesomeIcon icon={faPlusCircle} />
             </span>
-            </div>
+            </div>*/}
             <div className="navbar-item has-dropdown is-hoverable">
               <a className="navbar-link">{this.state.username}</a>
               <div className="navbar-dropdown is-right">
                 {rotationDropDown}
+                <hr className="navbar-divider"/>
+                <Link className="navbar-item" to="/createRotation">Create New Rotation</Link>
                 <hr className="navbar-divider"/>
                 <a className="navbar-item" onClick={this.onLogoutHandler}>Logout</a>
               </div>
@@ -373,16 +331,6 @@ class DashboardContainer extends React.Component {
 
       <section className="section top-section">
         <div className="container">
-          {/*<nav className="navbar">
-            <div className="navbar-menu">
-              <div className="navbar-start">
-                <div className="navbar-item has-dropdown is-hoverable">
-                  <a className="navbar-link">{this.state.currentRotationName}</a>
-                  {rotationDropDown}
-                </div>
-              </div>
-            </div>
-          </nav>*/}
           <Switch>
             <Route path="/dashboard" >
               <HighlightedTab>
@@ -393,6 +341,9 @@ class DashboardContainer extends React.Component {
               <HighlightedTab>
                 {this.state.currentRotation !== null ? <Configuration rotation={this.state.currentRotation} totalCycles={this.state.totalCycles}/>: null}
               </HighlightedTab>
+            </Route>
+            <Route path="/createRotation">
+              <CreateRotation/>
             </Route>
           </Switch>
         </div>

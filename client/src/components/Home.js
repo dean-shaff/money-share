@@ -1,5 +1,6 @@
 import React from "react"
 
+import AppTitle from "./AppTitle.js"
 
 const Home = () => {
   return (
@@ -8,7 +9,7 @@ const Home = () => {
       <div className="container">
         <div className="navbar-brand">
           <a href="/" className="navbar-item">
-            <h1 className="title is-1">Money Share App</h1>
+            <AppTitle/>
           </a>
         </div>
       </div>
