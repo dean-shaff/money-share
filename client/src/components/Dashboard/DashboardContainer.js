@@ -140,6 +140,7 @@ class DashboardContainer extends React.Component {
   // }
 
   onUserPaidChange (evt, user, paid) {
+    console.log(`onUserPaidChange`)
     const rotationId = this.state.currentRotation.id
     const userId = user.id
     if (! paid) {

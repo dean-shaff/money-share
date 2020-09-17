@@ -7,7 +7,7 @@ import "./User.css"
 
 const UserButtons = (props) => {
 
-  console.log(`UserButtons: ${props.waiting}`)
+  console.log(`UserButtons: waiting=${props.waiting} paid=${props.paid}`)
 
   let buttonText = 'Mark as Paid'
   if (props.paid) {
@@ -25,15 +25,13 @@ const UserButtons = (props) => {
   }
 
   return (
-    <div className="buttons">
-      <div className="level">
-        <div className="level-item">
-          <button
-            className={`button is-info is-outlined is-small ${loadingClass}`}
-            onClick={onClick}>
-              {buttonText}
-          </button>
-        </div>
+    <div className="level">
+      <div className="level-item">
+        <button
+          className={`button is-info is-outlined is-small ${loadingClass} is-fullwidth`}
+          onClick={onClick}>
+            {buttonText}
+        </button>
       </div>
     </div>
   )
@@ -44,12 +42,10 @@ class User extends React.Component  {
 
   constructor(props) {
     super(props)
-    if (this.props.name === 'Dean Shaff') {
-      console.log(`User.constructor`)
+    if (this.props.user.name === 'Dean Shaff') {
+      console.log(`User.constructor: paid=${this.props.user.paid}`)
     }
-
     this.state = {
-      computedPaid: this.props.user.paid,
       showButtons: false,
       waiting: false
     }
@@ -59,17 +55,18 @@ class User extends React.Component  {
 
 
   onClick (evt) {
-    evt.stopPropagation()
     this.setState({showButtons: ! this.state.showButtons})
   }
 
   onToggleClick (evt) {
-    this.props.onClick(evt, this.props.user, ! this.state.computedPaid)
+    this.props.onClick(evt, this.props.user, ! this.props.user.paid)
     this.setState({waiting: true})
-    // setComputedPaid(! computedPaid)
   }
 
   componentDidUpdate(prevProps) {
+    if (this.props.user.name === 'Dean Shaff') {
+      console.log(`User.componentDidUpdate: ${prevProps.user.paid}, ${this.props.user.paid}`)
+    }
     if (prevProps.user.paid !== this.props.user.paid) {
       this.setState({waiting: false})
     }
@@ -77,7 +74,7 @@ class User extends React.Component  {
 
   render () {
     if (this.props.user.name === 'Dean Shaff') {
-      console.log(`User.render: waiting=${this.state.waiting}, showButtons=${this.state.showButtons}`)
+      console.log(`User.render: paid=${this.props.user.paid} waiting=${this.state.waiting}, showButtons=${this.state.showButtons}`)
     }
 
     let isPaid = (
@@ -85,7 +82,7 @@ class User extends React.Component  {
         <FontAwesomeIcon icon={faCheckCircle}/>
       </span>
     )
-    if (! this.state.computedPaid) {
+    if (! this.props.user.paid) {
       isPaid = (
         <span className="icon is-right has-text-danger">
           <FontAwesomeIcon icon={faTimesCircle}/>
@@ -94,7 +91,7 @@ class User extends React.Component  {
     }
     let userButtons = null
     if (this.state.showButtons) {
-      userButtons = <UserButtons paid={this.state.computedPaid} waiting={this.state.waiting} onClick={this.onToggleClick} />
+      userButtons = <UserButtons paid={this.props.user.paid} waiting={this.state.waiting} onClick={this.onToggleClick} />
     }
 
     return (

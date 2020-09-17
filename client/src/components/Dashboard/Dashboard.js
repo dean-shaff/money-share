@@ -14,7 +14,7 @@ const ActivityGridElement = (props) => {
   return (
     <div className="tile is-parent is-3">
       <article className="tile is-child">
-        <User {...props}/>
+        <User onClick={props.onClick} user={props.user}/>
       </article>
     </div>
   )
@@ -25,7 +25,7 @@ const ActivityGridRow = (props) =>  {
   return (
     <div className="tile is-ancestor">
       {props.members.map(mem => (
-        <ActivityGridElement key={mem.name} user={mem} onClick={props.onClick}/>
+        <ActivityGridElement key={mem.id} user={mem} onClick={props.onClick}/>
       ))}
     </div>
   )
@@ -38,7 +38,7 @@ const ActivityGrid = (props) => {
   let grid = []
   for (let irow=0; irow<nRows; irow++) {
     let [start, end] = [irow*tilesPerRow, (irow + 1)*tilesPerRow]
-    grid.push(<ActivityGridRow key={irow.toString()} members={members.slice(start, end)} onClick={props.onClick} />)
+    grid.push(<ActivityGridRow key={`row-${start}-${end}`} members={members.slice(start, end)} onClick={props.onClick} />)
   }
   return grid
 }
@@ -102,6 +102,8 @@ class Dashboard extends React.Component {
 
     let cycleRecipients = this.createMemberElements(reOrderedMembers[0])
     let cycleNotPaying = this.createMemberElements(reOrderedMembers.slice(-nonPayingCycles).flat())
+    // let cycleRecipients = null
+    // let cycleNotPaying = null
 
     return (
       <div className="columns">
@@ -156,7 +158,7 @@ class Dashboard extends React.Component {
               </div>
             </nav>
             <div className="container top-container">
-              <ActivityGrid members={this.state.filteredMembers} tilesPerRow={this.props.tilesPerRow} onClick={this.props.onUserPaidChange}/>
+              {/*<ActivityGrid members={this.state.filteredMembers} tilesPerRow={this.props.tilesPerRow} onClick={this.props.onUserPaidChange}/>*/}
             </div>
           </div>
         </div>
