@@ -9,12 +9,12 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
-import moment from 'moment'
+import { DateTime } from 'luxon'
 
 import User from "./../User.js"
 import Dashboard from "./Dashboard.js"
 import Configuration from "./Configuration.js"
-import { getTokenUserInfo, getCycleNumberTotalCycles } from "./../../util.js"
+import { getTokenUserInfo, getRotationCycleInfo, deleteNote, createNote } from "./../../util.js"
 import settings from './../../settings.js'
 
 import './DashboardContainer.css'
@@ -85,10 +85,15 @@ class DashboardContainer extends React.Component {
       currentRotation: null,
       rotationNames: null,
       currentRotationName: null,
+      cycleNumber: null,
+      totalCycles: null,
+      daysRemaining: null,
+      cycleStartDate: null,
     }
     this.onLogoutHandler = this.onLogoutHandler.bind(this)
     this.onPlusCircleClick = this.onPlusCircleClick.bind(this)
     this.onStart = this.onStart.bind(this)
+    this.onUserPaidChange = this.onUserPaidChange.bind(this)
   }
 
   componentDidMount() {
@@ -100,12 +105,16 @@ class DashboardContainer extends React.Component {
       .then(resp => resp.json())
       .then(data => {
 
-        let currentRotation = this.computeMembersPaid(data[0])
+        let {rotation, cycleNumber, totalCycles, daysRemaining, cycleStartDate} = this.computeMembersPaid(data[0])
 
         this.setState({
           'rotations': data,
-          'currentRotation': currentRotation,
-          'currentRotationName': currentRotation.name,
+          'currentRotation': rotation,
+          'currentRotationName': rotation.name,
+          'cycleNumber': cycleNumber,
+          'totalCycles': totalCycles,
+          'daysRemaining': daysRemaining,
+          'cycleStartDate': cycleStartDate,
           'rotationNames': data.map(d => d.name)
         })
 
@@ -130,28 +139,67 @@ class DashboardContainer extends React.Component {
   //   })
   // }
 
+  onUserPaidChange (evt, user, paid) {
+    const rotationId = this.state.currentRotation.id
+    const userId = user.id
+    if (! paid) {
+      console.log(`DashboardContainer.onUserPaidChange: deleting newest note`)
+      let notes = user.CycleNotes
+      let mostRecent = notes[notes.length - 1]
+      deleteNote(userId, mostRecent.id)
+        .then(resp => {
+          if (resp.status === 204) {
+            let currentRotation = JSON.parse(JSON.stringify(this.state.currentRotation))
+            for (let idx=0; idx<currentRotation.members.length; idx++) {
+              if (currentRotation.members[idx].id === userId) {
+                currentRotation.members[idx].paid = false
+                currentRotation.members[idx].CycleNotes.pop()
+                break
+              }
+            }
+            this.setState({'currentRotation': currentRotation})
+          }
+        })
+    } else {
+      console.log(`DashboardContainer.onUserPaidChange: creating new note`)
+      const datePaid = DateTime.local().toISO()
+      const amountPaid = this.state.currentRotation.cycleAmount
+      // userId, rotationId, datePaid, amountPaid
+      createNote(userId, rotationId, datePaid, amountPaid)
+        .then(resp => resp.json())
+        .then(data => {
+          let currentRotation = JSON.parse(JSON.stringify(this.state.currentRotation))
+          for (let idx=0; idx<currentRotation.members.length; idx++) {
+            if (currentRotation.members[idx].id == userId) {
+              currentRotation.members[idx].paid = true
+              currentRotation.members[idx].CycleNotes.push(data)
+              break
+            }
+          }
+          this.setState({'currentRotation': currentRotation})
+        })
+    }
+  }
+
   computeMembersPaid (rotation) {
     if (! rotation.started) {
       return {}
     }
 
-
     const dateCompare = (a, b) => {
-      let dateA = moment(a.datePaid, dateFormat)
-      let dateB = moment(b.datePaid, dateFormat)
-      let diff = dateA.diff(dateB)
-      if (diff > 0) {
+      let dateA = DateTime.fromISO(a.datePaid)
+      let dateB = DateTime.fromISO(b.datePaid)
+      if (dateA > dateB) {
         return 1
-      } else if (diff === 0) {
+      } else if (dateA.toMillis() === dateB.toMillis()) {
         return 0
       } else {
         return -1
       }
     }
 
-    let dateStarted = moment(rotation.dateStarted, dateFormat)
-    let [cycleNumber, totalCycles] = getCycleNumberTotalCycles(rotation)
-    let thisCycleStartDate = dateStarted.add(cycleNumber*rotation.cycleDuration, 'days')
+    let dateStarted = DateTime.fromISO(rotation.dateStarted)
+    let {cycleNumber, totalCycles, daysRemaining, cycleStartDate} = getRotationCycleInfo(rotation)
 
     const members = rotation.members
     for (let idx=0; idx<members.length; idx++) {
@@ -161,14 +209,15 @@ class DashboardContainer extends React.Component {
       if (notes.length > 0) {
         notes.sort(dateCompare)
         let mostRecent = notes[notes.length - 1]
-        let mostRecentPaid = moment(mostRecent.datePaid, dateFormat)
-        if (mostRecentPaid.isSameOrAfter(thisCycleStartDate)) {
+        let mostRecentPaid = DateTime.fromISO(mostRecent.datePaid)
+        if (mostRecentPaid >= cycleStartDate) {
           rotation.members[idx].paid = true
         }
+        rotation.members[idx].CycleNotes = notes
       }
     }
 
-    return rotation
+    return {rotation, cycleNumber, totalCycles, daysRemaining, cycleStartDate}
   }
 
   onLogoutHandler (evt) {
@@ -224,6 +273,11 @@ class DashboardContainer extends React.Component {
         dashboard = (
           <Dashboard
             tilesPerRow={4}
+            onUserPaidChange={this.onUserPaidChange}
+            daysRemaining={this.state.daysRemaining}
+            cycleNumber={this.state.cycleNumber}
+            totalCycles={this.state.totalCycles}
+            cycleStartDate={this.state.cycleStartDate}
             rotation={this.state.currentRotation}/>
         )
       }

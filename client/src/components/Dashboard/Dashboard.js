@@ -1,57 +1,46 @@
 import React from "react"
-import moment from 'moment'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faSort } from '@fortawesome/free-solid-svg-icons'
 
 import User from './../User.js'
-import { roll, getRotationCycleInfo } from './../../util.js'
-import settings from './../../settings.js'
+import { roll } from './../../util.js'
 
-const dateFormat = settings.dateFormat
 
 const BlueHighlight = ({text}) => {
-  return <span className="blue-highlight">{text}</span>
+  return <span className="has-text-primary">{text}</span>
 }
 
-class ActivityGridRow extends React.Component {
-
-  constructor(props) {
-    super(props)
-  }
-
-  render () {
-    return (
-      <div className="tile is-ancestor">
-        {this.props.members.map(mem => (
-          <div key={mem.name} className="tile is-parent is-3">
-            <div className="tile is-child">
-              <User user={mem}/>
-            </div>
-          </div>
-        ))}
-      </div>
-    )
-  }
+const ActivityGridElement = (props) => {
+  return (
+    <div className="tile is-parent is-3">
+      <article className="tile is-child">
+        <User {...props}/>
+      </article>
+    </div>
+  )
 }
 
-class ActivityGrid extends React.Component {
 
-  constructor(props) {
-    super(props)
+const ActivityGridRow = (props) =>  {
+  return (
+    <div className="tile is-ancestor">
+      {props.members.map(mem => (
+        <ActivityGridElement key={mem.name} user={mem} onClick={props.onClick}/>
+      ))}
+    </div>
+  )
+}
+
+const ActivityGrid = (props) => {
+  const members = props.members
+  const tilesPerRow = props.tilesPerRow
+  const nRows = Math.ceil(members.length / tilesPerRow)
+  let grid = []
+  for (let irow=0; irow<nRows; irow++) {
+    let [start, end] = [irow*tilesPerRow, (irow + 1)*tilesPerRow]
+    grid.push(<ActivityGridRow key={irow.toString()} members={members.slice(start, end)} onClick={props.onClick} />)
   }
-
-  render () {
-    const members = this.props.members
-    const tilesPerRow = this.props.tilesPerRow
-    const nRows = Math.ceil(members.length / tilesPerRow)
-    let grid = []
-    for (let irow=0; irow<nRows; irow++) {
-      let [start, end] = [irow*tilesPerRow, (irow + 1)*tilesPerRow]
-      grid.push(<ActivityGridRow key={irow.toString()} members={members.slice(start, end)} />)
-    }
-    return grid
-  }
-
+  return grid
 }
 
 
@@ -79,12 +68,11 @@ class Dashboard extends React.Component {
     })
   }
 
-  reOrderMembers (rotation) {
+
+  reOrderMembers (rotation, totalCycles, cycleNumber) {
 
     let members = rotation.members.slice()
     let membersPerCycle = rotation.membersPerCycle
-
-    let {cycleNumber, totalCycles, daysRemaining} = getRotationCycleInfo(rotation)
 
     let reOrderedMembers = []
     for (let icycle=0; icycle<totalCycles; icycle++) {
@@ -99,28 +87,31 @@ class Dashboard extends React.Component {
   }
 
   createMemberElements (members) {
-    return members.map((mem, idx) => <User key={mem.name} user={mem}/>)
+    return members.map((mem, idx) => (<User onClick={this.props.onUserPaidChange} key={mem.name} user={mem}/>))
   }
 
   render () {
+    console.log(`Dashboard.render`)
     const rotation = this.props.rotation
-    // console.log(`Dashboard.render: rotation=${JSON.stringify(rotation, null, 2)}`)
-    let nonPayingCycles = rotation.nonPayingCycles
-    let {cycleNumber, totalCycles, daysRemaining} = getRotationCycleInfo(rotation)
-    let reOrderedMembers = this.reOrderMembers(rotation)
+    const nonPayingCycles = rotation.nonPayingCycles
+    let reOrderedMembers = this.reOrderMembers(
+      rotation,
+      this.props.totalCycles,
+      this.props.cycleNumber
+    )
 
     let cycleRecipients = this.createMemberElements(reOrderedMembers[0])
     let cycleNotPaying = this.createMemberElements(reOrderedMembers.slice(-nonPayingCycles).flat())
 
     return (
       <div className="columns">
-        <div className="column is-one-third">
+        <div className="column is-one-quarter">
           <div className="box">
             <h4 className="title is-4">
-              This is cycle <BlueHighlight text={cycleNumber + 1}/> of <BlueHighlight text={totalCycles}/>
+              This is cycle <BlueHighlight text={this.props.cycleNumber + 1}/> of <BlueHighlight text={this.props.totalCycles}/>
             </h4>
             <h4 className="title is-4">
-              There are <BlueHighlight text={daysRemaining}/> days left in this cycle
+              There are <BlueHighlight text={this.props.daysRemaining}/> days left in this cycle
             </h4>
           </div>
           <div className="box">
@@ -140,7 +131,7 @@ class Dashboard extends React.Component {
             </div>
           </div>
         </div>
-        <div className="column is-two-thirds">
+        <div className="column">
           <div className="box">
             <nav className="navbar has-shadow">
               <div className="navbar-menu">
@@ -164,8 +155,8 @@ class Dashboard extends React.Component {
                 </div>
               </div>
             </nav>
-            <div className="container">
-              <ActivityGrid members={this.state.filteredMembers} tilesPerRow={this.props.tilesPerRow}/>
+            <div className="container top-container">
+              <ActivityGrid members={this.state.filteredMembers} tilesPerRow={this.props.tilesPerRow} onClick={this.props.onUserPaidChange}/>
             </div>
           </div>
         </div>

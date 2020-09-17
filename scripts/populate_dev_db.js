@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 
-const moment = require('moment')
+const { DateTime } = require('luxon')
 
 const { init } = require("./../lib/server.js")
 const controllers = require("./../lib/controllers")
@@ -15,12 +15,12 @@ let users = [
     email: "dean.shaff@gmail.com",
     password: "deanshaffpassword"
   },
-  // {
-  //   name: "Charles Raita",
-  //   username: "charlesraita",
-  //   email: 'charlesraita@gmail.com',
-  //   password: 'charlesraitapassword'
-  // }
+  {
+    name: "Jose Velazquez de la Cruz Montero",
+    username: "josedelacruz",
+    email: 'josedelacrux@gmail.com',
+    password: 'josedelacruxpassword'
+  }
 ]
 
 for (let idx=0; idx<10; idx++) {
@@ -39,10 +39,10 @@ const main = async () => {
   }
   let server = await init();
 
-  let now = moment()
+  let now = DateTime.local()
 
   // let's say the rotation started a week ago
-  let dateStarted = now.subtract(7, 'days')
+  let dateStarted = now.minus({ days: 7 })
 
   users = await Promise.all(users.map(user => {
     return controllers.user.create({ payload: user })
@@ -71,7 +71,7 @@ const main = async () => {
         params: { 'userId': userId },
         payload: {
           amountPaid: 100.0,
-          datePaid: dateStarted.add(randomDay, 'days'),
+          datePaid: dateStarted.plus({ days: randomDay }),
           rotationId: rotation.id
         }
       })

@@ -1,10 +1,7 @@
 import jwtDecode from 'jwt-decode'
 
-import moment from 'moment'
+import { DateTime } from 'luxon'
 
-import settings from './settings.js'
-
-const dateFormat = settings.dateFormat
 
 
 export const isLoggedIn = function () {
@@ -45,7 +42,7 @@ export const roll = function (arr, places) {
  */
 export const getRotationCycleInfo = function (rotation, todayFunction) {
   if (todayFunction == null) {
-    todayFunction = moment
+    todayFunction = DateTime.local
   }
   let dateStarted = rotation.dateStarted
   let membersPerCycle = rotation.membersPerCycle
@@ -54,18 +51,40 @@ export const getRotationCycleInfo = function (rotation, todayFunction) {
 
   let totalCycles = totalMembers / membersPerCycle
 
-  let dateStartedObj = moment(dateStarted, dateFormat)
+  let dateStartedObj = DateTime.fromISO(dateStarted)
   let today = todayFunction()
 
-  let daysSinceStart = today.diff(dateStartedObj, 'days')
+  let daysSinceStart = Math.floor(today.diff(dateStartedObj, 'days').toObject().days)
   let cycleNumber = Math.floor(daysSinceStart/cycleDuration)
 
   let daysRemaining = daysSinceStart % cycleDuration
-  // let cycleStartDate = dateStartedObj.add(cycleNumber*cycleDuration, 'days')
-  // let daysRemaining = today.diff(cycleStartDate, 'days')
+  let cycleStartDate = dateStartedObj.plus({days: cycleNumber*cycleDuration})
 
   console.log(`util.getRotationCycleInfo: cycleNumber=${cycleNumber}, totalCycles=${totalCycles}, daysRemaining=${daysRemaining}`)
 
-  return {cycleNumber, totalCycles, daysRemaining}
+  return {cycleNumber, totalCycles, daysRemaining, cycleStartDate}
 
+}
+
+
+export const deleteNote = function (userId, noteId) {
+  console.log(`util.deleteNote`)
+  return fetch(`/api/user/${userId}/cycleNote/${noteId}`, {
+    method: 'DELETE'
+  })
+}
+
+export const createNote = function (userId, rotationId, datePaid, amountPaid) {
+  console.log(`util.createNote`)
+  return fetch(`/api/user/${userId}/cycleNote`, {
+    method: 'POST',
+    body: JSON.stringify({
+      'rotationId': rotationId,
+      'datePaid': datePaid,
+      'amountPaid': amountPaid
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
 }

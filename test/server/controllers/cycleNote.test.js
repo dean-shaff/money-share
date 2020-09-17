@@ -1,6 +1,6 @@
 "use strict"
 
-const moment = require('moment')
+const { DateTime } = require('luxon')
 const { expect } = require('@hapi/code');
 const { init } = require("./../../../lib/server.js")
 
@@ -30,7 +30,7 @@ describe("cycleNote", () => {
         userId: newUser.id
       },
       payload: {
-        'datePaid': moment(),
+        'datePaid': DateTime.local(),
         'amountPaid': 100.0,
         'rotationId': rotationId
       }
@@ -47,7 +47,7 @@ describe("cycleNote", () => {
       method: 'POST',
       url: `/api/user/${newUser.id}/cycleNote`,
       payload: {
-        'datePaid': moment(),
+        'datePaid': DateTime.local(),
         'amountPaid': 100.0,
         'rotationId': rotationId
       }
@@ -60,7 +60,7 @@ describe("cycleNote", () => {
       method: 'POST',
       url: `/api/user/${newUser.id}/cycleNote`,
       payload: {
-        'datePaid': moment(),
+        'datePaid': DateTime.local(),
         'amountPaid': 100.0
       }
     })
@@ -74,7 +74,7 @@ describe("cycleNote", () => {
     expect(res.statusCode).to.equal(200)
     expect(res.result.amountPaid).to.equal(100.0)
   })
-  
+
   test("PUT /user/{id}", async () => {
     const res = await server.inject({
       method: "PUT",

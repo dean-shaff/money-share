@@ -1,14 +1,14 @@
 // test out client utility code
 const { expect } = require('@hapi/code');
-const moment = require('moment')
+const { DateTime } = require('luxon')
 
 const { getRotationCycleInfo } = require('./../../client/src/util.js')
-const settings = require('./../../client/src/settings.js')
 
 
 describe('getRotationCycleInfo', () => {
   test('membersPerCycle equal to 1', () => {
-    let dateStarted = moment().subtract(48, 'days').format(settings.dateFormat)
+    let dateStarted = DateTime.local().minus({days: 48}).toISO()
+
     const rotation = {
       'dateStarted': dateStarted,
       'members': new Array(12),
@@ -23,7 +23,7 @@ describe('getRotationCycleInfo', () => {
   })
 
   test('membersPerCycle equal to 5', () => {
-    let dateStarted = moment().subtract(48, 'days').format(settings.dateFormat)
+    let dateStarted = DateTime.local().minus({days: 48}).toISO()
     const rotation = {
       'dateStarted': dateStarted,
       'members': new Array(60),
