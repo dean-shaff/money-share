@@ -4,14 +4,12 @@
   "description": "Money Share Web App",
   "main": "app.js",
   "scripts": {
-    "test": "jest ./test/**/*.test.js",
+    "test": "jest ./test/**/*.test.js --config jest.integration.config.js",
     "test-server": "jest ./test/server/**/*.test.js",
-    "test-client": "jest ./test/client/**/*.test.js",
+    "test-integration": "jest ./test/integration/*.test.js --config jest.integration.config.js",
+    "test-client": "jest ./test/client/*.test.js",
     "build": "./node_modules/.bin/webpack --config webpack.config.js",
     "watch": "./node_modules/.bin/webpack --watch --config webpack.config.js"
-  },
-  "jest": {
-    "preset": "jest-puppeteer"
   },
   "repository": {
     "type": "git",

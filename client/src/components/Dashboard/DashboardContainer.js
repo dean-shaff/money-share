@@ -19,6 +19,7 @@ import settings from './../../settings.js'
 
 import './DashboardContainer.css'
 
+
 const dateFormat = settings.dateFormat
 
 
@@ -32,6 +33,9 @@ const getLiClassNameFactory = (highlightPathName) => {
   }
 }
 
+// <li className={getLiClassName("/members")}><Link to="/members">Members</Link></li>
+// <li className={getLiClassName("/queue")}><Link to="/queue">Queue</Link></li>
+
 const HighlightedTab = ({ children }) => {
   const location = useLocation()
   const getLiClassName = getLiClassNameFactory(location.pathname)
@@ -41,8 +45,6 @@ const HighlightedTab = ({ children }) => {
         <ul>
           <li className={getLiClassName("/dashboard")}><Link to="/dashboard">Dashboard</Link></li>
           <li className={getLiClassName("/configuration")}><Link to="/configuration">Configuration</Link></li>
-          <li className={getLiClassName("/members")}><Link to="/members">Members</Link></li>
-          <li className={getLiClassName("/queue")}><Link to="/queue">Queue</Link></li>
         </ul>
       </div>
       {children}
@@ -51,15 +53,25 @@ const HighlightedTab = ({ children }) => {
 }
 
 
-
-const Members = () => {
-  return <div>Hello from Members</div>
-}
-
-const Queue = () => {
-  return <div>Hello from Queue</div>
-}
-
+//
+// const Members = () => {
+//   return <div>Hello from Members</div>
+// }
+//
+// const Queue = () => {
+//   return <div>Hello from Queue</div>
+// }
+// <Route path="/members">
+//   <HighlightedTab>
+//     <Members/>
+//   </HighlightedTab>
+// </Route>
+// <Route path="/queue">
+//   <HighlightedTab>
+//     <Queue/>
+//   </HighlightedTab>
+// </Route>
+//
 
 
 
@@ -71,7 +83,6 @@ class DashboardContainer extends React.Component {
       username: null,
       rotations: null,
       currentRotation: null,
-      currentRotationMembersPaid: null,
       rotationNames: null,
       currentRotationName: null,
     }
@@ -268,16 +279,6 @@ class DashboardContainer extends React.Component {
                 <Configuration/>
               </HighlightedTab>
             </Route>
-            <Route path="/members">
-              <HighlightedTab>
-                <Members/>
-              </HighlightedTab>
-            </Route>
-            <Route path="/queue">
-              <HighlightedTab>
-                <Queue/>
-              </HighlightedTab>
-            </Route>
           </Switch>
         </div>
       </section>
@@ -287,23 +288,6 @@ class DashboardContainer extends React.Component {
   }
 }
 
-// <div className="dropdown">
-//   <div className="dropdown-trigger">
-//     <button className="button" aria-haspopup="true" aria-controls="dropdown-menu">
-//       <span>{this.state.currentRotationName}</span>
-//       <span className="icon is-small">
-//         <FontAwesomeIcon icon={faAngleDown}/>
-//       </span>
-//     </button>
-//   </div>
-//   <div className="dropdown-menu" id="dropdown-menu" role="menu">
-//     <div className="dropdown-content">
-//       <a href="#" className="dropdown-item">
-//         Dropdown item
-//       </a>
-//     </div>
-//   </div>
-// </div>
 
 
 export default DashboardContainer

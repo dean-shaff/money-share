@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faSort } from '@fortawesome/free-solid-svg-icons'
 
 import User from './../User.js'
-import { roll, getCycleNumberTotalCycles } from './../../util.js'
+import { roll, getRotationCycleInfo } from './../../util.js'
 import settings from './../../settings.js'
 
 const dateFormat = settings.dateFormat
@@ -79,20 +79,12 @@ class Dashboard extends React.Component {
     })
   }
 
-  getDaysRemaining (dateStarted, cycleDuration)  {
-    let dateStartedObj = moment(dateStarted, dateFormat)
-    let nextCycle = dateStartedObj.add(cycleDuration, 'days')
-    let today = moment()
-    let delta = nextCycle.diff(today, 'days')
-    return delta
-  }
-
   reOrderMembers (rotation) {
 
     let members = rotation.members.slice()
     let membersPerCycle = rotation.membersPerCycle
 
-    let [cycleNumber, totalCycles] = getCycleNumberTotalCycles(rotation)
+    let {cycleNumber, totalCycles, daysRemaining} = getRotationCycleInfo(rotation)
 
     let reOrderedMembers = []
     for (let icycle=0; icycle<totalCycles; icycle++) {
@@ -114,9 +106,7 @@ class Dashboard extends React.Component {
     const rotation = this.props.rotation
     // console.log(`Dashboard.render: rotation=${JSON.stringify(rotation, null, 2)}`)
     let nonPayingCycles = rotation.nonPayingCycles
-    let daysRemaining = this.getDaysRemaining(
-      rotation.dateStarted, rotation.cycleDuration)
-    let [cycleNumber, totalCycles] = getCycleNumberTotalCycles(rotation)
+    let {cycleNumber, totalCycles, daysRemaining} = getRotationCycleInfo(rotation)
     let reOrderedMembers = this.reOrderMembers(rotation)
 
     let cycleRecipients = this.createMemberElements(reOrderedMembers[0])

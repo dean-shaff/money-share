@@ -1,9 +1,24 @@
 TODO:
 - Don't ever send password back in response!!!!
+  - I think I fixed this
 - I need to make (most) API routes authenticated routes only... this will happen later
 - fix daysRemaining function -- it is currently not working correctly
 - I'd like to fix data flow from `DashboardContainer` to `Dashboard` and other downstream elements
-- Can I use `settings.js` in my client code? 
+- Can I use `settings.js` in my client code?
+  - No, but I made a client version of `settings.js`
+
+### 17/09/2020
+
+It's crunch time. Here's whats still left to do:
+
+- Finish Dashboard page.
+  - Need `Activity` filters.
+    - I want a drop down that appears next to the search box where we can select how we want to filter data.
+  - Need to be able to say that a given member has paid or note, and update database accordingly.
+  - Fix `daysRemaining`
+- Rotation configuration page
+- Member dashboard
+  - They should be able to see what rotations their part of, and their payment history.
 
 ### 16/09/2020
 

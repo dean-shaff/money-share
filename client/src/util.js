@@ -36,7 +36,17 @@ export const roll = function (arr, places) {
   }
 }
 
-export const getCycleNumberTotalCycles = function (rotation) {
+/**
+ * Get the current cycle number, the total number of cycles in the rotation,
+ * the number of days remaining in the cycle, and this cycle's start date
+ * @param  {[type]} rotation rotation object.
+ * @param  {[type]} todayFunction function to generate today. Defaults to moment constructor
+ * @return {[type]}          [description]
+ */
+export const getRotationCycleInfo = function (rotation, todayFunction) {
+  if (todayFunction == null) {
+    todayFunction = moment
+  }
   let dateStarted = rotation.dateStarted
   let membersPerCycle = rotation.membersPerCycle
   let totalMembers = rotation.members.length
@@ -45,10 +55,17 @@ export const getCycleNumberTotalCycles = function (rotation) {
   let totalCycles = totalMembers / membersPerCycle
 
   let dateStartedObj = moment(dateStarted, dateFormat)
-  let today = moment()
+  let today = todayFunction()
 
   let daysSinceStart = today.diff(dateStartedObj, 'days')
   let cycleNumber = Math.floor(daysSinceStart/cycleDuration)
 
-  return [cycleNumber, totalCycles]
+  let daysRemaining = daysSinceStart % cycleDuration
+  // let cycleStartDate = dateStartedObj.add(cycleNumber*cycleDuration, 'days')
+  // let daysRemaining = today.diff(cycleStartDate, 'days')
+
+  console.log(`util.getRotationCycleInfo: cycleNumber=${cycleNumber}, totalCycles=${totalCycles}, daysRemaining=${daysRemaining}`)
+
+  return {cycleNumber, totalCycles, daysRemaining}
+
 }
