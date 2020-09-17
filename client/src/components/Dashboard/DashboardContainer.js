@@ -81,13 +81,18 @@ class DashboardContainer extends React.Component {
     fetch(`/api/user/${tokenUserInfo.id}/rotations`)
       .then(resp => resp.json())
       .then(data => {
+        console.log(`componentDidMount: data=${JSON.stringify(data, null, 2)}`)
+        if (data.length > 0) {
+          this.setState({
+            'rotations': data,
+            'rotationNames': data.map(d => d.name)
+          })
 
-        this.setState({
-          'rotations': data,
-          'rotationNames': data.map(d => d.name)
-        })
-
-        this.setRotation(data[0])
+          this.setRotation(data[0])
+        } else {
+          // console.log(this.props.context.history)
+          this.props.history.push('/createRotation')
+        }
 
         // let memberIds = data[0].members.map(member => member.id)
         // return this.setCurrentRotationUsers(memberIds)
@@ -296,9 +301,7 @@ class DashboardContainer extends React.Component {
         )
       }
     }
-    // let DashboardTab = <HighlightedTab component={Dashboard} path="/dashboard"/>
     return (
-    <Router>
       <div>
       <nav className="navbar is-spaced has-shadow" role="navigation" aria-label="main navigation">
         <div className="container">
@@ -310,11 +313,6 @@ class DashboardContainer extends React.Component {
         </div>
         <div className="navbar-menu">
           <div className="navbar-end">
-            {/*<div className="navbar-item">
-            <span className="icon is-small is-left" onClick={this.onPlusCircleClick}>
-              <FontAwesomeIcon icon={faPlusCircle} />
-            </span>
-            </div>*/}
             <div className="navbar-item has-dropdown is-hoverable">
               <a className="navbar-link">{this.state.username}</a>
               <div className="navbar-dropdown is-right">
@@ -349,7 +347,6 @@ class DashboardContainer extends React.Component {
         </div>
       </section>
       </div>
-    </Router>
     )
   }
 }

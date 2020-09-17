@@ -13,6 +13,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
   if (! to) {
     to = '/login'
   }
+
   return (
     <Route
       {..._rest}

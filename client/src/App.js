@@ -16,24 +16,41 @@ import PrivateRoute from "./components/PrivateRoute.js"
 import { isLoggedIn } from "./util.js"
 
 
-const App = ({ children }) => (
+const App = () => (
   <Router>
-  <Switch>
-    <Route exact path="/" render={() => (
-      isLoggedIn() ? (
-        <Redirect to="/dashboard"/>
-      ) : (
-        <Home />
-      )
-    )}/>
-    <Route path="/login" component={Login} />
-    <Route path="/register" component={Register} />
-    <PrivateRoute path="/dashboard" component={DashboardContainer} to="/"/>
-    <PrivateRoute path="/configuration" component={DashboardContainer} to="/"/>
-    <PrivateRoute path="/members" component={DashboardContainer} to="/"/>
-    <PrivateRoute path="/queue" component={DashboardContainer} to="/"/>
-    <PrivateRoute path="/createRotation" component={DashboardContainer} to="/"/>
-  </Switch>
+    <Switch>
+      <Route exact path="/" render={() => (
+        isLoggedIn() ? (
+          <Redirect to="/dashboard"/>
+        ) : (
+          <Home />
+        )
+      )}/>
+      <Route path="/login" component={Login} />
+      <Route path="/register" component={Register} />
+      <PrivateRoute path="/dashboard" component={DashboardContainer} to="/"/>
+      <PrivateRoute path="/configuration" component={DashboardContainer} to="/"/>
+      <PrivateRoute path="/members" component={DashboardContainer} to="/"/>
+      <PrivateRoute path="/queue" component={DashboardContainer} to="/"/>
+      <PrivateRoute path="/createRotation" component={DashboardContainer} to="/"/>
+      {/*<Route path="/dashboard">
+        <DashboardContainer/>
+      </Route>
+      <Route path="/configuration">
+        <DashboardContainer/>
+      </Route>
+      <Route path="/members">
+        <DashboardContainer/>
+      </Route>
+      <Route path="/queue">
+        <DashboardContainer/>
+      </Route>
+      <Route path="/createRotation">
+        <DashboardContainer/>
+      </Route>
+*/}
+
+    </Switch>
   </Router>
 );
 

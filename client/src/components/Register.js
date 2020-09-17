@@ -12,17 +12,19 @@ const Register = ({ history }) => {
   const onSubmitHandler = function (evt) {
     evt.preventDefault()
     const formData = new FormData(evt.target)
-    fetch('/api/user', {
+    fetch('/register', {
       method: "POST",
       body: formData
     })
     .then(resp => resp.json())
     .then(data => {
+      console.log(`Register.onSubmitHandler: `)
       if ('message' in data) {
         setMsg(data.message)
         return
       }
       if (data.id_token !== undefined) {
+        console.log('Register.onSubmitHandler: settings localStorage, directing to /dashboard')
         localStorage.setItem('token', data.id_token)
         history.push('/dashboard')
       }
