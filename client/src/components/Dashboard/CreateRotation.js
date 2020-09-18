@@ -243,7 +243,7 @@ class CreateRotation extends React.Component {
           </div>
           <div className="column is-one-half">
             <h5 className="title is-5">Members</h5>
-            <div className="container">
+            <div className="block">
               <MemberDisplay members={this.state.members} onRemoveFactory={this.onRemoveFactory}/>
             </div>
             <AddMember onAdd={this.onAdd}/>
