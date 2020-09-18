@@ -15,11 +15,6 @@
   padding-top: 1rem;
 }
 
-
-.blue-highlight {
-  color: #3273dc;
-}
-
-.breakable {
-  word-wrap: break-word;
+.on-top {
+  z-index: 30;
 }

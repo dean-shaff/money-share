@@ -63,7 +63,66 @@ export const getRotationCycleInfo = function (rotation, todayFunction) {
   console.log(`util.getRotationCycleInfo: cycleNumber=${cycleNumber}, totalCycles=${totalCycles}, daysRemaining=${daysRemaining}`)
 
   return {cycleNumber, totalCycles, daysRemaining, cycleStartDate}
+}
 
+export const computeMembersPaid = function (rotation) {
+  if (! rotation.started) {
+    return {}
+  }
+
+  const dateCompare = (a, b) => {
+    let dateA = DateTime.fromISO(a.datePaid)
+    let dateB = DateTime.fromISO(b.datePaid)
+    if (dateA > dateB) {
+      return 1
+    } else if (dateA.toMillis() === dateB.toMillis()) {
+      return 0
+    } else {
+      return -1
+    }
+  }
+
+  const rotationIndexCompare = (a, b) => {
+    let idxA = a.MemberRotation.rotationIndex
+    let idxB = b.MemberRotation.rotationIndex
+    if (idxA > idxB) {
+      return 1
+    } else if (idxA === idxB) {
+      return 0
+    } else {
+      return -1
+    }
+  }
+
+  let dateStarted = DateTime.fromISO(rotation.dateStarted)
+  let {cycleNumber, totalCycles, daysRemaining, cycleStartDate} = getRotationCycleInfo(rotation)
+  rotation.members.sort(rotationIndexCompare)
+  roll(rotation.members, cycleNumber*rotation.membersPerCycle)
+
+  let notPayingThresh = rotation.members.length - rotation.membersPerCycle*rotation.nonPayingCycles
+
+  for (let idx=0; idx<rotation.members.length; idx++) {
+    if (idx >= notPayingThresh) {
+      rotation.members[idx].nonPaying = true
+    } else {
+      rotation.members[idx].nonPaying = false
+    }
+
+    let notes = rotation.members[idx].CycleNotes
+    rotation.members[idx].paid = false
+
+    if (notes.length > 0) {
+      notes.sort(dateCompare)
+      let mostRecent = notes[notes.length - 1]
+      let mostRecentPaid = DateTime.fromISO(mostRecent.datePaid)
+      if (mostRecentPaid >= cycleStartDate) {
+        rotation.members[idx].paid = true
+      }
+      rotation.members[idx].CycleNotes = notes
+    }
+  }
+
+  return {rotation, cycleNumber, totalCycles, daysRemaining, cycleStartDate}
 }
 
 

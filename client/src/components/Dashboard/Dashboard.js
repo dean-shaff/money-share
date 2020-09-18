@@ -173,7 +173,7 @@ class Dashboard extends React.Component {
         </div>
         <div className="column">
           <div className="box">
-            <nav className="navbar has-shadow">
+            <nav className="navbar has-shadow on-bottom">
               <div className="navbar-menu">
                 <div className="navbar-item">
                   <h4 className="title is-4">Activity</h4>

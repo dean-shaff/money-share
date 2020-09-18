@@ -2,3 +2,7 @@
   flex-basis: auto;
   margin-right: 0.5rem;
 }
+
+.navbar.on-bottom {
+  z-index: 10;
+}

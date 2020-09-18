@@ -16,7 +16,7 @@ import User from "./../User.js"
 import Dashboard from "./Dashboard.js"
 import Configuration from "./Configuration.js"
 import CreateRotation from "./CreateRotation.js"
-import { getTokenUserInfo, getRotationCycleInfo, deleteNote, createNote, roll } from "./../../util.js"
+import { getTokenUserInfo, getRotationCycleInfo, deleteNote, createNote, roll, computeMembersPaid } from "./../../util.js"
 import settings from './../../settings.js'
 
 import './DashboardContainer.css'
@@ -78,7 +78,7 @@ class DashboardContainer extends React.Component {
     this.setState({
       'username': tokenUserInfo.username
     })
-    fetch(`/api/user/${tokenUserInfo.id}/rotations`)
+    fetch(`/api/user/${tokenUserInfo.id}/managedRotations`)
       .then(resp => resp.json())
       .then(data => {
         console.log(`componentDidMount: data=${JSON.stringify(data, null, 2)}`)
@@ -87,21 +87,15 @@ class DashboardContainer extends React.Component {
             'rotations': data,
             'rotationNames': data.map(d => d.name)
           })
-
           this.setRotation(data[0])
         } else {
-          // console.log(this.props.context.history)
           this.props.history.push('/createRotation')
         }
-
-        // let memberIds = data[0].members.map(member => member.id)
-        // return this.setCurrentRotationUsers(memberIds)
       })
   }
 
   setRotation(newRotation) {
-    let {rotation, cycleNumber, totalCycles, daysRemaining, cycleStartDate} = this.computeMembersPaid(newRotation)
-
+    let {rotation, cycleNumber, totalCycles, daysRemaining, cycleStartDate} = computeMembersPaid(newRotation)
     this.setState({
       'currentRotation': rotation,
       'currentRotationName': rotation.name,
@@ -111,22 +105,6 @@ class DashboardContainer extends React.Component {
       'cycleStartDate': cycleStartDate
     })
   }
-
-  // setCurrentRotationUsers (memberIds) {
-  //   return fetch(`/api/users`, {
-  //     method: 'POST',
-  //     body: JSON.stringify({ids: memberIds}),
-  //     headers: {
-  //       'Content-Type': 'application/json'
-  //     },
-  //   })
-  //   .then(resp => resp.json())
-  //   .then(data => {
-  //     this.setState({
-  //       'currentRotationMembers': data.users
-  //     })
-  //   })
-  // }
 
   onUserPaidChange (evt, user, paid) {
     console.log(`onUserPaidChange`)
@@ -171,65 +149,7 @@ class DashboardContainer extends React.Component {
     }
   }
 
-  computeMembersPaid (rotation) {
-    if (! rotation.started) {
-      return {}
-    }
 
-    const dateCompare = (a, b) => {
-      let dateA = DateTime.fromISO(a.datePaid)
-      let dateB = DateTime.fromISO(b.datePaid)
-      if (dateA > dateB) {
-        return 1
-      } else if (dateA.toMillis() === dateB.toMillis()) {
-        return 0
-      } else {
-        return -1
-      }
-    }
-
-    const rotationIndexCompare = (a, b) => {
-      let idxA = a.MemberRotation.rotationIndex
-      let idxB = b.MemberRotation.rotationIndex
-      if (idxA > idxB) {
-        return 1
-      } else if (idxA === idxB) {
-        return 0
-      } else {
-        return -1
-      }
-    }
-
-    let dateStarted = DateTime.fromISO(rotation.dateStarted)
-    let {cycleNumber, totalCycles, daysRemaining, cycleStartDate} = getRotationCycleInfo(rotation)
-    rotation.members.sort(rotationIndexCompare)
-    roll(rotation.members, cycleNumber*rotation.membersPerCycle)
-
-    let notPayingThresh = rotation.members.length - rotation.membersPerCycle*rotation.nonPayingCycles
-
-    for (let idx=0; idx<rotation.members.length; idx++) {
-      if (idx >= notPayingThresh) {
-        rotation.members[idx].nonPaying = true
-      } else {
-        rotation.members[idx].nonPaying = false
-      }
-
-      let notes = rotation.members[idx].CycleNotes
-      rotation.members[idx].paid = false
-
-      if (notes.length > 0) {
-        notes.sort(dateCompare)
-        let mostRecent = notes[notes.length - 1]
-        let mostRecentPaid = DateTime.fromISO(mostRecent.datePaid)
-        if (mostRecentPaid >= cycleStartDate) {
-          rotation.members[idx].paid = true
-        }
-        rotation.members[idx].CycleNotes = notes
-      }
-    }
-
-    return {rotation, cycleNumber, totalCycles, daysRemaining, cycleStartDate}
-  }
 
   onLogoutHandler (evt) {
     localStorage.removeItem('token')
@@ -251,21 +171,21 @@ class DashboardContainer extends React.Component {
   onStart (evt) {
     const rotationId = this.state.currentRotation.id
     console.log(`DashboardContainer.onStart: ${rotationId}`)
-    fetch(`/api/rotation/${rotationId}`, {
-      method: 'PUT',
-      body: JSON.stringify({
-        'started': true,
-        'dateStarted': new Date()
-      }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(resp => resp.json())
-    .then(data => {
-      console.log(data)
-      this.setCurrentRotationUsers(data.members.map(member => member.id))
-    })
+    // fetch(`/api/rotation/${rotationId}`, {
+    //   method: 'PUT',
+    //   body: JSON.stringify({
+    //     'started': true,
+    //     'dateStarted': DateTime.local()
+    //   }),
+    //   headers: {
+    //     'Content-Type': 'application/json'
+    //   }
+    // })
+    // .then(resp => resp.json())
+    // .then(data => {
+    //   console.log(data)
+    //   this.setCurrentRotationUsers(data.members.map(member => member.id))
+    // })
   }
 
   render () {
@@ -313,7 +233,7 @@ class DashboardContainer extends React.Component {
         </div>
         <div className="navbar-menu">
           <div className="navbar-end">
-            <div className="navbar-item has-dropdown is-hoverable">
+            <div className="navbar-item has-dropdown is-hoverable on-top">
               <a className="navbar-link">{this.state.username}</a>
               <div className="navbar-dropdown is-right">
                 {rotationDropDown}

@@ -18,10 +18,10 @@ TODO:
 
 For today:
 
-- Need to fix API routes
+- Need to fix API routes: done
   - There should not be POST /api/users -- it should be GET request to /api/user that gets all the users!
-  - ditto for other routes 
-- Need to authenticate API routes
+  - ditto for other routes
+- Need to authenticate API routes: 
   - I think I can just use JWT
 - Automated production database creation
   - So I can upload Brandi's data
