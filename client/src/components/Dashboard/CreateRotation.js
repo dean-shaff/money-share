@@ -1,19 +1,73 @@
 import React, { useState } from "react"
 import { faInfoCircle, faClock, faDollarSign, faUser } from '@fortawesome/free-solid-svg-icons'
-
+import { authFetch } from "./../../util.js"
 
 import InputField from './../InputField.js'
 
 const AddMember = () => {
 
+  const [displayManualAdd, setDisplayManualAdd] = useState(false)
+
+  const onClick = function () {
+    console.log('onClick')
+  }
+
+
+  return (
+    <div className="box">
+      <div className="field has-addons has-addons-centered">
+        <div className="control">
+          <InputField type="text" name="name" placeholder="Username" icon={faUser}></InputField>
+        </div>
+        <div className="control">
+          <a className="button is-info" onClick={onClick}>
+            Search
+          </a>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const MemberDisplay = (props) => {
+  const members = props.members
+
+  return (
+    <div className="table-container">
+      <table className="table">
+        <thead>
+         <tr>
+           <th><abbr title="Position">Pos</abbr></th>
+           <th>Username</th>
+           <th>Name</th>
+         </tr>
+        </thead>
+        <tbody>
+          {members.map((mem, idx) => (
+            <tr key={mem.name}>
+              <td>{idx + 1}</td>
+              <td>{mem.username}</td>
+              <td>{mem.name}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
 }
 
 
-const CreateRotation = () => {
+const CreateRotation = (props) => {
 
   const durationUnits = ['Days', 'Weeks', 'Months']
 
   const [durationUnit, setDurationUnit] = useState(durationUnits[0])
+  const [members, setMembers] = useState([
+    {
+      name: "First",
+      username: 'first'
+    }
+  ])
 
   const onSelect = (evt) => {
     let val = evt.target.value
@@ -45,7 +99,9 @@ const CreateRotation = () => {
           <InputField type="number" name="nonPayingCycles" label="Nonpaying Cycles" icon={faInfoCircle}></InputField>
           <InputField type="number" name="membersPerCycle" label="Members per Cycle" icon={faUser}></InputField>
         </div>
-        <div className="column is-two-thirds box">
+        <div className="column is-two-thirds">
+          <MemberDisplay members={members}/>
+          <AddMember/>
         </div>
       </div>
     </div>
