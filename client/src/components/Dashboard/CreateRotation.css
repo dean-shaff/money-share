@@ -1,0 +1,11 @@
+.button.is-slide-out {
+  border-width: 0px;
+}
+
+.button.is-slide-out:focus:not(:active) {
+  box-shadow: none;
+}
+
+.field.needs-bottom-margin {
+  margin-bottom: 0.75rem;
+}

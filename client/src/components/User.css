@@ -8,10 +8,5 @@
 }
 
 .user.box:hover {
-  /* border-color: #b5b5b5; */
-  /* border: 1px solid #b5b5b5; */
-  /* border-width: 1px; */
-  /* box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px #b5b5b5; */
   box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px #d2d2d2;
-
 }

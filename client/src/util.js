@@ -83,9 +83,6 @@ export const getRotationCycleInfo = function (rotation, todayFunction) {
 }
 
 export const computeMembersPaid = function (rotation) {
-  if (! rotation.started) {
-    return {}
-  }
 
   const dateCompare = (a, b) => {
     let dateA = DateTime.fromISO(a.datePaid)
@@ -164,4 +161,12 @@ export const createNote = function (userId, rotationId, datePaid, amountPaid) {
       'Content-Type': 'application/json'
     }
   })
+}
+
+export const getDefault = function (obj, key, defaultVal) {
+  if (obj[key] === undefined) {
+    return defaultValue
+  } else {
+    return obj[key]
+  }
 }

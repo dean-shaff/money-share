@@ -61,24 +61,30 @@ const HighlightedTab = ({ children }) => {
 
 const RotationDropDown = ({managedRotations, memberRotations, currentRotation, onClickFactory}) => {
 
-  let managedRotationElem = managedRotations.map((rot, idx) => {
-    const name = rot.name
-    let className = 'navbar-item'
-    if (name === currentRotation.name && currentRotation.managed) {
-      className = `${className} is-active`
+  const mapFactory = (flag) => {
+    return (rot, idx) => {
+      const name = rot.name
+      let className = 'navbar-item'
+      if (currentRotation !== null) {
+        let managed = flag ? currentRotation.managed: ! currentRotation.managed
+        if (name === currentRotation.name && managed) {
+          className = `${className} is-active`
+        }
+      }
+      if (! rot.started) {
+        if (rot.managed) {
+          return <Link to="/createRotation" key={name} className={className} onClick={onClickFactory(rot)}>{name}</Link>
+        } else {
+          return null
+        }
+      } else {
+        return <Link to="/dashboard" key={name} className={className} onClick={onClickFactory(rot)}>{name}</Link>
+      }
     }
-    return <Link to="/dashboard" key={name} className={className} onClick={onClickFactory(rot)}>{name}</Link>
-  })
+  }
 
-  let memberRotationElem = memberRotations.map((rot, idx) => {
-    const name = rot.name
-    let className = 'navbar-item'
-    if (name === currentRotation.name && ! currentRotation.managed) {
-      className = `${className} is-active`
-    }
-    return <Link to="/dashboard" key={name} className={className} onClick={onClickFactory(rot)}>{name}</Link>
-  })
-
+  let managedRotationElem = managedRotations.map(mapFactory(true))
+  let memberRotationElem = memberRotations.map(mapFactory(false))
 
   return (
     <div>
@@ -110,6 +116,7 @@ class DashboardContainer extends React.Component {
     this.onStart = this.onStart.bind(this)
     this.onUserPaidChange = this.onUserPaidChange.bind(this)
     this.onSelectRotationFactory = this.onSelectRotationFactory.bind(this)
+    this.onCreateNewRotation = this.onCreateNewRotation.bind(this)
   }
 
   async componentDidMount() {
@@ -139,6 +146,15 @@ class DashboardContainer extends React.Component {
   }
 
   setRotation(newRotation) {
+    console.log('DashboardContainer.setRotation')
+    if (! newRotation.started) {
+      console.log('DashboardContainer.setRotation: redirecting to /createRotation')
+      this.setState({
+        'currentRotation': newRotation
+      })
+      this.props.history.push('/createRotation')
+      return
+    }
     let {rotation, cycleNumber, totalCycles, daysRemaining, cycleStartDate} = computeMembersPaid(newRotation)
     this.setState({
       'currentRotation': rotation,
@@ -201,10 +217,7 @@ class DashboardContainer extends React.Component {
   onSelectRotationFactory (rotation) {
     return (evt) => {
       console.log(`onSelectRotationFactory`)
-      // const curRot = this.state.currentRotation
-      // if (curRot.id !== rotation.id && curRot.managed !== rotation.managed) {
       this.setRotation(rotation)
-      // }
     }
   }
 
@@ -228,29 +241,31 @@ class DashboardContainer extends React.Component {
     // })
   }
 
+  onCreateNewRotation (evt) {
+    console.log('onCreateNewRotation')
+    this.setState({
+      'currentRotation': null
+    })
+    this.props.history.push('/createRotation')
+  }
+
   render () {
-    let rotationDropDown = (
-      this.state.currentRotation !== null ? (
+    let rotationDropDown = null
+    if (this.state.managedRotations.length > 0 || this.state.memberRotations.length > 0) {
+      rotationDropDown = (
         <RotationDropDown
           managedRotations={this.state.managedRotations}
           memberRotations={this.state.memberRotations}
           currentRotation={this.state.currentRotation}
           onClickFactory={this.onSelectRotationFactory}
           />
-      ) : (
-        null
-      )
-    )
-    let dashboard = null
-
-    if (this.state.currentRotation !== null) {
-      if (this.state.currentRotation.started === null || ! this.state.currentRotation.started) {
-        dashboard = (
-          <div>
-            <button className="button is-primary" onClick={this.onStart}>Start Rotation!</button>
-          </div>
         )
-      } else {
+    }
+
+    let dashboard = null
+    if (this.state.currentRotation !== null) {
+      console.log(`Dashboard.render: name=${this.state.currentRotation.name}, started=${this.state.currentRotation.started}`)
+      if (this.state.currentRotation.started) {
         dashboard = (
           <Dashboard
             tilesPerRow={4}
@@ -280,7 +295,8 @@ class DashboardContainer extends React.Component {
               <div className="navbar-dropdown is-right">
                 {rotationDropDown}
                 <hr className="navbar-divider"/>
-                <Link className="navbar-item" to="/createRotation">Create New Rotation</Link>
+                <a className="navbar-item" onClick={this.onCreateNewRotation}>Create New Rotation</a>
+                {/*<Link className="navbar-item" to="/createRotation">Create New Rotation</Link>*/}
                 <hr className="navbar-divider"/>
                 <a className="navbar-item" onClick={this.onLogoutHandler}>Logout</a>
               </div>
@@ -303,7 +319,7 @@ class DashboardContainer extends React.Component {
               </HighlightedTab>
             </Route>
             <Route path="/createRotation">
-              <CreateRotation/>
+              <CreateRotation rotation={this.state.currentRotation}/>
             </Route>
           </Switch>
         </div>

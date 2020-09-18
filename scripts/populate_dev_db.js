@@ -38,6 +38,14 @@ for (let idx=0; idx<10; idx++) {
 
 let rotationParams = [
   {
+    name: "Incomplete Rotation",
+    cycleAmount: 200,
+    cycleDuration: 28,
+    nonPayingCycles: 1,
+    membersPerCycle: 1,
+    started: false
+  },
+  {
     name: "My Rotation",
     cycleAmount: 100,
     cycleDuration: 14,
@@ -54,7 +62,8 @@ let rotationParams = [
     membersPerCycle: 2,
     started: true,
     dateStarted: now.minus({days: 54}),
-  }
+  },
+
 ]
 
 
@@ -80,6 +89,9 @@ const main = async () => {
       payload: Object.assign(basePayload, params)
     })
 
+    if (! params.started) {
+      continue
+    }
     await Promise.all(users.map((user, idx) => {
       if (idx % 2 == 0) {
         const userId = user.id
