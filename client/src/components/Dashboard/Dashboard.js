@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faSort, faAngleDown } from '@fortawesome/free-solid-svg-icons'
 
 import User from './../User.js'
-import { roll } from './../../util.js'
+import { roll, getTokenUserInfo } from './../../util.js'
 
 import "./Dashboard.css"
 
@@ -42,8 +42,7 @@ const ActivityGrid = (props) => {
 }
 
 
-
-class Dashboard extends React.Component {
+class ManagedDashboard extends React.Component {
 
   constructor(props) {
     super(props)
@@ -218,5 +217,59 @@ class Dashboard extends React.Component {
     )
   }
 }
+
+class MemberDashboard extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      user: this.findUser(this.props.rotation)
+    }
+  }
+
+  findUser(rotation){
+    const tokenUserInfo = getTokenUserInfo()
+    let user = null
+    for (let idx=0; idx<rotation.members.length; idx++) {
+      let member = rotation.members[idx]
+      if (tokenUserInfo.id === member.id) {
+        user = member
+        break
+      }
+    }
+    return user
+  }
+
+  render () {
+    const rotation = this.props.rotation
+    const user = this.state.user
+    let paidText = "You're all paid up for this cycle!"
+    if (! user.paid) {
+      paidText = "Looks like you've yet to pay this cycle"
+    }
+    if (user.nonPaying) {
+      paidText = "Lucky you, you don't have to pay this cycle!"
+    }
+
+    return (
+      <div className="content is-large">
+        <p className="title">Hi {user.name}!</p>
+        <p>{paidText}</p>
+        <p>
+          There are <BlueHighlight text={this.props.daysRemaining}/> days left in this cycle
+        </p>
+      </div>
+    )
+  }
+
+}
+
+
+const Dashboard = (props) => {
+  const isManaged = props.rotation.managed
+  return (
+    isManaged ? <ManagedDashboard {...props}/>: <MemberDashboard {...props}/>
+  )
+}
+
 
 export default Dashboard

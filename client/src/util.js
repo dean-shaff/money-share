@@ -150,6 +150,7 @@ export const deleteNote = function (userId, noteId) {
   })
 }
 
+
 export const createNote = function (userId, rotationId, datePaid, amountPaid) {
   console.log(`util.createNote: userId=${userId}, rotationId=${rotationId}, datePaid=${datePaid}, amountPaid=${amountPaid}`)
   return authFetch(`/api/user/${userId}/cycleNote`, {

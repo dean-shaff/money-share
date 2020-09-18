@@ -59,15 +59,47 @@ const HighlightedTab = ({ children }) => {
   )
 }
 
+const RotationDropDown = ({managedRotations, memberRotations, currentRotation, onClickFactory}) => {
+
+  let managedRotationElem = managedRotations.map((rot, idx) => {
+    const name = rot.name
+    let className = 'navbar-item'
+    if (name === currentRotation.name && currentRotation.managed) {
+      className = `${className} is-active`
+    }
+    return <Link to="/dashboard" key={name} className={className} onClick={onClickFactory(rot)}>{name}</Link>
+  })
+
+  let memberRotationElem = memberRotations.map((rot, idx) => {
+    const name = rot.name
+    let className = 'navbar-item'
+    if (name === currentRotation.name && ! currentRotation.managed) {
+      className = `${className} is-active`
+    }
+    return <Link to="/dashboard" key={name} className={className} onClick={onClickFactory(rot)}>{name}</Link>
+  })
+
+
+  return (
+    <div>
+      <label className="navbar-item"><strong>Managed Rotations</strong></label>
+        {managedRotationElem}
+      <label className="navbar-item"><strong>Member Rotations</strong></label>
+        {memberRotationElem}
+    </div>
+  )
+}
+
+
 class DashboardContainer extends React.Component {
 
   constructor(props){
     super(props)
     this.state = {
       username: null,
-      rotations: null,
+      managedRotations: [],
+      memberRotations: [],
       currentRotation: null,
-      rotationNames: null,
       currentRotationName: null,
       cycleNumber: null,
       totalCycles: null,
@@ -75,31 +107,35 @@ class DashboardContainer extends React.Component {
       cycleStartDate: null,
     }
     this.onLogoutHandler = this.onLogoutHandler.bind(this)
-    this.onPlusCircleClick = this.onPlusCircleClick.bind(this)
     this.onStart = this.onStart.bind(this)
     this.onUserPaidChange = this.onUserPaidChange.bind(this)
     this.onSelectRotationFactory = this.onSelectRotationFactory.bind(this)
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const tokenUserInfo = getTokenUserInfo()
     this.setState({
       'username': tokenUserInfo.username
     })
-    authFetch(`/api/user/${tokenUserInfo.id}/managedRotations`)
-      .then(resp => resp.json())
-      .then(data => {
-        console.log(`componentDidMount: data=${JSON.stringify(data, null, 2)}`)
-        if (data.length > 0) {
-          this.setState({
-            'rotations': data,
-            'rotationNames': data.map(d => d.name)
-          })
-          this.setRotation(data[0])
-        } else {
-          this.props.history.push('/createRotation')
-        }
-      })
+    let [managedRotations, memberRotations] = await Promise.all([
+      authFetch(`/api/user/${tokenUserInfo.id}/managedRotations`).then(resp => resp.json()),
+      authFetch(`/api/user/${tokenUserInfo.id}/memberRotations`).then(resp => resp.json())
+    ])
+    managedRotations = managedRotations.map(rot => {rot.managed = true; return rot})
+    memberRotations = memberRotations.map(rot => {rot.managed = false; return rot})
+
+    this.setState({
+      'managedRotations': managedRotations,
+      'memberRotations': memberRotations
+    })
+    if (managedRotations.length > 0) {
+      this.setRotation(managedRotations[0])
+      return
+    }
+    if (memberRotations > 0) {
+      return
+    }
+    this.props.history.push('/createRotation')
   }
 
   setRotation(newRotation) {
@@ -157,23 +193,19 @@ class DashboardContainer extends React.Component {
     }
   }
 
-
-
   onLogoutHandler (evt) {
     localStorage.removeItem('token')
     this.props.history.push('/')
   }
 
-  onSelectRotationFactory (idx) {
+  onSelectRotationFactory (rotation) {
     return (evt) => {
-      if (this.state.currentRotation.id !== this.state.rotations[idx].id) {
-        this.setRotation(this.state.rotations[idx])
-      }
+      console.log(`onSelectRotationFactory`)
+      // const curRot = this.state.currentRotation
+      // if (curRot.id !== rotation.id && curRot.managed !== rotation.managed) {
+      this.setRotation(rotation)
+      // }
     }
-  }
-
-  onPlusCircleClick (evt) {
-    console.log('click')
   }
 
   onStart (evt) {
@@ -197,16 +229,18 @@ class DashboardContainer extends React.Component {
   }
 
   render () {
-    let rotationDropDown = null
-    if (this.state.rotationNames !== null) {
-      rotationDropDown = this.state.rotationNames.map((name, idx) => {
-        let className = 'navbar-item'
-        if (name === this.state.currentRotationName) {
-          className = `${className} is-active`
-        }
-        return <Link to="/dashboard" key={name} className={className} onClick={this.onSelectRotationFactory(idx)}>{name}</Link>
-      })
-    }
+    let rotationDropDown = (
+      this.state.currentRotation !== null ? (
+        <RotationDropDown
+          managedRotations={this.state.managedRotations}
+          memberRotations={this.state.memberRotations}
+          currentRotation={this.state.currentRotation}
+          onClickFactory={this.onSelectRotationFactory}
+          />
+      ) : (
+        null
+      )
+    )
     let dashboard = null
 
     if (this.state.currentRotation !== null) {
