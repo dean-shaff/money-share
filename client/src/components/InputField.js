@@ -17,9 +17,15 @@ const InputField = (props) => {
     )
     delete propsCopy.icon
   }
+  let labelElem = null
+  if (propsCopy.label) {
+    labelElem=<label className="label">{propsCopy.label}</label>
+    delete propsCopy.label
+  }
 
   return (
     <div className="field">
+      {labelElem}
       <div className={className}>
         <input className="input" {...propsCopy}></input>
         {iconElem}
