@@ -36,6 +36,7 @@ const Register = ({ history }) => {
     <form onSubmit={onSubmitHandler}>
       <LoginRegisterContainer title="Register">
         <InputField type="text" name="username" placeholder="Username" icon={faUser}></InputField>
+        <InputField type="text" name="name" placeholder="Name" icon={faUser}></InputField>
         <InputField type="email" name="email" placeholder="Email" icon={faAt}></InputField>
         <InputField type="password" name="password" placeholder="Password" icon={faLock}></InputField>
         <div className="field">
