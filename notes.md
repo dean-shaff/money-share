@@ -1,24 +1,50 @@
 TODO:
 - Don't ever send password back in response!!!!
-  - I think I fixed this
+  - I think I fixed this - I now have public attributes I send back to the client.
 - I need to make (most) API routes authenticated routes only... this will happen later
 - fix daysRemaining function -- it is currently not working correctly
 - I'd like to fix data flow from `DashboardContainer` to `Dashboard` and other downstream elements
 - Can I use `settings.js` in my client code?
   - No, but I made a client version of `settings.js`
 - Apparently I shouldn't be using `moment.js` anymore.
+  - Not sure why, but apparently the move is to use `luxon`, or native JS
+- forgot password
+- change password
+- add currency to `cycleAmount`, and time period (eg days, months) to `cycleDuration` fields in `Rotation` model.
+- list view for Dashboard Activity area
+
+
+### 18/09/2020
+
+For today:
+
+- Need to fix API routes
+  - There should not be POST /api/users -- it should be GET request to /api/user that gets all the users!
+  - ditto for other routes 
+- Need to authenticate API routes
+  - I think I can just use JWT
+- Automated production database creation
+  - So I can upload Brandi's data
+- Rotation configuration page
+  - This can be the same for updating and creating.
+  - possible shuffle method
+- Member dashboard.
+  - This can be really simple:
+    - Says if you need to pay, by when, and how much.
+    - Says when you're up in the queue.
+  - Need to modify hover menu by username to include multiple levels.
 
 ### 17/09/2020
 
 It's crunch time. Here's whats still left to do:
 
-- Used `luxon` instead of `moment.js`
-- Finish Dashboard page.
+- Used `luxon` instead of `moment.js`: done
+- Finish Dashboard page. : done
   - Need `Activity` filters.
     - I want a drop down that appears next to the search box where we can select how we want to filter data.
   - Need to be able to say that a given member has paid or note, and update database accordingly.
   - Fix `daysRemaining`: fixed
-- Rotation configuration page
+- Rotation configuration page: done
 - Member dashboard
   - They should be able to see what rotations their part of, and their payment history.
 

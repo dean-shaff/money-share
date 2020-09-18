@@ -1,8 +1,9 @@
 "use strict"
 
 const { expect } = require('@hapi/code');
-const { init } = require("./../../../lib/server.js")
+const qs = require('qs')
 
+const { init } = require("./../../../lib/server.js")
 const user = require("./../../../lib/controllers/user.js")
 
 
@@ -76,6 +77,27 @@ describe("user", () => {
     })
     expect(res.statusCode).to.equal(200)
     expect(res.result.name).to.equal("Dean Shaff")
+  })
+
+  test("GET /api/user/", async () => {
+    const res = await server.inject({
+      method: "GET",
+      url: `/api/user/`
+    })
+    expect(res.statusCode).to.equal(200)
+    expect(res.result[0].name).to.equal("Dean Shaff")
+  })
+
+  test("GET /api/user with query params", async () => {
+    let ids = [newUser.id]
+    let query = qs.stringify({id: ids})
+    console.log(`GET /api/user with query params: query=${query}`)
+    const res = await server.inject({
+      method: "GET",
+      url: `/api/user/?${query}`
+    })
+    expect(res.statusCode).to.equal(200)
+    expect(res.result[0].name).to.equal("Dean Shaff")
   })
 
   test("PUT /api/user/{id}", async () => {

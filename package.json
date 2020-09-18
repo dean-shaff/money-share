@@ -51,6 +51,7 @@
     "luxon": "^1.25.0",
     "pg": "^8.3.3",
     "puppeteer": "^5.3.0",
+    "qs": "^6.9.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
@@ -60,5 +61,8 @@
     "style-loader": "^1.2.1",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12"
+  },
+  "devDependencies": {
+    "axios": "^0.20.0"
   }
 }
