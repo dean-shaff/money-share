@@ -12,7 +12,7 @@ TODO:
 - change password
 - add currency to `cycleAmount`, and time period (eg days, months) to `cycleDuration` fields in `Rotation` model.
 - list view for Dashboard Activity area
-
+- On landing page the sign up/login buttons go away if the viewport gets below a certain size. This is not okay!
 
 ### 18/09/2020
 
