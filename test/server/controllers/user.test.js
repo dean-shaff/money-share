@@ -5,12 +5,13 @@ const qs = require('qs')
 
 const { init } = require("./../../../lib/server.js")
 const user = require("./../../../lib/controllers/user.js")
-
+const { authInject } = require('./util.js')
 
 describe("user", () => {
 
   let server
   let newUser
+  let inject
 
   beforeEach(async () => {
     server = await init();
@@ -22,6 +23,7 @@ describe("user", () => {
         password: "deanshaffpassword"
       }
     })
+    inject = authInject(server, newUser)
   })
 
   afterEach(async () => {
@@ -29,7 +31,7 @@ describe("user", () => {
   });
 
   test("POST /api/user", async () => {
-    const res = await server.inject({
+    const res = await inject({
       method: "POST",
       url: "/api/user",
       payload: {
@@ -43,7 +45,7 @@ describe("user", () => {
   })
 
   test("POST /api/user with same email", async () => {
-    const res = await server.inject({
+    const res = await inject({
       method: "POST",
       url: "/api/user",
       payload: {
@@ -57,7 +59,7 @@ describe("user", () => {
   })
 
   test("POST /api/user with same username", async () => {
-    const res = await server.inject({
+    const res = await inject({
       method: "POST",
       url: "/api/user",
       payload: {
@@ -71,7 +73,7 @@ describe("user", () => {
   })
 
   test("GET /api/user/{id}", async () => {
-    const res = await server.inject({
+    const res = await inject({
       method: "GET",
       url: `/api/user/${newUser.dataValues.id}`
     })
@@ -80,7 +82,7 @@ describe("user", () => {
   })
 
   test("GET /api/user/", async () => {
-    const res = await server.inject({
+    const res = await inject({
       method: "GET",
       url: `/api/user/`
     })
@@ -90,9 +92,21 @@ describe("user", () => {
 
   test("GET /api/user with query params", async () => {
     let ids = [newUser.id]
-    let query = qs.stringify({id: ids})
+    let query = qs.stringify({ids: ids})
     console.log(`GET /api/user with query params: query=${query}`)
-    const res = await server.inject({
+    const res = await inject({
+      method: "GET",
+      url: `/api/user/?${query}`
+    })
+    expect(res.statusCode).to.equal(200)
+    expect(res.result[0].name).to.equal("Dean Shaff")
+  })
+
+  test("GET /api/user with username query params", async () => {
+    let usernames = [newUser.username]
+    let query = qs.stringify({usernames: usernames})
+    console.log(`GET /api/user with query params: query=${query}`)
+    const res = await inject({
       method: "GET",
       url: `/api/user/?${query}`
     })
@@ -101,7 +115,7 @@ describe("user", () => {
   })
 
   test("PUT /api/user/{id}", async () => {
-    const res = await server.inject({
+    const res = await inject({
       method: "PUT",
       url: `/api/user/${newUser.dataValues.id}`,
       payload: {
@@ -113,7 +127,7 @@ describe("user", () => {
   })
 
   test("DELETE /api/user/{id}", async () => {
-    const res = await server.inject({
+    const res = await inject({
       method: "DELETE",
       url: `/api/user/${newUser.dataValues.id}`
     })

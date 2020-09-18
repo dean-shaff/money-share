@@ -5,6 +5,7 @@ const { init } = require("./../../../lib/server.js")
 
 const controllers = require("./../../../lib/controllers/")
 const models = require("./../../../lib/models/")
+const { authInject } = require('./util.js')
 
 
 describe("rotation", () => {
@@ -13,6 +14,7 @@ describe("rotation", () => {
   let users
   let manager
   let rotation
+  let inject
 
   beforeAll(async () => {
     server = await init();
@@ -37,6 +39,7 @@ describe("rotation", () => {
       })
     }))
     manager = users[0]
+    inject = authInject(server, manager)
   })
 
   beforeEach(async () => {
@@ -62,7 +65,7 @@ describe("rotation", () => {
   });
 
   test('POST /api/rotation', async () => {
-    const res = await server.inject({
+    const res = await inject({
       method: 'POST',
       url: '/api/rotation',
       payload: {
@@ -82,7 +85,7 @@ describe("rotation", () => {
   })
 
   test("PUT /api/rotation/{id}", async () => {
-    const res = await server.inject({
+    const res = await inject({
       method: 'PUT',
       url: `/api/rotation/${rotation.id}`,
       payload: {
@@ -103,7 +106,7 @@ describe("rotation", () => {
   })
 
   test('GET /api/rotation/{id}', async () => {
-    const res = await server.inject({
+    const res = await inject({
       method: 'GET',
       url: `/api/rotation/${rotation.id}`
     })
@@ -113,7 +116,7 @@ describe("rotation", () => {
   })
 
   test('DELETE /api/rotation/{id}', async () => {
-    const res = await server.inject({
+    const res = await inject({
       method: 'DELETE',
       url: `/api/rotation/${rotation.id}`
     })
@@ -121,7 +124,7 @@ describe("rotation", () => {
   })
 
   test('GET /api/user/{userId}/managedRotations', async () => {
-    const res = await server.inject({
+    const res = await inject({
       method: 'GET',
       url: `/api/user/${manager.id}/managedRotations`
     })
@@ -130,7 +133,7 @@ describe("rotation", () => {
   })
 
   test('GET /api/user/{userId}/memberRotations', async () => {
-    const res = await server.inject({
+    const res = await inject({
       method: 'GET',
       url: `/api/user/${users[1].id}/memberRotations`
     })

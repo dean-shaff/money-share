@@ -1,4 +1,5 @@
 const axios = require('axios')
+const qs = require('qs')
 
 let users = [
   {
@@ -18,10 +19,15 @@ let users = [
 const baseURL = 'https://money-share-app.herokuapp.com'
 
 const main = async () => {
-  let result = await Promise.all(users.map(user => {
-    return axios.post(`${baseURL}/api/user`, user)
-  }))
-  console.log(result)
+  let token = await axios.post(`${baseURL}/login`, {
+    username: 'deanshaff',
+    password: 'deanshaff'
+  })
+
+
+  // let result = await Promise.all(users.map(user => {
+  //   return axios.post(`${baseURL}/api/user`, user)
+  // }))
 }
 
 process.on('unhandledRejection', (err) => {

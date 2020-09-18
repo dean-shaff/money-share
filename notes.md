@@ -21,7 +21,7 @@ For today:
 - Need to fix API routes: done
   - There should not be POST /api/users -- it should be GET request to /api/user that gets all the users!
   - ditto for other routes
-- Need to authenticate API routes: 
+- Need to authenticate API routes: done
   - I think I can just use JWT
 - Automated production database creation
   - So I can upload Brandi's data
@@ -30,9 +30,9 @@ For today:
   - possible shuffle method
 - Member dashboard.
   - This can be really simple:
-    - Says if you need to pay, by when, and how much.
+    - Says if you need to pay, by when, and how much: done
     - Says when you're up in the queue.
-  - Need to modify hover menu by username to include multiple levels.
+  - Need to modify hover menu by username to include multiple levels: done
 
 ### 17/09/2020
 

@@ -5,6 +5,7 @@ const { expect } = require('@hapi/code');
 const { init } = require("./../../../lib/server.js")
 
 const controllers = require("./../../../lib/controllers/")
+const { authInject } = require('./util.js')
 
 
 describe("cycleNote", () => {
@@ -13,6 +14,7 @@ describe("cycleNote", () => {
   let server
   let newUser
   let newCycleNote
+  let inject
 
   beforeEach(async () => {
     server = await init();
@@ -35,6 +37,9 @@ describe("cycleNote", () => {
         'rotationId': rotationId
       }
     })
+
+    inject = authInject(server, newUser)
+
   })
 
   afterEach(async () => {
@@ -43,7 +48,7 @@ describe("cycleNote", () => {
 
   test("POST /api/user/{userId}/cycleNote", async () => {
     // console.log("POST /api/user/{userId}/cycleNote")
-    const res = await server.inject({
+    const res = await inject({
       method: 'POST',
       url: `/api/user/${newUser.id}/cycleNote`,
       payload: {
@@ -56,7 +61,7 @@ describe("cycleNote", () => {
   })
 
   test("POST /api/user/{userId}/cycleNote without rotation Id", async () => {
-    const res = await server.inject({
+    const res = await inject({
       method: 'POST',
       url: `/api/user/${newUser.id}/cycleNote`,
       payload: {
@@ -67,7 +72,7 @@ describe("cycleNote", () => {
     expect(res.statusCode).to.equal(400)
   })
   test("GET /api/user/{userId}/cycleNote/{id}", async () => {
-    const res = await server.inject({
+    const res = await inject({
       method: "GET",
       url: `/api/user/${newUser.dataValues.id}/cycleNote/${newCycleNote.id}`
     })
@@ -76,7 +81,7 @@ describe("cycleNote", () => {
   })
 
   test("PUT /user/{id}", async () => {
-    const res = await server.inject({
+    const res = await inject({
       method: "PUT",
       url: `/api/user/${newUser.dataValues.id}/cycleNote/${newCycleNote.id}`,
       payload: {
@@ -89,7 +94,7 @@ describe("cycleNote", () => {
 
   test("DELETE /api/users/{userId}/cycleNote", async () => {
 
-    const res = await server.inject({
+    const res = await inject({
       method: 'DELETE',
       url: `/api/user/${newUser.id}/cycleNote/${newCycleNote.id}`
     })
