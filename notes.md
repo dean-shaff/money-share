@@ -25,7 +25,7 @@ For today:
   - I think I can just use JWT
 - Automated production database creation
   - So I can upload Brandi's data
-- Rotation configuration page
+- Rotation configuration page: pretty much done -- needs some work tho!
   - This can be the same for updating and creating.
   - possible shuffle method
 - Member dashboard.

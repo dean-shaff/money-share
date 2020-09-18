@@ -33,6 +33,7 @@ const App = () => (
       <PrivateRoute path="/members" component={DashboardContainer} to="/"/>
       <PrivateRoute path="/queue" component={DashboardContainer} to="/"/>
       <PrivateRoute path="/createRotation" component={DashboardContainer} to="/"/>
+      <PrivateRoute path="/updateRotation" component={DashboardContainer} to="/"/>
       {/*<Route path="/dashboard">
         <DashboardContainer/>
       </Route>

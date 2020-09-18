@@ -73,7 +73,7 @@ const RotationDropDown = ({managedRotations, memberRotations, currentRotation, o
       }
       if (! rot.started) {
         if (rot.managed) {
-          return <Link to="/createRotation" key={name} className={className} onClick={onClickFactory(rot)}>{name}</Link>
+          return <Link to="/updateRotation" key={name} className={className} onClick={onClickFactory(rot)}>{name}</Link>
         } else {
           return null
         }
@@ -140,6 +140,7 @@ class DashboardContainer extends React.Component {
       return
     }
     if (memberRotations > 0) {
+      this.setRotation(memberRotations[0])
       return
     }
     this.props.history.push('/createRotation')
@@ -148,11 +149,11 @@ class DashboardContainer extends React.Component {
   setRotation(newRotation) {
     console.log('DashboardContainer.setRotation')
     if (! newRotation.started) {
-      console.log('DashboardContainer.setRotation: redirecting to /createRotation')
+      console.log('DashboardContainer.setRotation: redirecting to /updateRotation')
       this.setState({
         'currentRotation': newRotation
       })
-      this.props.history.push('/createRotation')
+      this.props.history.push('/updateRotation')
       return
     }
     let {rotation, cycleNumber, totalCycles, daysRemaining, cycleStartDate} = computeMembersPaid(newRotation)
@@ -319,6 +320,9 @@ class DashboardContainer extends React.Component {
               </HighlightedTab>
             </Route>
             <Route path="/createRotation">
+              <CreateRotation rotation={null}/>
+            </Route>
+            <Route path="/updateRotation">
               <CreateRotation rotation={this.state.currentRotation}/>
             </Route>
           </Switch>

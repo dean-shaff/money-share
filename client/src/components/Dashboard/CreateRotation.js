@@ -214,13 +214,12 @@ const MemberGrid = (props) => {
       </div>
     )
   })
-
 }
-
 
 
 class CreateRotation extends React.Component {
   constructor(props) {
+    console.log(`CreateRotation`)
     super(props)
     const durationUnits = ['Days', 'Weeks', 'Months']
     this.state = {
@@ -242,7 +241,7 @@ class CreateRotation extends React.Component {
 
   componentDidUpdate(prevProps) {
     // console.log(`CreateRotation: ${prevProps.rotation}, ${this.props.rotation}`)
-    if (prevProps.rotation === null && this.props.rotation !== null) {
+    if (prevProps.rotation !== this.props.rotation) {
       this.setStateFromProps(this.props)
     }
     // if (prevProps.)
@@ -257,6 +256,15 @@ class CreateRotation extends React.Component {
         'nonPayingCycles': getDefault(props.rotation, 'nonPayingCycles', ''),
         'membersPerCycle': getDefault(props.rotation, 'membersPerCycle', ''),
         'name': getDefault(props.rotation, 'name', '')
+      })
+    } else {
+      this.setState({
+        'members': [],
+        'cycleDuration': '',
+        'cycleAmount': '',
+        'nonPayingCycles': '',
+        'membersPerCycle': '',
+        'name': ''
       })
     }
   }
@@ -299,6 +307,7 @@ class CreateRotation extends React.Component {
   }
 
   render () {
+    console.log(`CreateRotation.render: ${this.props.rotation === null}`)
     let memberDisplay = null
     if (this.state.members.length > 0) {
       memberDisplay = (
@@ -342,7 +351,6 @@ class CreateRotation extends React.Component {
           </div>
           <div className="column is-one-half">
             <h5 className="title is-5">Members</h5>
-
             {memberDisplay}
             <AddMember onAdd={this.onAdd}/>
           </div>
