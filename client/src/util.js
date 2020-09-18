@@ -3,7 +3,6 @@ import jwtDecode from 'jwt-decode'
 import { DateTime } from 'luxon'
 
 
-
 export const isLoggedIn = function () {
   const token = localStorage.getItem('token')
   if (!token) {
@@ -16,6 +15,24 @@ export const isLoggedIn = function () {
   } else {
     return true
   }
+}
+
+export const authFetch = async function (url, options) {
+  const token = localStorage.getItem('token')
+  const authOptions = {
+    'Authorization': token
+  }
+  if (options == null) {
+    options = {}
+  }
+  if ('headers' in options) {
+    options.headers = Object.assign(options.headers, authOptions)
+  } else {
+    options.headers = authOptions
+  }
+  options = Object.assign(options)
+  // console.log(`authFetch: options.headers=${JSON.stringify(options.headers, null, 2)}`)
+  return fetch(url, Object.assign(authOptions, options))
 }
 
 export const getTokenUserInfo = function () {
@@ -127,15 +144,15 @@ export const computeMembersPaid = function (rotation) {
 
 
 export const deleteNote = function (userId, noteId) {
-  console.log(`util.deleteNote`)
-  return fetch(`/api/user/${userId}/cycleNote/${noteId}`, {
+  console.log(`util.deleteNote: userId=${userId}, noteId=${noteId}`)
+  return authFetch(`/api/user/${userId}/cycleNote/${noteId}`, {
     method: 'DELETE'
   })
 }
 
 export const createNote = function (userId, rotationId, datePaid, amountPaid) {
-  console.log(`util.createNote`)
-  return fetch(`/api/user/${userId}/cycleNote`, {
+  console.log(`util.createNote: userId=${userId}, rotationId=${rotationId}, datePaid=${datePaid}, amountPaid=${amountPaid}`)
+  return authFetch(`/api/user/${userId}/cycleNote`, {
     method: 'POST',
     body: JSON.stringify({
       'rotationId': rotationId,

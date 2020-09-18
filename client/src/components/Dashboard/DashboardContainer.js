@@ -16,7 +16,15 @@ import User from "./../User.js"
 import Dashboard from "./Dashboard.js"
 import Configuration from "./Configuration.js"
 import CreateRotation from "./CreateRotation.js"
-import { getTokenUserInfo, getRotationCycleInfo, deleteNote, createNote, roll, computeMembersPaid } from "./../../util.js"
+import {
+  getTokenUserInfo,
+  getRotationCycleInfo,
+  deleteNote,
+  createNote,
+  roll,
+  computeMembersPaid,
+  authFetch
+} from "./../../util.js"
 import settings from './../../settings.js'
 
 import './DashboardContainer.css'
@@ -78,7 +86,7 @@ class DashboardContainer extends React.Component {
     this.setState({
       'username': tokenUserInfo.username
     })
-    fetch(`/api/user/${tokenUserInfo.id}/managedRotations`)
+    authFetch(`/api/user/${tokenUserInfo.id}/managedRotations`)
       .then(resp => resp.json())
       .then(data => {
         console.log(`componentDidMount: data=${JSON.stringify(data, null, 2)}`)
