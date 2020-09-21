@@ -170,6 +170,28 @@ export const getRotation = function (rotationId) {
   })
 }
 
+export const createRotation = function (options) {
+  console.log(`util.createRotation`)
+  return authFetch(`/api/rotation`, {
+    method: 'POST',
+    body: JSON.stringify(options),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+}
+
+export const updateRotation = function (rotationId, options) {
+  console.log(`util.createRotation: ${rotationId}`)
+  return authFetch(`/api/rotation/${rotationId}`, {
+    method: 'PUT',
+    body: JSON.stringify(options),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+}
+
 export const getDefault = function (obj, key, defaultVal) {
   if (obj[key] === undefined) {
     return defaultValue

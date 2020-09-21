@@ -4,6 +4,7 @@ import { DateTime } from 'luxon'
 
 import Dashboard from './Dashboard.js'
 import Configuration from './Configuration.js'
+import CreateUpdateRotation from './CreateUpdateRotation.js'
 import {
   deleteNote,
   createNote,
@@ -63,7 +64,6 @@ class ManagedRotation extends React.Component {
       this.setState({
         'rotation': newRotation
       })
-      // this.props.history.push(`${this.props.match.url}/update`)
       return
     }
     let {rotation, cycleNumber, totalCycles, daysRemaining, cycleStartDate} = computeMembersPaid(newRotation)
@@ -179,7 +179,7 @@ class ManagedRotation extends React.Component {
       } else {
         dashboard = <Redirect to={`${this.props.match.url}/update`}/>
         // update = <CreateUpdateRotation rotation={this.state.rotation}/>
-        update = <div>{this.state.rotation.name}</div>
+        update = <CreateUpdateRotation rotation={this.state.rotation}/>
         base = <Redirect to={`${this.props.match.url}/update`}/>
       }
     }

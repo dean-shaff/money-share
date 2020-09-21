@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import qs from 'qs'
 import { faInfoCircle, faClock, faDollarSign, faUser, faTimesCircle, faChevronDown, faChevronUp, faAt } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { authFetch, getDefault } from "./../../../util.js"
+import { authFetch, getDefault, getTokenUserInfo, createRotation, updateRotation } from "./../../../util.js"
 
 import InputField from './../../InputField.js'
 
@@ -220,7 +220,7 @@ const MemberGrid = (props) => {
 
 class CreateUpdateRotation extends React.Component {
   constructor(props) {
-    console.log(`CreateUpdateRotation`)
+    console.log(`CreateUpdateRotation.constructor`)
     super(props)
     const durationUnits = ['Days', 'Weeks', 'Months']
     this.state = {
@@ -231,13 +231,20 @@ class CreateUpdateRotation extends React.Component {
       'cycleAmount': '',
       'nonPayingCycles': '',
       'membersPerCycle': '',
-      'name': ''
+      'name': '',
+      'errorMsg': ''
     }
-    this.setStateFromProps(this.props)
     this.onSelect = this.onSelect.bind(this)
     this.onAdd = this.onAdd.bind(this)
     this.onRemoveFactory = this.onRemoveFactory.bind(this)
     this.onInputChange = this.onInputChange.bind(this)
+    this.onSaveClick = this.onSaveClick.bind(this)
+    this.onStartClick = this.onStartClick.bind(this)
+  }
+
+  componentDidMount(){
+    console.log(`CreateUpdateRotation: componentDidMount`)
+    this.setStateFromProps(this.props)
   }
 
   componentDidUpdate(prevProps) {
@@ -270,6 +277,52 @@ class CreateUpdateRotation extends React.Component {
     }
   }
 
+  onSaveClick () {
+    const createUpdatePayload = {
+      'memberIds': this.state.members.map(mem => mem.id),
+      'cycleDuration': this.state.cycleDuration,
+      'cycleAmount': this.state.cycleAmount,
+      'nonPayingCycles': this.state.nonPayingCycles,
+      'membersPerCycle': this.state.membersPerCycle,
+      'name': this.state.name
+    }
+
+
+    if (this.props.rotation === null) {
+      // means we're creating a totally new rotation
+      const userInfo = getTokenUserInfo()
+      const creatPayload = Object.assign({'managerId': userInfo.id}, createUpdatePayload)
+      createRotation(createPayload)
+        .then(resp => {
+          if (! resp.ok) {
+            this.setState({errorMsg: 'Error when creating new Rotation'})
+          } else {
+            return resp.json()
+          }
+        })
+        .then(data => {
+          console.log(data)
+        })
+    } else {
+      // updating and existing rotation
+      updateRotation(this.props.rotation.id, createUpdatePayload)
+        .then(resp => {
+          if (! resp.ok) {
+            this.setState({errorMsg: 'Error when updating rotation'})
+          } else {
+            return resp.json()
+          }
+        })
+        .then(data => {
+          console.log(data)
+        })
+
+    }
+  }
+
+  onStartClick () {
+
+  }
 
   onSelect (evt) {
     let val = evt.target.value
@@ -349,6 +402,15 @@ class CreateUpdateRotation extends React.Component {
             <InputField type="text" onChange={this.onInputChange} name="cycleAmount" value={this.state.cycleAmount} label="Cycle Payment" icon={faDollarSign}></InputField>
             <InputField type="number" onChange={this.onInputChange} name="nonPayingCycles" value={this.state.nonPayingCycles} label="Nonpaying Cycles" icon={faInfoCircle}></InputField>
             <InputField type="number" onChange={this.onInputChange} name="membersPerCycle" value={this.state.membersPerCycle} label="Members per Cycle" icon={faUser}></InputField>
+            <div className="field is-grouped is-fullwidth">
+              <div className="control">
+                <button className="button is-primary" onClick={this.onSaveClick}>Save</button>
+              </div>
+              <div className="control">
+                <button className="button is-warning" onClick={this.onStartClick}>Start Rotation!</button>
+              </div>
+            </div>
+            <div className='has-text-danger'>{this.state.errorMsg}</div>
           </div>
           <div className="column is-one-half">
             <h5 className="title is-5">Members</h5>
