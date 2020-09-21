@@ -2,11 +2,12 @@ import React, { useState } from "react"
 import qs from 'qs'
 import { faInfoCircle, faClock, faDollarSign, faUser, faTimesCircle, faChevronDown, faChevronUp, faAt } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { authFetch, getDefault } from "./../../util.js"
+import { authFetch, getDefault } from "./../../../util.js"
 
-import InputField from './../InputField.js'
+import InputField from './../../InputField.js'
+
 import "./CreateUpdateRotation.css"
-import "./../User.css"
+import "./../../User.css"
 
 
 const ManualEntry = (props) => {

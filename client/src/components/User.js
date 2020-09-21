@@ -64,9 +64,9 @@ class User extends React.Component  {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.user.name === 'Dean Shaff') {
-      console.log(`User.componentDidUpdate: ${prevProps.user.paid}, ${this.props.user.paid}`)
-    }
+    // if (this.props.user.name === 'Dean Shaff') {
+      // console.log(`User.componentDidUpdate: ${prevProps.user.paid}, ${this.props.user.paid}`)
+    // }
     if (prevProps.user.paid !== this.props.user.paid) {
       this.setState({waiting: false})
     }

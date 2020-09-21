@@ -163,10 +163,21 @@ export const createNote = function (userId, rotationId, datePaid, amountPaid) {
   })
 }
 
+export const getRotation = function (rotationId) {
+  console.log(`util.getRotation: id=${rotationId}`)
+  return authFetch(`/api/rotation/${rotationId}`, {
+    method: 'GET'
+  })
+}
+
 export const getDefault = function (obj, key, defaultVal) {
   if (obj[key] === undefined) {
     return defaultValue
   } else {
     return obj[key]
   }
+}
+
+export const stringify = function (obj) {
+  return JSON.stringify(obj, null, 2)
 }

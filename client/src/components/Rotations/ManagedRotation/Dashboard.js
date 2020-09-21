@@ -2,8 +2,8 @@ import React from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faSort, faAngleDown } from '@fortawesome/free-solid-svg-icons'
 
-import User from './../User.js'
-import { roll, getTokenUserInfo } from './../../util.js'
+import User from './../../User.js'
+import { roll, getTokenUserInfo } from './../../../util.js'
 
 import "./Dashboard.css"
 
@@ -42,7 +42,7 @@ const ActivityGrid = (props) => {
 }
 
 
-class ManagedDashboard extends React.Component {
+class Dashboard extends React.Component {
 
   constructor(props) {
     super(props)
@@ -125,10 +125,33 @@ class ManagedDashboard extends React.Component {
     return members.map((mem, idx) => (<User onClick={this.props.onUserPaidChange} key={mem.name} user={mem}/>))
   }
 
+
+  onStart (evt) {
+    const rotationId = this.state.currentRotation.id
+    console.log(`Rotations.onStart: ${rotationId}`)
+    // fetch(`/api/rotation/${rotationId}`, {
+    //   method: 'PUT',
+    //   body: JSON.stringify({
+    //     'started': true,
+    //     'dateStarted': DateTime.local()
+    //   }),
+    //   headers: {
+    //     'Content-Type': 'application/json'
+    //   }
+    // })
+    // .then(resp => resp.json())
+    // .then(data => {
+    //   console.log(data)
+    //   this.setCurrentRotationUsers(data.members.map(member => member.id))
+    // })
+  }
+
   render () {
-    console.log(`Dashboard.render`)
+    console.log(`Dashboard.render: totalCycles=${this.props.totalCycles}, cycleNumber=${this.props.cycleNumber}, daysRemaining=${this.props.daysRemaining}`)
     const rotation = this.props.rotation
+    // console.log(`Dashboard.render: rotation=${JSON.stringify(rotation, null, 2)}`)
     const nonPayingCycles = rotation.nonPayingCycles
+
     let reOrderedMembers = this.reOrderMembers(
       rotation,
       this.props.totalCycles,
@@ -216,59 +239,6 @@ class ManagedDashboard extends React.Component {
       </div>
     )
   }
-}
-
-class MemberDashboard extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      user: this.findUser(this.props.rotation)
-    }
-  }
-
-  findUser(rotation){
-    const tokenUserInfo = getTokenUserInfo()
-    let user = null
-    for (let idx=0; idx<rotation.members.length; idx++) {
-      let member = rotation.members[idx]
-      if (tokenUserInfo.id === member.id) {
-        user = member
-        break
-      }
-    }
-    return user
-  }
-
-  render () {
-    const rotation = this.props.rotation
-    const user = this.state.user
-    let paidText = "You're all paid up for this cycle!"
-    if (! user.paid) {
-      paidText = "Looks like you've yet to pay this cycle"
-    }
-    if (user.nonPaying) {
-      paidText = "Lucky you, you don't have to pay this cycle!"
-    }
-
-    return (
-      <div className="content is-large">
-        <p className="title">Hi {user.name}!</p>
-        <p>{paidText}</p>
-        <p>
-          There are <BlueHighlight text={this.props.daysRemaining}/> days left in this cycle
-        </p>
-      </div>
-    )
-  }
-
-}
-
-
-const Dashboard = (props) => {
-  const isManaged = props.rotation.managed
-  return (
-    isManaged ? <ManagedDashboard {...props}/>: <MemberDashboard {...props}/>
-  )
 }
 
 

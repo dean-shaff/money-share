@@ -11,7 +11,7 @@ import {
 import Home from "./components/Home.js"
 import Login from "./components/Login.js"
 import Register from "./components/Register.js"
-import Rotations from "./component/Rotations/Rotations.js"
+import { Rotations } from "./components/Rotations/"
 import PrivateRoute from "./components/PrivateRoute.js"
 import { isLoggedIn } from "./util.js"
 
@@ -21,7 +21,7 @@ const App = () => (
     <Switch>
       <Route exact path="/" render={() => (
         isLoggedIn() ? (
-          <Redirect to="/dashboard"/>
+          <Redirect to="/rotations"/>
         ) : (
           <Home />
         )
