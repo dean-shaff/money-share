@@ -1,5 +1,6 @@
 import React from 'react'
 import { useLocation, Route, Link, Redirect } from "react-router-dom";
+import { DateTime } from 'luxon'
 
 import Dashboard from './Dashboard.js'
 import Configuration from './Configuration.js'
@@ -50,6 +51,7 @@ class ManagedRotation extends React.Component {
       'daysRemaining': null,
       'cycleStartDate': null
     }
+    this.onUserPaidChange = this.onUserPaidChange.bind(this)
   }
 
   setRotation(newRotation) {
@@ -107,7 +109,7 @@ class ManagedRotation extends React.Component {
 
   onUserPaidChange (evt, user, paid) {
     console.log(`onUserPaidChange`)
-    const rotationId = this.state.currentRotation.id
+    const rotationId = this.state.rotation.id
     const userId = user.id
     if (! paid) {
       console.log(`Rotations.onUserPaidChange: deleting newest note`)
@@ -116,7 +118,7 @@ class ManagedRotation extends React.Component {
       deleteNote(userId, mostRecent.id)
         .then(resp => {
           if (resp.status === 204) {
-            let currentRotation = JSON.parse(JSON.stringify(this.state.currentRotation))
+            let currentRotation = JSON.parse(JSON.stringify(this.state.rotation))
             for (let idx=0; idx<currentRotation.members.length; idx++) {
               if (currentRotation.members[idx].id === userId) {
                 currentRotation.members[idx].paid = false
@@ -124,18 +126,18 @@ class ManagedRotation extends React.Component {
                 break
               }
             }
-            this.setState({'currentRotation': currentRotation})
+            this.setState({'rotation': currentRotation})
           }
         })
     } else {
       console.log(`Rotations.onUserPaidChange: creating new note`)
       const datePaid = DateTime.local().toISO()
-      const amountPaid = this.state.currentRotation.cycleAmount
+      const amountPaid = this.state.rotation.cycleAmount
       // userId, rotationId, datePaid, amountPaid
       createNote(userId, rotationId, datePaid, amountPaid)
         .then(resp => resp.json())
         .then(data => {
-          let currentRotation = JSON.parse(JSON.stringify(this.state.currentRotation))
+          let currentRotation = JSON.parse(JSON.stringify(this.state.rotation))
           for (let idx=0; idx<currentRotation.members.length; idx++) {
             if (currentRotation.members[idx].id == userId) {
               currentRotation.members[idx].paid = true
@@ -143,7 +145,7 @@ class ManagedRotation extends React.Component {
               break
             }
           }
-          this.setState({'currentRotation': currentRotation})
+          this.setState({'rotation': currentRotation})
         })
     }
   }
@@ -170,7 +172,7 @@ class ManagedRotation extends React.Component {
       if (this.state.rotation.started) {
         dashboard = (
           <HighlightedTab match={this.props.match}>
-            <Dashboard tilesPerRow={4} {...this.state}/>
+            <Dashboard tilesPerRow={4} onUserPaidChange={this.onUserPaidChange} {...this.state}/>
           </HighlightedTab>
         )
         update = <Redirect to={`${this.props.match.url}/dashboard`}/>
