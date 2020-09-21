@@ -25,7 +25,7 @@ const Login = ({ history }) => {
       }
       if (data.id_token !== undefined) {
         localStorage.setItem('token', data.id_token)
-        history.push('/dashboard')
+        history.push('/rotations')
       }
     })
   }

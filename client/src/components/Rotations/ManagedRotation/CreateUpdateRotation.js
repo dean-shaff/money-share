@@ -2,9 +2,10 @@ import React, { useState } from "react"
 import qs from 'qs'
 import { faInfoCircle, faClock, faDollarSign, faUser, faTimesCircle, faChevronDown, faChevronUp, faAt } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { authFetch, getDefault, getTokenUserInfo, createRotation, updateRotation } from "./../../../util.js"
+import { DateTime } from 'luxon'
 
 import InputField from './../../InputField.js'
+import { authFetch, getDefault, getTokenUserInfo, createRotation, updateRotation } from "./../../../util.js"
 
 import "./CreateUpdateRotation.css"
 import "./../../User.css"
@@ -220,12 +221,11 @@ const MemberGrid = (props) => {
 
 class CreateUpdateRotation extends React.Component {
   constructor(props) {
-    console.log(`CreateUpdateRotation.constructor`)
     super(props)
-    const durationUnits = ['Days', 'Weeks', 'Months']
+    const cycleDurationUnits = ['days', 'weeks', 'months']
     this.state = {
-      'durationUnits': durationUnits,
-      'durationUnit': durationUnits[0],
+      'cycleDurationUnits': cycleDurationUnits,
+      'cycleDurationUnit': cycleDurationUnits[0],
       'members': [],
       'cycleDuration': '',
       'cycleAmount': '',
@@ -243,56 +243,72 @@ class CreateUpdateRotation extends React.Component {
   }
 
   componentDidMount(){
-    console.log(`CreateUpdateRotation: componentDidMount`)
-    this.setStateFromProps(this.props)
+    // console.log(`CreateUpdateRotation.componentDidMount`)
+    this.setStateFromRotation(this.props.rotation)
   }
 
   componentDidUpdate(prevProps) {
+    // console.log(`CreateUpdateRotation.componentDidUpdate`)
     // console.log(`CreateUpdateRotation: ${prevProps.rotation}, ${this.props.rotation}`)
     if (prevProps.rotation !== this.props.rotation) {
-      this.setStateFromProps(this.props)
+      this.setStateFromRotation(this.props.rotation)
     }
     // if (prevProps.)
   }
 
-  setStateFromProps (props) {
-    if (props.rotation !== null) {
-      this.setState({
-        'members': getDefault(props.rotation, 'members', []),
-        'cycleDuration': getDefault(props.rotation, 'cycleDuration', ''),
-        'cycleAmount': getDefault(props.rotation, 'cycleAmount', ''),
-        'nonPayingCycles': getDefault(props.rotation, 'nonPayingCycles', ''),
-        'membersPerCycle': getDefault(props.rotation, 'membersPerCycle', ''),
-        'name': getDefault(props.rotation, 'name', '')
-      })
-    } else {
-      this.setState({
-        'members': [],
-        'cycleDuration': '',
-        'cycleAmount': '',
-        'nonPayingCycles': '',
-        'membersPerCycle': '',
-        'name': ''
-      })
+  setStateFromRotation (rotation) {
+    let options = {
+      'members': [],
+      'cycleDuration': '14',
+      'cycleAmount': '100',
+      'nonPayingCycles': '1',
+      'membersPerCycle': '1',
+      'name': 'Rotation 3'
     }
+
+    if (rotation !== null) {
+      options = {
+        'members': getDefault(rotation, 'members', []),
+        'cycleDuration': getDefault(rotation, 'cycleDuration', ''),
+        'cycleDurationUnit': getDefault(rotation, 'cycleDurationUnit', 'days'),
+        'cycleAmount': getDefault(rotation, 'cycleAmount', ''),
+        'cycleAmountCurrency': getDefault(rotation, 'cycleAmountCurrency', 'usd'),
+        'nonPayingCycles': getDefault(rotation, 'nonPayingCycles', ''),
+        'membersPerCycle': getDefault(rotation, 'membersPerCycle', ''),
+        'name': getDefault(rotation, 'name', '')
+      }
+    }
+
+    return new Promise((resolve, reject) => {
+      this.setState(options, resolve)
+    })
+
   }
 
   onSaveClick () {
-    const createUpdatePayload = {
+    this.save()
+  }
+
+  async save(options) {
+    if (options === undefined) {
+      options = {}
+    }
+    // console.log(`CreateUpdateRotation.save: members.length=${this.state.members.length}`)
+    const createUpdatePayload = Object.assign(options, {
       'memberIds': this.state.members.map(mem => mem.id),
       'cycleDuration': this.state.cycleDuration,
+      'cycleDurationUnit': this.state.cycleDurationUnit.toLowerCase(),
       'cycleAmount': this.state.cycleAmount,
       'nonPayingCycles': this.state.nonPayingCycles,
       'membersPerCycle': this.state.membersPerCycle,
       'name': this.state.name
-    }
-
+    })
 
     if (this.props.rotation === null) {
       // means we're creating a totally new rotation
       const userInfo = getTokenUserInfo()
-      const creatPayload = Object.assign({'managerId': userInfo.id}, createUpdatePayload)
-      createRotation(createPayload)
+      const createPayload = Object.assign({'managerId': userInfo.id}, createUpdatePayload)
+      return createRotation(createPayload)
         .then(resp => {
           if (! resp.ok) {
             this.setState({errorMsg: 'Error when creating new Rotation'})
@@ -300,12 +316,10 @@ class CreateUpdateRotation extends React.Component {
             return resp.json()
           }
         })
-        .then(data => {
-          console.log(data)
-        })
+        .then(data => {this.setStateFromRotation(data); return data})
     } else {
       // updating and existing rotation
-      updateRotation(this.props.rotation.id, createUpdatePayload)
+      return updateRotation(this.props.rotation.id, createUpdatePayload)
         .then(resp => {
           if (! resp.ok) {
             this.setState({errorMsg: 'Error when updating rotation'})
@@ -313,23 +327,24 @@ class CreateUpdateRotation extends React.Component {
             return resp.json()
           }
         })
-        .then(data => {
-          console.log(data)
-        })
-
+        .then(data => {this.setStateFromRotation(data); return data})
     }
   }
 
-  onStartClick () {
-
+  async onStartClick (evt) {
+    console.log(`onStartClick`)
+    let data = await this.save({started: true, dateStarted: DateTime.local()})
+    this.props.onChange(data)
   }
 
   onSelect (evt) {
     let val = evt.target.value
-    setDurationUnit(val)
+    this.setState({
+      'cycleDurationUnit': val
+    })
   }
 
-  onAdd (data){
+  onAdd (data) {
     if (data.length > 0) {
       const datum = data[0]
       const members = this.state.members
@@ -338,7 +353,7 @@ class CreateUpdateRotation extends React.Component {
         members.push(datum)
         this.setState({
           'members': members
-        })
+        }, () => {this.save()})
       }
     }
   }
@@ -349,7 +364,7 @@ class CreateUpdateRotation extends React.Component {
       const newMembers = members.filter(mem => mem.id !== member.id)
       this.setState({
         'members': newMembers
-      })
+      }, () => {this.save()})
     }
   }
 
@@ -361,7 +376,7 @@ class CreateUpdateRotation extends React.Component {
   }
 
   render () {
-    console.log(`CreateUpdateRotation.render: ${this.props.rotation === null}`)
+    // console.log(`CreateUpdateRotation.render: ${this.props.rotation === null}`)
     let memberDisplay = null
     if (this.state.members.length > 0) {
       memberDisplay = (
@@ -391,9 +406,9 @@ class CreateUpdateRotation extends React.Component {
                   <InputField type="text" onChange={this.onInputChange} name="cycleDuration" value={this.state.cycleDuration} icon={faClock}></InputField>
                 </div>
                 <div className="control">
-                  <span className="select" onChange={this.onSelect} value={this.state.durationUnit}>
+                  <span className="select" onChange={this.onSelect} value={this.state.cycleDurationUnit}>
                     <select>
-                      {this.state.durationUnits.map(unit => <option key={unit} value={unit}>{unit}</option>)}
+                      {this.state.cycleDurationUnits.map(unit => <option key={unit} value={unit}>{unit}</option>)}
                     </select>
                   </span>
                 </div>
@@ -402,7 +417,7 @@ class CreateUpdateRotation extends React.Component {
             <InputField type="text" onChange={this.onInputChange} name="cycleAmount" value={this.state.cycleAmount} label="Cycle Payment" icon={faDollarSign}></InputField>
             <InputField type="number" onChange={this.onInputChange} name="nonPayingCycles" value={this.state.nonPayingCycles} label="Nonpaying Cycles" icon={faInfoCircle}></InputField>
             <InputField type="number" onChange={this.onInputChange} name="membersPerCycle" value={this.state.membersPerCycle} label="Members per Cycle" icon={faUser}></InputField>
-            <div className="field is-grouped is-fullwidth">
+            <div className="field is-grouped is-expanded">
               <div className="control">
                 <button className="button is-primary" onClick={this.onSaveClick}>Save</button>
               </div>

@@ -26,7 +26,7 @@ const Register = ({ history }) => {
       if (data.id_token !== undefined) {
         console.log('Register.onSubmitHandler: settings localStorage, directing to /dashboard')
         localStorage.setItem('token', data.id_token)
-        history.push('/dashboard')
+        history.push('/rotations')
       }
     })
   }

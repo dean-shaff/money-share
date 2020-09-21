@@ -99,7 +99,7 @@ describe("rotation", () => {
     expect(res.statusCode).to.equal(200)
 
     const rotationUpdated = res.result
-    expect((await rotationUpdated.countMembers())).to.equal(11)
+    expect((await rotationUpdated.countMembers())).to.equal(6)
     expect(rotationUpdated.name).to.equal("My Modified Rotation")
     expect(rotationUpdated.cycleAmount).to.equal(200)
     expect(rotationUpdated.cycleDuration).to.equal(28)

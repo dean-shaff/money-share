@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faSort, faAngleDown } from '@fortawesome/free-solid-svg-icons'
 
 import User from './../../User.js'
-import { roll, getTokenUserInfo } from './../../../util.js'
+import { roll, getTokenUserInfo, updateRotation } from './../../../util.js'
 
 import "./Dashboard.css"
 
@@ -59,6 +59,7 @@ class Dashboard extends React.Component {
     }
     this.onSearch = this.onSearch.bind(this)
     this.onSort = this.onSort.bind(this)
+    this.onStopDev = this.onStopDev.bind(this)
   }
 
   onSearch (evt) {
@@ -125,25 +126,14 @@ class Dashboard extends React.Component {
     return members.map((mem, idx) => (<User onClick={this.props.onUserPaidChange} key={mem.name} user={mem}/>))
   }
 
-
-  onStart (evt) {
-    const rotationId = this.state.currentRotation.id
-    console.log(`Rotations.onStart: ${rotationId}`)
-    // fetch(`/api/rotation/${rotationId}`, {
-    //   method: 'PUT',
-    //   body: JSON.stringify({
-    //     'started': true,
-    //     'dateStarted': DateTime.local()
-    //   }),
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   }
-    // })
-    // .then(resp => resp.json())
-    // .then(data => {
-    //   console.log(data)
-    //   this.setCurrentRotationUsers(data.members.map(member => member.id))
-    // })
+  onStopDev(){
+    const rotation = this.props.rotation
+    let options = {
+      'memberIds': rotation.members.map(mem => mem.id),
+      'started': false,
+      'dateStarted': null
+    }
+    updateRotation(rotation.id, options)
   }
 
   render () {
@@ -234,6 +224,7 @@ class Dashboard extends React.Component {
             <div className="container top-container">
               <ActivityGrid members={filteredMembers} tilesPerRow={this.props.tilesPerRow} onClick={this.props.onUserPaidChange}/>
             </div>
+            <button className="button" onClick={this.onStopDev}>Stop</button>
           </div>
         </div>
       </div>

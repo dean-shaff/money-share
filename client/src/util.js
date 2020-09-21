@@ -66,16 +66,29 @@ export const getRotationCycleInfo = function (rotation, todayFunction) {
   let totalMembers = rotation.members.length
   let cycleDuration = rotation.cycleDuration
 
+  let cycleDurationUnit = rotation.cycleDurationUnit
+  if (cycleDurationUnit === undefined) {
+    cycleDurationUnit = 'days'
+  }
+  cycleDurationUnit = cycleDurationUnit.toLowerCase()
+  if (! ['days', 'weeks', 'months'].includes(cycleDurationUnit)) {
+    cycleDurationUnit = 'days'
+  }
+  console.log(`util.getRotationCycleInfo: dateStarted=${dateStarted}, membersPerCycle=${membersPerCycle}, cycleDuration=${cycleDuration}, cycleDurationUnit=${cycleDurationUnit}`)
   let totalCycles = totalMembers / membersPerCycle
 
   let dateStartedObj = DateTime.fromISO(dateStarted)
   let today = todayFunction()
 
-  let daysSinceStart = Math.floor(today.diff(dateStartedObj, 'days').toObject().days)
-  let cycleNumber = Math.floor(daysSinceStart/cycleDuration)
+  let unitsSinceStart = Math.floor(today.diff(dateStartedObj, cycleDurationUnit).toObject()[cycleDurationUnit])
+  let cycleNumber = Math.floor(unitsSinceStart/cycleDuration)
 
-  let daysRemaining = daysSinceStart % cycleDuration
-  let cycleStartDate = dateStartedObj.plus({days: cycleNumber*cycleDuration})
+  // let daysSinceStart = Math.floor(today.diff(dateStartedObj, 'days').toObject().days)
+  // let daysRemaining = daysSinceStart % cycleDuration
+
+  // let cycleNumber = Math.floor(daysSinceStart/cycleDuration)
+  let cycleStartDate = dateStartedObj.plus({[cycleDurationUnit]: cycleNumber*cycleDuration})
+  let daysRemaining = Math.floor(today.diff(cycleStartDate, 'days').toObject().days)
 
   console.log(`util.getRotationCycleInfo: cycleNumber=${cycleNumber}, totalCycles=${totalCycles}, daysRemaining=${daysRemaining}`)
 
@@ -182,7 +195,7 @@ export const createRotation = function (options) {
 }
 
 export const updateRotation = function (rotationId, options) {
-  console.log(`util.createRotation: ${rotationId}`)
+  console.log(`util.updateRotation: ${rotationId}`)
   return authFetch(`/api/rotation/${rotationId}`, {
     method: 'PUT',
     body: JSON.stringify(options),
@@ -194,7 +207,7 @@ export const updateRotation = function (rotationId, options) {
 
 export const getDefault = function (obj, key, defaultVal) {
   if (obj[key] === undefined) {
-    return defaultValue
+    return defaultVal
   } else {
     return obj[key]
   }

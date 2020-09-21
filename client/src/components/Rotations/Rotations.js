@@ -145,6 +145,26 @@ class Rotations extends React.Component {
     }
   }
 
+  onRotationChangeFactory (stateName) {
+    return (rotation) => {
+      console.log(`onRotationChangeFactory: ${stateName}`)
+      let rotations = this.state[stateName].slice()
+      for (let idx=0; idx<rotations.length; idx++) {
+        if (rotations[idx].id === rotation.id) {
+          rotations[idx] = rotation
+          this.setState({
+            [stateName]: rotations
+          })
+          return
+        }
+      }
+      rotations.push(rotation)
+      this.setState({
+        [stateName]: rotations
+      })
+    }
+  }
+
   render () {
     console.log(`Rotations.render`)
     let rotationDropDown = null
@@ -191,10 +211,10 @@ class Rotations extends React.Component {
         <div className="container">
           <Route
             path={`${this.props.match.path}/managedRotation/:rotationId`}
-            render={(props) => <ManagedRotation {...props} rotations={this.state.managedRotations}/>}/>
+            render={(props) => <ManagedRotation {...props} rotations={this.state.managedRotations} onChange={this.onRotationChangeFactory('managedRotations')}/>}/>
           <Route
             path={`${this.props.match.path}/memberRotation/:rotationId`}
-            render={(props) => <MemberRotation {...props} rotations={this.state.memberRotations}/>}/>
+            render={(props) => <MemberRotation {...props} rotations={this.state.memberRotations} onChange={this.onRotationChangeFactory('memberRotations')}/>}/>
         </div>
       </section>
       </div>

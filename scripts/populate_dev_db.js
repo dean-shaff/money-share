@@ -57,7 +57,8 @@ let rotationParams = [
   {
     name: "My Second Rotation",
     cycleAmount: 200,
-    cycleDuration: 28,
+    cycleDuration: 1,
+    cycleDurationUnit: 'months',
     nonPayingCycles: 2,
     membersPerCycle: 2,
     started: true,

@@ -105,6 +105,17 @@ class ManagedRotation extends React.Component {
     if (prevProps.rotations.length !== this.props.rotations.length) {
       await this.setRotationFromProps()
     }
+    if (this.props.rotations.length > 0) {
+      const rotationId = this.props.match.params.rotationId
+      let rotation = this.props.rotations.find(rot => rot.id === rotationId)
+      let prevRotation = prevProps.rotations.find(rot => rot.id === rotationId)
+      if (rotation !== undefined && prevRotation !== undefined) {
+        if (rotation.started !== prevRotation.started) {
+          this.setRotation(rotation)
+        }
+      }
+    }
+
   }
 
   onUserPaidChange (evt, user, paid) {
@@ -151,35 +162,38 @@ class ManagedRotation extends React.Component {
   }
 
   render() {
-    console.log(`ManagedRotation.render: match=${JSON.stringify(this.props.match, null, 2)}`)
+    // console.log(`ManagedRotation.render: match=${JSON.stringify(this.props.match, null, 2)}`)
     let dashboard = null
-    let update = null
+    let update = () => {return null}
     let configuration = null
     let base = <Redirect to={`${this.props.match.url}/dashboard`}/>
 
     if (this.props.match.params.rotationId === 'create') {
-      base = <div>Hello from create</div>
+      base = <CreateUpdateRotation rotation={null} onChange={this.props.onChange}/>
     }
 
 
     if (this.state.rotation != null) {
-      console.log(`ManagedRotation.render: rotation.name=${this.state.rotation.name} rotation.started=${this.state.rotation.started}`)
+      // console.log(`ManagedRotation.render: rotation.name=${this.state.rotation.name} rotation.started=${this.state.rotation.started}`)
       configuration = (
         <HighlightedTab match={this.props.match}>
           <Configuration totalCycles={this.state.totalCycles} rotation={this.state.rotation}/>
         </HighlightedTab>
       )
       if (this.state.rotation.started) {
+        console.log(`ManagedRotation.render: ${this.state.rotation.name} not started`)
         dashboard = (
           <HighlightedTab match={this.props.match}>
             <Dashboard tilesPerRow={4} onUserPaidChange={this.onUserPaidChange} {...this.state}/>
           </HighlightedTab>
         )
+        // update = props => <Redirect to={`${this.props.match.url}/dashboard`}/>
         update = <Redirect to={`${this.props.match.url}/dashboard`}/>
       } else {
+        console.log(`ManagedRotation.render: ${this.state.rotation.name} not started`)
         dashboard = <Redirect to={`${this.props.match.url}/update`}/>
-        // update = <CreateUpdateRotation rotation={this.state.rotation}/>
-        update = <CreateUpdateRotation rotation={this.state.rotation}/>
+        // update = props => <CreateUpdateRotation {...props} rotation={this.state.rotation} onChange={this.props.onChange}/>
+        update = <CreateUpdateRotation rotation={this.state.rotation} onChange={this.props.onChange}/>
         base = <Redirect to={`${this.props.match.url}/update`}/>
       }
     }
@@ -192,6 +206,7 @@ class ManagedRotation extends React.Component {
         <Route path={`${this.props.match.path}/configuration`}>
           {configuration}
         </Route>
+        {/*// <Route path={`${this.props.match.path}/update`} render={update}/>*/}
         <Route path={`${this.props.match.path}/update`}>
           {update}
         </Route>
