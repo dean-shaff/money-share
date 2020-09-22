@@ -156,6 +156,9 @@ describe("rotation", () => {
     const rotations = res.result
     expect(rotations[0].managerId).to.equal(manager.id)
     expect((await rotations[0].hasMember(users[1]))).to.equal(true)
+    let rotation = JSON.parse(JSON.stringify(rotations[0]))
+    expect(rotation.members.length).to.equal(5)
+    // console.log(`rotations[0].countMembers()=${(await rotations[0].countMembers())}`)
   })
 
 })

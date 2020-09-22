@@ -99,6 +99,7 @@ export const getRotationCycleInfo = function (rotation, todayFunction) {
 
   console.log(`util.getRotationCycleInfo: cycleNumber=${cycleNumber}, totalCycles=${totalCycles}, daysRemaining=${daysRemaining}`)
 
+
   return {cycleNumber, totalCycles, daysRemaining, cycleStartDate}
 }
 
@@ -133,13 +134,22 @@ export const computeMembersPaid = function (rotation) {
   rotation.members.sort(rotationIndexCompare)
   roll(rotation.members, cycleNumber*rotation.membersPerCycle)
 
-  let notPayingThresh = rotation.members.length - rotation.membersPerCycle*rotation.nonPayingCycles
+  let nonPayingThresh = rotation.members.length - (rotation.membersPerCycle*rotation.nonPayingCycles)
+  let receivingPaymentThresh = rotation.membersPerCycle
+
+  console.log(`util.computeMembersPaid: members.length=${rotation.members.length}, membersPerCycle=${rotation.membersPerCycle}, nonPayingCycles=${rotation.nonPayingCycles}`)
+  console.log(`util.computeMembersPaid: nonPayingThresh=${nonPayingThresh}, receivingPaymentThresh=${receivingPaymentThresh}`)
 
   for (let idx=0; idx<rotation.members.length; idx++) {
-    if (idx >= notPayingThresh) {
+    if (idx >= nonPayingThresh) {
       rotation.members[idx].nonPaying = true
     } else {
       rotation.members[idx].nonPaying = false
+    }
+    if (idx < receivingPaymentThresh) {
+      rotation.members[idx].receivingPayment = true
+    } else {
+      rotation.members[idx].receivingPayment = false
     }
 
     let notes = rotation.members[idx].CycleNotes
