@@ -231,6 +231,8 @@ class Rotations extends React.Component {
                 <Link className="navbar-item" to={`${this.props.match.url}/managedRotation/create`}>Create New Rotation</Link>
                 <hr className="navbar-divider"/>
                 <Link to="/" className="navbar-item" onClick={this.onLogoutHandler}>Logout</Link>
+                <hr className="navbar-divider"/>
+                <Link to="/changePassword" className="navbar-item">Change Password</Link>
                 {/*<a className="navbar-item" onClick={this.onLogoutHandler}>Logout</a>*/}
               </div>
             </div>

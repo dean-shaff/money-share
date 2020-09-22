@@ -224,7 +224,7 @@ class Dashboard extends React.Component {
             <div className="container top-container">
               <ActivityGrid members={filteredMembers} tilesPerRow={this.props.tilesPerRow} onClick={this.props.onUserPaidChange}/>
             </div>
-            <button className="button" onClick={this.onStopDev}>Stop</button>
+            {/*<button className="button" onClick={this.onStopDev}>Stop</button>*/}
           </div>
         </div>
       </div>
