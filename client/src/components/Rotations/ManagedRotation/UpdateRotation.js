@@ -7,10 +7,12 @@ import slug from 'slug'
 
 import InputField from './../../InputField.js'
 import CreateUpdateRotationForm from "./CreateUpdateRotationForm"
+import DeleteModal from './DeleteModal.js'
 import { authFetch, getDefault, getTokenUserInfo, createRotation, updateRotation, deleteRotation } from "./../../../util.js"
 
 import "./UpdateRotation.css"
 import "./../../User.css"
+
 
 
 const ManualEntry = (props) => {
@@ -270,7 +272,7 @@ class UpdateRotation extends React.Component {
       'membersPerCycle': '',
       'name': '',
       'errorMsg': '',
-      'deleteModalClass': ''
+      'deleteModalVisible': false
     }
     this.onSelect = this.onSelect.bind(this)
     this.onAdd = this.onAdd.bind(this)
@@ -355,13 +357,12 @@ class UpdateRotation extends React.Component {
     // this.props.onDelete(this.props.rotation)
     deleteRotation(this.props.rotation.id)
       .then(resp => {
-        if (! resp.ok) {
-          this.setState({
-            'errorMsg': `Error deleting rotation ${this.state.name}`
-          })
-        } else {
-          this.props.onDelete(this.props.rotation)
-        }
+        this.props.onDelete(this.props.rotation)
+      })
+      .catch(err => {
+        this.setState({
+          'errorMsg': err.message
+        })
       })
     this.closeDeleteModal()
   }
@@ -408,13 +409,13 @@ class UpdateRotation extends React.Component {
 
   closeDeleteModal () {
     this.setState({
-      'deleteModalClass': ''
+      'deleteModalVisible': false
     })
   }
 
   openDeleteModal () {
     this.setState({
-      'deleteModalClass': 'is-active'
+      'deleteModalVisible': true
     })
   }
 
@@ -456,24 +457,14 @@ class UpdateRotation extends React.Component {
             <AddMember onAdd={this.onAdd}/>
           </div>
         </div>
-        <div className={`modal ${this.state.deleteModalClass}`}>
-          <div className="modal-background" onClick={this.closeDeleteModal}></div>
-          <div className="modal-card">
-            <header className="modal-card-head">
-              <p className="modal-card-title">Delete {this.state.name}</p>
-              <button className="delete" aria-label="close" onClick={this.closeDeleteModal}></button>
-            </header>
-            <section className="modal-card-body">
-              <div className="content">
-                <p>Are you sure you want to delete this rotation?</p>
-              </div>
-            </section>
-            <footer className="modal-card-foot">
-              <button className="button is-danger" onClick={this.onDeleteClick}>Delete</button>
-              <button className="button" onClick={this.closeDeleteModal}>Cancel</button>
-            </footer>
-          </div>
-        </div>
+        <DeleteModal
+          visible={this.state.deleteModalVisible}
+          onClose={this.closeDeleteModal}
+          onTrigger={this.onDeleteClick}
+          buttonText={"Delete"}
+          title={`Delete ${this.state.name}`}>
+          <p>Are you sure you want to delete this rotation?</p>
+        </DeleteModal>
       </div>
     )
   }

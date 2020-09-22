@@ -90,15 +90,6 @@ const main = async () => {
     console.log(`Error making rotation: ${JSON.stringify(err, null, 2)}`)
   }
 
-
-  // const query = qs.stringify({ usernames: ['deanshaff'] })
-  // const user = (await axios.get(`${baseURL}/api/user/?${query}`)).data[0]
-  //
-  // let newUser
-  // try {
-  //   newUser = await axios.post(`${baseURL}/api/user`, users[0]).then(resp => resp.data)
-  // } catch (err) { }
-
 }
 
 process.on('unhandledRejection', (err) => {

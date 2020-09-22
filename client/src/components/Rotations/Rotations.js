@@ -175,7 +175,12 @@ class Rotations extends React.Component {
         rotations.splice(idx, 1)
         this.setState({
           [stateName]: rotations
-        }, () => {this.reDirect()})
+        }, () => {
+          let currentRotation = this.getCurrentRotation()
+          this.setState({
+            'currentRotation': currentRotation
+          }, this.reDirect())
+        })
       }
     }
   }
@@ -196,7 +201,7 @@ class Rotations extends React.Component {
         rotations[idx] = rotation
         this.setState({
           [stateName]: rotations
-        })
+        }) //, () => {this.props.history.push(`${this.props.match.url}/managedRotation/${rotation.id}/dashboard`)})
       }
     }
   }
