@@ -15,24 +15,21 @@ const ChangePassword = ({ history }) => {
     const userInfo = getTokenUserInfo()
     const formData = new FormData(evt.target)
     formData.append('id', userInfo.id)
-    console.log(formData)
-    // authFetch('/changePassword', {
-    //   method: "POST",
-    //   body: formData
-    // })
-    // .then(resp => resp.json())
-    // .then(data => {
-    //   console.log(`ChangePassword.onSubmitHandler: `)
-    //   if ('message' in data) {
-    //     setMsg(data.message)
-    //     return
-    //   }
-    //   if (data.id_token !== undefined) {
-    //     console.log('ChangePassword.onSubmitHandler: settings localStorage, directing to /dashboard')
-    //     localStorage.setItem('token', data.id_token)
-    //     history.push('/rotations')
-    //   }
-    // })
+    authFetch('/changePassword', {
+      method: "POST",
+      body: formData
+    })
+    .then(resp => resp.json())
+    .then(data => {
+      if (data.id_token !== undefined) {
+        console.log('ChangePassword.onSubmitHandler: settings localStorage, directing to /rotations')
+        localStorage.setItem('token', data.id_token)
+        history.push('/rotations')
+      }
+    })
+    .catch(err => {
+      setMsg(err.message)
+    })
   }
 
 

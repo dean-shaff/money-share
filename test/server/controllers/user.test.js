@@ -145,4 +145,17 @@ describe("user", () => {
     expect(res.statusCode).to.equal(204);
   })
 
+  test("POST /changePassword", async () => {
+    const res = await inject({
+      method: 'POST',
+      url: `/changePassword`,
+      payload: {
+        id: newUser.dataValues.id,
+        oldPassword: 'deanshaffpassword',
+        password: 'deanshaffpassword1'
+      }
+    })
+    expect(res.statusCode).to.equal(201)
+  })
+
 })
