@@ -17,6 +17,13 @@ export const isLoggedIn = function () {
   }
 }
 
+const handleErrors = (resp) => {
+  if (! resp.ok) {
+    throw Error(resp.status)
+  }
+  return resp
+}
+
 export const authFetch = async function (url, options) {
   const token = localStorage.getItem('token')
   const authOptions = {
@@ -32,7 +39,7 @@ export const authFetch = async function (url, options) {
   }
   options = Object.assign(options)
   // console.log(`authFetch: options.headers=${JSON.stringify(options.headers, null, 2)}`)
-  return fetch(url, Object.assign(authOptions, options))
+  return fetch(url, Object.assign(authOptions, options)).then(handleErrors)
 }
 
 export const getTokenUserInfo = function () {

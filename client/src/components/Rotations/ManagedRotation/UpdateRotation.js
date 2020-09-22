@@ -3,6 +3,7 @@ import qs from 'qs'
 import { faInfoCircle, faClock, faDollarSign, faUser, faTimesCircle, faChevronDown, faChevronUp, faAt } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { DateTime } from 'luxon'
+import slug from 'slug'
 
 import InputField from './../../InputField.js'
 import CreateUpdateRotationForm from "./CreateUpdateRotationForm"
@@ -16,8 +17,8 @@ const ManualEntry = (props) => {
   return (
     <div>
       <form onSubmit={props.onSubmit}>
-      <InputField type="text" name="username" placeholder="Username" icon={faUser}></InputField>
       <InputField type="text" name="name" placeholder="Name" icon={faUser}></InputField>
+      {/*<InputField type="text" name="username" placeholder="Username" icon={faUser}></InputField>*/}
       <InputField type="email" name="email" placeholder="Email" icon={faAt}></InputField>
       <div className="field needs-bottom-margin">
         <div className="control">
@@ -38,8 +39,9 @@ class AddMember extends React.Component {
     this.state = {
       'searchTypes': searchTypes,
       'searchType': searchTypes[0],
-      'searchText': 'deanshaff',
-      'displayManualAdd': false
+      'searchText': '',
+      'displayManualAdd': false,
+      'errorMsg': ''
     }
     this.onClick = this.onClick.bind(this)
     this.onSelect = this.onSelect.bind(this)
@@ -56,7 +58,18 @@ class AddMember extends React.Component {
     authFetch(`/api/user/search/?${query}`)
       .then(resp => resp.json())
       .then(data => {
-        this.props.onAdd(data)
+        if (data.length === 0) {
+          this.setState({
+            'errorMsg': "Couldn't find that user!"
+          })
+        } else {
+          this.props.onAdd(data)
+        }
+      })
+      .catch(err => {
+        this.setState({
+          'errorMsg': err.message
+        })
       })
   }
 
@@ -77,14 +90,34 @@ class AddMember extends React.Component {
   onManualEntrySubmit (evt) {
     evt.preventDefault()
     let formData = new FormData(evt.target)
-    formData.append('autoCreated', true)
-    for (const [key, val] of formData.entries()) {
-      console.log(key, val)
+    let name = formData.get('name')
+    if (name === '') {
+      this.setState({
+        'errorMsg': 'Make sure to fill out the name field before hitting Add!'
+      })
+      return
     }
-    // authFetch('/api/user', {
-    //   method: "POST",
-    //   body: formData
-    // })
+    let username = slug(name)
+
+    formData.append('username', username)
+    formData.append('autoCreated', true)
+
+    authFetch('/api/user', {
+      method: 'POST',
+      body: formData
+    })
+    .then(resp => resp.json())
+    .then(data => {
+      this.props.onAdd([data])
+    })
+    .catch(err => {
+      console.log(err.message)
+      let msg = 'Error creating user'
+      if (err.message === '400') {
+        msg = 'A user with this name or email already exists'
+      }
+      this.setState({errorMsg: msg})
+    })
   }
 
   onToggleManualEntry (evt) {
@@ -129,6 +162,7 @@ class AddMember extends React.Component {
         </div>
       </div>
       {manualEntry}
+      <div className='has-text-danger is-centered'>{this.state.errorMsg}</div>
       <div className="field">
         <div className="control">
           <button className="button is-fullwidth is-slide-out is-small" onClick={this.onToggleManualEntry}><span>Manual Entry</span>
@@ -327,7 +361,7 @@ class UpdateRotation extends React.Component {
   }
 
   onDeleteClick (evt) {
-    this.props.onDelete(this.props.rotation)    
+    this.props.onDelete(this.props.rotation)
     // deleteRotation(this.props.rotation.id)
     //   .then(resp => {
     //     if (! resp.ok) {
@@ -352,12 +386,14 @@ class UpdateRotation extends React.Component {
     if (data.length > 0) {
       const datum = data[0]
       const members = this.state.members
-      const memberIds = members.map(mem => mem.id)
-      if (! memberIds.includes(datum.id)) {
+      const existingMember = members.find(mem => mem.id === datum.id)
+      if (! existingMember) {
         members.push(datum)
         this.setState({
           'members': members
         }, () => {this.save()})
+      } else {
+        throw Error(`${datum.name} already in members list!`)
       }
     }
   }
