@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { getTokenUserInfo } from './../../../util.js'
+import { getTokenUserInfo, stringify } from './../../../util.js'
 
 
 class Dashboard extends React.Component {
@@ -12,6 +12,11 @@ class Dashboard extends React.Component {
     const tokenUserInfo = getTokenUserInfo()
     let user = rotation.members.find(mem => mem.id === tokenUserInfo.id)
     return user
+  }
+
+  componentDidMount() {
+    // console.log(`Dashboard.componentDidMount: ${stringify(this.props.match)}`)
+    this.props.onSetCurrentRotation(this.props.rotation)
   }
 
   render () {

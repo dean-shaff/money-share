@@ -90,6 +90,7 @@ class Rotations extends React.Component {
     this.onSelectRotationFactory = this.onSelectRotationFactory.bind(this)
     this.onRotationChangeFactory = this.onRotationChangeFactory.bind(this)
     this.onRotationDeleteFactory = this.onRotationDeleteFactory.bind(this)
+    this.onSetCurrentRotation = this.onSetCurrentRotation.bind(this)
   }
 
   async componentDidMount() {
@@ -160,6 +161,9 @@ class Rotations extends React.Component {
 
   onSetCurrentRotation (rotation) {
     console.log('onSetCurrentRotation')
+    this.setState({
+      'currentRotation': rotation
+    })
   }
 
   onRotationDeleteFactory (stateName) {
@@ -248,6 +252,7 @@ class Rotations extends React.Component {
               (props) => (
                 <ManagedRotation {...props}
                   rotations={this.state.managedRotations}
+                  onSetCurrentRotation={this.onSetCurrentRotation}
                   onChange={this.onRotationChangeFactory('managedRotations')}
                   onDelete={this.onRotationDeleteFactory('managedRotations')}/>)}/>
           <Route
@@ -255,7 +260,8 @@ class Rotations extends React.Component {
             render={
               (props) => (
                 <MemberRotation {...props}
-                  rotations={this.state.memberRotations}/>)}/>
+                  rotations={this.state.memberRotations}
+                  onSetCurrentRotation={this.onSetCurrentRotation}/>)}/>
         </div>
       </section>
       </div>

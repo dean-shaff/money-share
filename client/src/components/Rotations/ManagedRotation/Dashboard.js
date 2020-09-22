@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faSort, faAngleDown } from '@fortawesome/free-solid-svg-icons'
 
 import User from './../../User.js'
-import { roll, getTokenUserInfo, updateRotation } from './../../../util.js'
+import { roll, getTokenUserInfo, updateRotation, stringify } from './../../../util.js'
 
 import "./Dashboard.css"
 
@@ -103,6 +103,11 @@ class Dashboard extends React.Component {
         return  mem.nonPaying
       }
     })
+  }
+
+  componentDidMount() {
+    // console.log(`Dashboard.componentDidMount: ${stringify(this.props.match)}`)
+    this.props.onSetCurrentRotation(this.props.rotation)
   }
 
   reOrderMembers (rotation, totalCycles, cycleNumber) {

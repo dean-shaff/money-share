@@ -10,7 +10,8 @@ import {
   deleteNote,
   createNote,
   computeMembersPaid,
-  getRotation
+  getRotation,
+  stringify
 } from "./../../../util.js"
 
 
@@ -94,32 +95,87 @@ class ManagedRotation extends React.Component {
     }
   }
 
+  // render() {
+  //   let dashboard = null
+  //   let update = null
+  //   let configuration = null
+  //   let base = <Redirect to={`${this.props.match.url}/dashboard`}/>
+  //
+  //   const rotationId = this.props.match.params.rotationId
+  //   let rotation = this.props.rotations.find(rot => rot.id === rotationId)
+  //
+  //   if (rotation != null) {
+  //     // this.props.onSetCurrentRotation(rotation)
+  //     let computed = computeMembersPaid(rotation)
+  //     configuration = (
+  //       <HighlightedTab match={this.props.match}>
+  //         <Configuration totalCycles={computed.totalCycles} rotation={computed.rotation}/>
+  //       </HighlightedTab>
+  //     )
+  //     if (rotation.started) {
+  //       dashboard = (
+  //         <HighlightedTab match={this.props.match}>
+  //           <Dashboard tilesPerRow={4} onUserPaidChange={this.onUserPaidChangeFactory(rotation)} {...computed}/>
+  //         </HighlightedTab>
+  //       )
+  //       update = <Redirect to={`${this.props.match.url}/dashboard`}/>
+  //     } else {
+  //       dashboard = <Redirect to={`${this.props.match.url}/update`}/>
+  //       update = <UpdateRotation rotation={computed.rotation} onChange={this.props.onChange} onDelete={this.props.onDelete}/>
+  //       base = <Redirect to={`${this.props.match.url}/update`}/>
+  //     }
+  //   }
+  //
+  //   if (rotationId === 'create') {
+  //     base = <CreateRotation onChange={this.props.onChange}/>
+  //   }
+  //
+  //   return (
+  //     <div>
+  //       <Route path={`${this.props.match.path}/dashboard`}>
+  //         {dashboard}
+  //       </Route>
+  //       <Route path={`${this.props.match.path}/configuration`}>
+  //         {configuration}
+  //       </Route>
+  //       <Route path={`${this.props.match.path}/update`}>
+  //         {update}
+  //       </Route>
+  //       <Route path={`${this.props.match.path}`}>
+  //         {base}
+  //       </Route>
+  //     </div>
+  //   )
+  // }
   render() {
-    let dashboard = null
-    let update = null
-    let configuration = null
+    let dashboard = () => null
+    let update = () => null
+    let configuration = () => null
     let base = <Redirect to={`${this.props.match.url}/dashboard`}/>
 
     const rotationId = this.props.match.params.rotationId
     let rotation = this.props.rotations.find(rot => rot.id === rotationId)
 
     if (rotation != null) {
+      // this.props.onSetCurrentRotation(rotation)
       let computed = computeMembersPaid(rotation)
-      configuration = (
+      configuration = (props) => (
         <HighlightedTab match={this.props.match}>
-          <Configuration totalCycles={computed.totalCycles} rotation={computed.rotation}/>
+          <Configuration totalCycles={computed.totalCycles} rotation={computed.rotation} {...props}/>
         </HighlightedTab>
       )
       if (rotation.started) {
-        dashboard = (
+        dashboard = (props) => (
           <HighlightedTab match={this.props.match}>
-            <Dashboard tilesPerRow={4} onUserPaidChange={this.onUserPaidChangeFactory(rotation)} {...computed}/>
+            <Dashboard tilesPerRow={4} onUserPaidChange={this.onUserPaidChangeFactory(rotation)} onSetCurrentRotation={this.props.onSetCurrentRotation} {...props} {...computed}/>
           </HighlightedTab>
         )
-        update = <Redirect to={`${this.props.match.url}/dashboard`}/>
+        update = (props) => (<Redirect to={`${this.props.match.url}/dashboard`}/>)
       } else {
-        dashboard = <Redirect to={`${this.props.match.url}/update`}/>
-        update = <UpdateRotation rotation={computed.rotation} onChange={this.props.onChange} onDelete={this.props.onDelete}/>
+        dashboard = (props) => (<Redirect to={`${this.props.match.url}/update`}/>)
+        update = props => (
+          <UpdateRotation rotation={computed.rotation} onChange={this.props.onChange} onDelete={this.props.onDelete} {...props}/>
+        )
         base = <Redirect to={`${this.props.match.url}/update`}/>
       }
     }
@@ -130,22 +186,15 @@ class ManagedRotation extends React.Component {
 
     return (
       <div>
-        <Route path={`${this.props.match.path}/dashboard`}>
-          {dashboard}
-        </Route>
-        <Route path={`${this.props.match.path}/configuration`}>
-          {configuration}
-        </Route>
-        <Route path={`${this.props.match.path}/update`}>
-          {update}
-        </Route>
+        <Route path={`${this.props.match.path}/dashboard`} render={dashboard}/>
+        <Route path={`${this.props.match.path}/configuration`} render={configuration}/>
+        <Route path={`${this.props.match.path}/update`} render={update}/>
         <Route path={`${this.props.match.path}`}>
           {base}
         </Route>
       </div>
     )
-  }
-}
+  }}
 
 
 export default ManagedRotation

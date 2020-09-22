@@ -8,7 +8,7 @@ const MemberRotation = (props) => {
   const rotation = props.rotations.find(rot => rot.id === rotationId)
   if (rotation !== undefined) {
     let {cycleNumber, totalCycles, daysRemaining, cycleStartDate} = computeMembersPaid(rotation)
-    return <Dashboard rotation={rotation} daysRemaining={daysRemaining}/>
+    return <Dashboard rotation={rotation} daysRemaining={daysRemaining} onSetCurrentRotation={props.onSetCurrentRotation}/>
   } else {
     return null
   }
