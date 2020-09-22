@@ -59,7 +59,7 @@ class User extends React.Component  {
   }
 
   onToggleClick (evt) {
-    this.props.onClick(evt, this.props.user, ! this.props.user.paid)
+    this.props.onClick(this.props.user, ! this.props.user.paid)
     this.setState({waiting: true})
   }
 

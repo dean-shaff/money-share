@@ -48,7 +48,7 @@ const RotationDropDown = ({match, managedRotations, memberRotations, currentRota
 
       if (rot.managed) {
         if (rot.started) {
-          return <Link className={className} key={rot.id} to={`${match.url}/managedRotation/${rot.id}`} onClick={onClick}>{name}</Link>
+          return <Link className={className} key={rot.id} to={`${match.url}/managedRotation/${rot.id}/dashboard`} onClick={onClick}>{name}</Link>
         } else {
           return <Link className={className} key={rot.id} to={`${match.url}/managedRotation/${rot.id}/update`} onClick={onClick}>{name}</Link>
         }
@@ -131,12 +131,6 @@ class Rotations extends React.Component {
     return null
   }
 
-  // reDirectIfIsExact() {
-  //   if (this.props.match.isExact) {
-  //     this.reDirect()
-  //   }
-  // }
-
   reDirect () {
     console.log('Rotations.reDirect')
     const currentRotation = this.state.currentRotation
@@ -149,16 +143,6 @@ class Rotations extends React.Component {
     } else {
       this.props.history.push(`${this.props.match.url}/memberRotation/${currentRotation.id}`)
     }
-    // const managedRotations = this.state.managedRotations
-    // const memberRotations = this.state.memberRotations
-    // if (managedRotations.length > 0) {
-    //   this.props.history.push(`${this.props.match.url}/managedRotation/${managedRotations[0].id}`)
-    //   return
-    // }
-    // if (memberRotations > 0) {
-    //   this.props.history.push(`${this.props.match.url}/memberRotation/${memberRotations[0].id}`)
-    //   return
-    // }
   }
 
   onLogoutHandler (evt) {
@@ -196,7 +180,7 @@ class Rotations extends React.Component {
     return (rotation) => {
       console.log(`onRotationChangeFactory: ${stateName}: ${rotation.id}, ${rotation.name}`)
       let rotations = this.state[stateName].slice()
-      let idx = rotations.findIndex(rot => {rot.id === rotation.id})
+      let idx = rotations.findIndex(rot => rot.id === rotation.id)
       if (idx === -1) {
         // this means we've added a new rotation
         rotations.unshift(rotation)
@@ -266,7 +250,10 @@ class Rotations extends React.Component {
                   onDelete={this.onRotationDeleteFactory('managedRotations')}/>)}/>
           <Route
             path={`${this.props.match.path}/memberRotation/:rotationId`}
-            render={(props) => <MemberRotation {...props} rotations={this.state.memberRotations} onChange={this.onRotationChangeFactory('memberRotations')}/>}/>
+            render={
+              (props) => (
+                <MemberRotation {...props}
+                  rotations={this.state.memberRotations}/>)}/>
         </div>
       </section>
       </div>

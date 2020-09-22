@@ -296,26 +296,15 @@ class UpdateRotation extends React.Component {
   }
 
   setStateFromRotation (rotation) {
-    let options = {
-      'members': [],
-      'cycleDuration': '14',
-      'cycleAmount': '100',
-      'nonPayingCycles': '1',
-      'membersPerCycle': '1',
-      'name': 'Rotation 3'
-    }
-
-    if (rotation !== null) {
-      options = {
-        'members': getDefault(rotation, 'members', []),
-        'cycleDuration': getDefault(rotation, 'cycleDuration', ''),
-        'cycleDurationUnit': getDefault(rotation, 'cycleDurationUnit', 'days'),
-        'cycleAmount': getDefault(rotation, 'cycleAmount', ''),
-        'cycleAmountCurrency': getDefault(rotation, 'cycleAmountCurrency', 'usd'),
-        'nonPayingCycles': getDefault(rotation, 'nonPayingCycles', ''),
-        'membersPerCycle': getDefault(rotation, 'membersPerCycle', ''),
-        'name': getDefault(rotation, 'name', '')
-      }
+    const options = {
+      'members': getDefault(rotation, 'members', []),
+      'cycleDuration': getDefault(rotation, 'cycleDuration', ''),
+      'cycleDurationUnit': getDefault(rotation, 'cycleDurationUnit', 'days'),
+      'cycleAmount': getDefault(rotation, 'cycleAmount', ''),
+      'cycleAmountCurrency': getDefault(rotation, 'cycleAmountCurrency', 'usd'),
+      'nonPayingCycles': getDefault(rotation, 'nonPayingCycles', ''),
+      'membersPerCycle': getDefault(rotation, 'membersPerCycle', ''),
+      'name': getDefault(rotation, 'name', '')
     }
 
     return new Promise((resolve, reject) => {
@@ -355,23 +344,23 @@ class UpdateRotation extends React.Component {
   }
 
   async onStartClick (evt) {
-    console.log(`onStartClick`)
+    console.log(`UpdateRotation.StartClick`)
     let data = await this.save({started: true, dateStarted: DateTime.local()})
     this.props.onChange(data)
   }
 
   onDeleteClick (evt) {
-    this.props.onDelete(this.props.rotation)
-    // deleteRotation(this.props.rotation.id)
-    //   .then(resp => {
-    //     if (! resp.ok) {
-    //       this.setState({
-    //         'errorMsg': `Error deleting rotation ${this.state.name}`
-    //       })
-    //     } else {
-    //       this.props.onDelete(this.props.rotation)
-    //     }
-    //   })
+    // this.props.onDelete(this.props.rotation)
+    deleteRotation(this.props.rotation.id)
+      .then(resp => {
+        if (! resp.ok) {
+          this.setState({
+            'errorMsg': `Error deleting rotation ${this.state.name}`
+          })
+        } else {
+          this.props.onDelete(this.props.rotation)
+        }
+      })
     this.closeDeleteModal()
   }
 
@@ -429,7 +418,6 @@ class UpdateRotation extends React.Component {
 
 
   render () {
-    // console.log(`UpdateRotation.render: ${this.props.rotation === null}`)
     let memberDisplay = null
     if (this.state.members.length > 0) {
       memberDisplay = (

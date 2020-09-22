@@ -6,27 +6,18 @@ import { getTokenUserInfo } from './../../../util.js'
 class Dashboard extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {
-      user: this.findUser(this.props.rotation)
-    }
   }
 
   findUser(rotation){
     const tokenUserInfo = getTokenUserInfo()
-    let user = null
-    for (let idx=0; idx<rotation.members.length; idx++) {
-      let member = rotation.members[idx]
-      if (tokenUserInfo.id === member.id) {
-        user = member
-        break
-      }
-    }
+    let user = rotation.members.find(mem => mem.id === tokenUserInfo.id)
     return user
   }
 
   render () {
     const rotation = this.props.rotation
-    const user = this.state.user
+    const user = this.findUser(rotation)
+
     let paidText = "You're all paid up for this cycle!"
     if (! user.paid) {
       paidText = "Looks like you've yet to pay this cycle"
@@ -40,7 +31,7 @@ class Dashboard extends React.Component {
         <p className="title">Hi {user.name}!</p>
         <p>{paidText}</p>
         <p>
-          There are <BlueHighlight text={this.props.daysRemaining}/> days left in this cycle
+          There are <span className="has-text-primary">{this.props.daysRemaining}</span> days left in this cycle
         </p>
       </div>
     )
