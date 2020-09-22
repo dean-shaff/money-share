@@ -64,6 +64,7 @@ class AddMember extends React.Component {
           })
         } else {
           this.props.onAdd(data)
+          this.setState({'errorMsg': ''})
         }
       })
       .catch(err => {
@@ -109,6 +110,7 @@ class AddMember extends React.Component {
     .then(resp => resp.json())
     .then(data => {
       this.props.onAdd([data])
+      this.setState({'errorMsg': ''})
     })
     .catch(err => {
       console.log(err.message)
