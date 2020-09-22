@@ -24,8 +24,7 @@ import {
 import settings from './../../settings.js'
 
 import ManagedRotation from './ManagedRotation/ManagedRotation.js'
-// import { ManagedRotation } from './ManagedRotation/Man'
-// import { MemberRotation } from './MemberRotation'
+import MemberRotation from './MemberRotation/MemberRotation.js'
 
 import './Rotations.css'
 
@@ -86,16 +85,11 @@ class Rotations extends React.Component {
       managedRotations: [],
       memberRotations: [],
       currentRotation: null
-      // cycleNumber: null,
-      // totalCycles: null,
-      // daysRemaining: null,
-      // cycleStartDate: null,
     }
     this.onLogoutHandler = this.onLogoutHandler.bind(this)
-    // this.onStart = this.onStart.bind(this)
-    // this.onUserPaidChange = this.onUserPaidChange.bind(this)
     this.onSelectRotationFactory = this.onSelectRotationFactory.bind(this)
-    // this.onCreateNewRotation = this.onCreateNewRotation.bind(this)
+    this.onRotationChangeFactory = this.onRotationChangeFactory.bind(this)
+    this.onRotationDeleteFactory = this.onRotationDeleteFactory.bind(this)
   }
 
   async componentDidMount() {
@@ -110,26 +104,61 @@ class Rotations extends React.Component {
     ])
     managedRotations = managedRotations.map(rot => {rot.managed = true; return rot})
     memberRotations = memberRotations.map(rot => {rot.managed = false; return rot})
-
-    this.setState({
-      'managedRotations': managedRotations,
-      'memberRotations': memberRotations
-    })
-
     if (this.props.match.isExact) {
-      // only redirect if we're on /rotations
-      if (managedRotations.length > 0) {
-        this.setState({'currentRotation': managedRotations[0]})
-        this.props.history.push(`${this.props.match.url}/managedRotation/${managedRotations[0].id}`)
-        return
-      }
-      if (memberRotations > 0) {
-        this.setState({'currentRotation': memberRotations[0]})
-        this.props.history.push(`${this.props.match.url}/memberRotation/${memberRotations[0].id}`)
-        return
-      }
-      this.props.history.push(`${this.props.match.url}/managedRotation/create`)
+      let currentRotation = this.getCurrentRotation(managedRotations, memberRotations)
+      this.setState({
+        'managedRotations': managedRotations,
+        'memberRotations': memberRotations,
+        'currentRotation': currentRotation
+      }, () => {this.reDirect()})
+    } else {
+      this.setState({
+        'managedRotations': managedRotations,
+        'memberRotations': memberRotations
+      })
     }
+  }
+
+  getCurrentRotation (_managedRotations, _memberRotations) {
+    const managedRotations = _managedRotations === undefined ? this.state.managedRotations: _managedRotations
+    const memberRotations = _memberRotations === undefined ? this.state.memberRotations: _memberRotations
+    if (managedRotations.length > 0) {
+      return managedRotations[0]
+    }
+    if (memberRotations > 0) {
+      return memberRotations[0]
+    }
+    return null
+  }
+
+  // reDirectIfIsExact() {
+  //   if (this.props.match.isExact) {
+  //     this.reDirect()
+  //   }
+  // }
+
+  reDirect () {
+    console.log('Rotations.reDirect')
+    const currentRotation = this.state.currentRotation
+    if (currentRotation === null) {
+      this.props.history.push(`${this.props.match.url}/managedRotation/create`)
+      return
+    }
+    if (currentRotation.managed) {
+      this.props.history.push(`${this.props.match.url}/managedRotation/${currentRotation.id}`)
+    } else {
+      this.props.history.push(`${this.props.match.url}/memberRotation/${currentRotation.id}`)
+    }
+    // const managedRotations = this.state.managedRotations
+    // const memberRotations = this.state.memberRotations
+    // if (managedRotations.length > 0) {
+    //   this.props.history.push(`${this.props.match.url}/managedRotation/${managedRotations[0].id}`)
+    //   return
+    // }
+    // if (memberRotations > 0) {
+    //   this.props.history.push(`${this.props.match.url}/memberRotation/${memberRotations[0].id}`)
+    //   return
+    // }
   }
 
   onLogoutHandler (evt) {
@@ -145,28 +174,46 @@ class Rotations extends React.Component {
     }
   }
 
+  onSetCurrentRotation (rotation) {
+    console.log('onSetCurrentRotation')
+  }
+
+  onRotationDeleteFactory (stateName) {
+    return (rotation) => {
+      console.log(`onRotationDeleteFactory: ${stateName}: deleting ${rotation.id}`)
+      let rotations = this.state[stateName].slice()
+      let idx = rotations.findIndex(rot => rot.id === rotation.id)
+      if (idx !== -1) {
+        rotations.splice(idx, 1)
+        this.setState({
+          [stateName]: rotations
+        }, () => {this.reDirect()})
+      }
+    }
+  }
+
   onRotationChangeFactory (stateName) {
     return (rotation) => {
-      console.log(`onRotationChangeFactory: ${stateName}`)
+      console.log(`onRotationChangeFactory: ${stateName}: ${rotation.id}, ${rotation.name}`)
       let rotations = this.state[stateName].slice()
-      for (let idx=0; idx<rotations.length; idx++) {
-        if (rotations[idx].id === rotation.id) {
-          rotations[idx] = rotation
-          this.setState({
-            [stateName]: rotations
-          })
-          return
-        }
+      let idx = rotations.findIndex(rot => {rot.id === rotation.id})
+      if (idx === -1) {
+        // this means we've added a new rotation
+        rotations.unshift(rotation)
+        this.setState({
+          [stateName]: rotations
+        }, () => {this.reDirect()})
+      } else {
+        // this means we've updated an existing rotation
+        rotations[idx] = rotation
+        this.setState({
+          [stateName]: rotations
+        })
       }
-      rotations.push(rotation)
-      this.setState({
-        [stateName]: rotations
-      })
     }
   }
 
   render () {
-    console.log(`Rotations.render`)
     let rotationDropDown = null
     if (this.state.managedRotations.length > 0 || this.state.memberRotations.length > 0) {
       rotationDropDown = (
@@ -211,7 +258,12 @@ class Rotations extends React.Component {
         <div className="container">
           <Route
             path={`${this.props.match.path}/managedRotation/:rotationId`}
-            render={(props) => <ManagedRotation {...props} rotations={this.state.managedRotations} onChange={this.onRotationChangeFactory('managedRotations')}/>}/>
+            render={
+              (props) => (
+                <ManagedRotation {...props}
+                  rotations={this.state.managedRotations}
+                  onChange={this.onRotationChangeFactory('managedRotations')}
+                  onDelete={this.onRotationDeleteFactory('managedRotations')}/>)}/>
           <Route
             path={`${this.props.match.path}/memberRotation/:rotationId`}
             render={(props) => <MemberRotation {...props} rotations={this.state.memberRotations} onChange={this.onRotationChangeFactory('memberRotations')}/>}/>

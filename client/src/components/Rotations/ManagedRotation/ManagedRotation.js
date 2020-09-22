@@ -57,7 +57,9 @@ class ManagedRotation extends React.Component {
   }
 
   setRotation(newRotation) {
+    console.log(`ManagedRotation.setRotation`)
     if (newRotation === undefined) {
+      console.log(`ManagedRotation.setRotation: newRotation is undefined`)
       return
     }
     if (! newRotation.started) {
@@ -78,21 +80,19 @@ class ManagedRotation extends React.Component {
   }
 
   setRotationFromProps(props) {
-    // console.log(`ManagedRotation.setRotationFromProps`)
-    // console.log(`ManagedRotation.setRotationFromProps: match=${JSON.stringify(thos.props.match, null, 2)}`)
-    // if (props.match === undefined) {
-    //   console.log(`ManagedRotation.setRotationFromProps: match is undefined`)
-    // }
     const rotationId = this.props.match.params.rotationId
-    if (this.props.rotations === undefined) {
-      // this means we have to GET the rotation
-      getRotation(rotationId)
-        .then(resp => resp.json())
-        .then(rot => this.setRotation(rot))
-    } else {
-      let rotation = this.props.rotations.find(rot => rot.id === rotationId)
-      this.setRotation(rotation)
-    }
+    let rotation = this.props.rotations.find(rot => rot.id === rotationId)
+    this.setRotation(rotation)
+
+    // if (this.props.rotations === undefined) {
+    //   // this means we have to GET the rotation
+    //   getRotation(rotationId)
+    //     .then(resp => resp.json())
+    //     .then(rot => this.setRotation(rot))
+    // } else {
+    //   let rotation = this.props.rotations.find(rot => rot.id === rotationId)
+    //   this.setRotation(rotation)
+    // }
   }
 
   async componentDidMount () {
@@ -101,10 +101,15 @@ class ManagedRotation extends React.Component {
 
   async componentDidUpdate(prevProps) {
     if (prevProps.match.params.rotationId !== this.props.match.params.rotationId) {
+      console.log(`ManagedRotation.componentDidUpdate: rotationIds are different`)
       await this.setRotationFromProps()
+      return
     }
     if (prevProps.rotations.length !== this.props.rotations.length) {
+      // means we either added a rotation or we simply got them from the server
+      console.log(`ManagedRotation.componentDidUpdate: lengths are different: prev length=${prevProps.rotations.length}, this length=${this.props.rotations.length}`)
       await this.setRotationFromProps()
+      return
     }
     if (this.props.rotations.length > 0) {
       const rotationId = this.props.match.params.rotationId
@@ -112,10 +117,16 @@ class ManagedRotation extends React.Component {
       let prevRotation = prevProps.rotations.find(rot => rot.id === rotationId)
       if (rotation !== undefined && prevRotation !== undefined) {
         if (rotation.started !== prevRotation.started) {
+          // testing whether we started our rotation
           this.setRotation(rotation)
+          return
         }
       }
+      if (rotation === undefined) {
+        console.log(`ManagedRotation.componentDidUpdate: rotation is gone!`)
+      }
     }
+
 
   }
 
@@ -163,13 +174,15 @@ class ManagedRotation extends React.Component {
   }
 
   render() {
+    // console.log(`ManagedRotation.render`)
     // console.log(`ManagedRotation.render: match=${JSON.stringify(this.props.match, null, 2)}`)
     let dashboard = null
-    let update = () => {return null}
+    let update = null
     let configuration = null
     let base = <Redirect to={`${this.props.match.url}/dashboard`}/>
 
     if (this.state.rotation != null) {
+      // console.log(`ManagedRotation.render: rotation !== null`)
       // console.log(`ManagedRotation.render: rotation.name=${this.state.rotation.name} rotation.started=${this.state.rotation.started}`)
       configuration = (
         <HighlightedTab match={this.props.match}>
@@ -177,28 +190,26 @@ class ManagedRotation extends React.Component {
         </HighlightedTab>
       )
       if (this.state.rotation.started) {
-        console.log(`ManagedRotation.render: ${this.state.rotation.name} not started`)
+        // console.log(`ManagedRotation.render: ${this.state.rotation.name} started`)
         dashboard = (
           <HighlightedTab match={this.props.match}>
             <Dashboard tilesPerRow={4} onUserPaidChange={this.onUserPaidChange} {...this.state}/>
           </HighlightedTab>
         )
-        // update = props => <Redirect to={`${this.props.match.url}/dashboard`}/>
         update = <Redirect to={`${this.props.match.url}/dashboard`}/>
       } else {
-        console.log(`ManagedRotation.render: ${this.state.rotation.name} not started`)
+        // console.log(`ManagedRotation.render: ${this.state.rotation.name} not started`)
         dashboard = <Redirect to={`${this.props.match.url}/update`}/>
-        // update = props => <CreateUpdateRotation {...props} rotation={this.state.rotation} onChange={this.props.onChange}/>
-        update = <UpdateRotation rotation={this.state.rotation} onChange={this.props.onChange}/>
+        update = <UpdateRotation rotation={this.state.rotation} onChange={this.props.onChange} onDelete={this.props.onDelete}/>
         base = <Redirect to={`${this.props.match.url}/update`}/>
       }
     }
 
     if (this.props.match.params.rotationId === 'create') {
+      console.log(`ManagedRotation.render: setting base to CreateRotation`)
       base = <CreateRotation onChange={this.props.onChange}/>
     }
 
-    // console.log(`ManagedRotation.render: ${JSON.stringify(base, null, 2)}`)
     return (
       <div>
         <Route path={`${this.props.match.path}/dashboard`}>
@@ -207,7 +218,6 @@ class ManagedRotation extends React.Component {
         <Route path={`${this.props.match.path}/configuration`}>
           {configuration}
         </Route>
-        {/*// <Route path={`${this.props.match.path}/update`} render={update}/>*/}
         <Route path={`${this.props.match.path}/update`}>
           {update}
         </Route>

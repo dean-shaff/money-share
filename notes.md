@@ -14,6 +14,11 @@ TODO:
 - list view for Dashboard Activity area
 - On landing page the sign up/login buttons go away if the viewport gets below a certain size. This is not okay!
 
+### 22/09/2020
+
+App is due today.
+
+
 ### 21/09/2020
 
 I've got today and tomorrow to finish this up. Here's what's on for today:
@@ -35,7 +40,7 @@ Routing:
 - /rotations -> Rotations.js
   - if managedRotations present redirects to /managedRotation/{id}/dashboard
   - OR if managedRotations not present but memberRotations present redirects to /memberRotation/{id}/dashboard
-  - OR if managedRotations not present AND memberRotations not present redirects to /memberRotation/create 
+  - OR if managedRotations not present AND memberRotations not present redirects to /memberRotation/create
 - /managedRotation/{id}/dashboard -> ManagedRotation/Dashboard.js
 - /managedRotation/{id}/configuration -> ManagedRotation/Configuration.js
 - /managedRotation/create -> ManagedRotation/CreateUpdateRotation.js

@@ -96,7 +96,7 @@ export const getRotationCycleInfo = function (rotation, todayFunction) {
 }
 
 export const computeMembersPaid = function (rotation) {
-
+  console.log(`util.computeMembersPaid`)
   const dateCompare = (a, b) => {
     let dateA = DateTime.fromISO(a.datePaid)
     let dateB = DateTime.fromISO(b.datePaid)
@@ -202,6 +202,13 @@ export const updateRotation = function (rotationId, options) {
     headers: {
       'Content-Type': 'application/json'
     }
+  })
+}
+
+export const deleteRotation = function (rotationId) {
+  console.log(`util.deleteRotation: ${rotationId}`)
+  return authFetch(`/api/rotation/${rotationId}`, {
+    method: 'DELETE'
   })
 }
 

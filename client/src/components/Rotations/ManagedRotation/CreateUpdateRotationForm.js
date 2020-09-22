@@ -11,10 +11,25 @@ class CreateUpdateRotationForm extends React.Component {
   render () {
     let startButton = null
     if (this.props.onStartClick !== undefined) {
+      // console.log(`CreateUpdateRotationForm: creating Start button`)
       startButton = (
+      <div className="field is-expanded">
         <div className="control">
-          <button className="button is-warning" onClick={this.props.onStartClick}>Start Rotation!</button>
+          <button className="button is-fullwidth is-warning" onClick={this.props.onStartClick}>Start Rotation!</button>
         </div>
+      </div>
+      )
+    }
+
+    let deleteButton = null
+    if (this.props.onDeleteClick !== undefined) {
+      // console.log(`CreateUpdateRotationForm: creating Delete button`)
+      deleteButton = (
+      <div className="field is-expanded">
+        <div className="control">
+          <button className="button is-fullwidth is-danger" onClick={this.props.onDeleteClick}>Delete Rotation</button>
+        </div>
+      </div>
       )
     }
 
@@ -39,12 +54,13 @@ class CreateUpdateRotationForm extends React.Component {
         <InputField type="text" onChange={this.props.onInputChange} name="cycleAmount" value={this.props.cycleAmount} label="Cycle Payment" icon={faDollarSign}></InputField>
         <InputField type="number" onChange={this.props.onInputChange} name="nonPayingCycles" value={this.props.nonPayingCycles} label="Nonpaying Cycles" icon={faInfoCircle}></InputField>
         <InputField type="number" onChange={this.props.onInputChange} name="membersPerCycle" value={this.props.membersPerCycle} label="Members per Cycle" icon={faUser}></InputField>
-        <div className="field is-grouped is-expanded">
+        <div className="field is-expanded">
           <div className="control">
-            <button className="button is-primary" onClick={this.props.onSaveClick}>Save</button>
+            <button className="button is-primary is-fullwidth" onClick={this.props.onSaveClick}>Save</button>
           </div>
-          {startButton}
         </div>
+        {startButton}
+        {deleteButton}
         <div className='has-text-danger'>{this.props.errorMsg}</div>
       </div>
     )

@@ -6,7 +6,7 @@ import { DateTime } from 'luxon'
 
 import InputField from './../../InputField.js'
 import CreateUpdateRotationForm from "./CreateUpdateRotationForm"
-import { authFetch, getDefault, getTokenUserInfo, createRotation, updateRotation } from "./../../../util.js"
+import { authFetch, getDefault, getTokenUserInfo, createRotation, updateRotation, deleteRotation } from "./../../../util.js"
 
 import "./UpdateRotation.css"
 import "./../../User.css"
@@ -233,7 +233,8 @@ class UpdateRotation extends React.Component {
       'nonPayingCycles': '',
       'membersPerCycle': '',
       'name': '',
-      'errorMsg': ''
+      'errorMsg': '',
+      'deleteModalClass': ''
     }
     this.onSelect = this.onSelect.bind(this)
     this.onAdd = this.onAdd.bind(this)
@@ -241,6 +242,9 @@ class UpdateRotation extends React.Component {
     this.onInputChange = this.onInputChange.bind(this)
     this.onSaveClick = this.onSaveClick.bind(this)
     this.onStartClick = this.onStartClick.bind(this)
+    this.onDeleteClick = this.onDeleteClick.bind(this)
+    this.closeDeleteModal = this.closeDeleteModal.bind(this)
+    this.openDeleteModal = this.openDeleteModal.bind(this)
   }
 
   componentDidMount(){
@@ -305,37 +309,36 @@ class UpdateRotation extends React.Component {
       'name': this.state.name
     })
 
-    if (this.props.rotation === null) {
-      // means we're creating a totally new rotation
-      const userInfo = getTokenUserInfo()
-      const createPayload = Object.assign({'managerId': userInfo.id}, createUpdatePayload)
-      return createRotation(createPayload)
-        .then(resp => {
-          if (! resp.ok) {
-            this.setState({errorMsg: 'Error when creating new Rotation'})
-          } else {
-            return resp.json()
-          }
-        })
-        .then(data => {this.setStateFromRotation(data); return data})
-    } else {
-      // updating and existing rotation
-      return updateRotation(this.props.rotation.id, createUpdatePayload)
-        .then(resp => {
-          if (! resp.ok) {
-            this.setState({errorMsg: 'Error when updating rotation'})
-          } else {
-            return resp.json()
-          }
-        })
-        .then(data => {this.setStateFromRotation(data); return data})
-    }
+    return updateRotation(this.props.rotation.id, createUpdatePayload)
+      .then(resp => {
+        if (! resp.ok) {
+          this.setState({errorMsg: 'Error when updating rotation'})
+        } else {
+          return resp.json()
+        }
+      })
+      .then(data => {this.setStateFromRotation(data); return data})
   }
 
   async onStartClick (evt) {
     console.log(`onStartClick`)
     let data = await this.save({started: true, dateStarted: DateTime.local()})
     this.props.onChange(data)
+  }
+
+  onDeleteClick (evt) {
+    this.props.onDelete(this.props.rotation)    
+    // deleteRotation(this.props.rotation.id)
+    //   .then(resp => {
+    //     if (! resp.ok) {
+    //       this.setState({
+    //         'errorMsg': `Error deleting rotation ${this.state.name}`
+    //       })
+    //     } else {
+    //       this.props.onDelete(this.props.rotation)
+    //     }
+    //   })
+    this.closeDeleteModal()
   }
 
   onSelect (evt) {
@@ -376,6 +379,19 @@ class UpdateRotation extends React.Component {
     })
   }
 
+  closeDeleteModal () {
+    this.setState({
+      'deleteModalClass': ''
+    })
+  }
+
+  openDeleteModal () {
+    this.setState({
+      'deleteModalClass': 'is-active'
+    })
+  }
+
+
   render () {
     // console.log(`UpdateRotation.render: ${this.props.rotation === null}`)
     let memberDisplay = null
@@ -405,12 +421,31 @@ class UpdateRotation extends React.Component {
               onInputChange={this.onInputChange}
               onSaveClick={this.onSaveClick}
               onStartClick={this.onStartClick}
+              onDeleteClick={this.openDeleteModal}
             />
           </div>
           <div className="column is-one-half">
             <h5 className="title is-5">Members</h5>
             {memberDisplay}
             <AddMember onAdd={this.onAdd}/>
+          </div>
+        </div>
+        <div className={`modal ${this.state.deleteModalClass}`}>
+          <div className="modal-background" onClick={this.closeDeleteModal}></div>
+          <div className="modal-card">
+            <header className="modal-card-head">
+              <p className="modal-card-title">Delete {this.state.name}</p>
+              <button className="delete" aria-label="close" onClick={this.closeDeleteModal}></button>
+            </header>
+            <section className="modal-card-body">
+              <div className="content">
+                <p>Are you sure you want to delete this rotation?</p>
+              </div>
+            </section>
+            <footer className="modal-card-foot">
+              <button className="button is-danger" onClick={this.onDeleteClick}>Delete</button>
+              <button className="button" onClick={this.closeDeleteModal}>Cancel</button>
+            </footer>
           </div>
         </div>
       </div>

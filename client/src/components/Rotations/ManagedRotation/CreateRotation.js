@@ -18,12 +18,11 @@ class CreateRotation extends React.Component {
     this.state = {
       'cycleDurationUnits': cycleDurationUnits,
       'cycleDurationUnit': cycleDurationUnits[0],
-      'members': [],
-      'cycleDuration': '',
-      'cycleAmount': '',
-      'nonPayingCycles': '',
-      'membersPerCycle': '',
-      'name': '',
+      'cycleDuration': '14',
+      'cycleAmount': '100',
+      'nonPayingCycles': '1',
+      'membersPerCycle': '1',
+      'name': 'Created Rotation',
       'errorMsg': ''
     }
     this.onSelect = this.onSelect.bind(this)
@@ -32,23 +31,24 @@ class CreateRotation extends React.Component {
   }
 
   onSaveClick () {
+    if (this.state.name === '') {
+      this.setState({
+        [errorMsg]: 'Please make sure your rotation has a name before saving!'
+      })
+      return
+    }
     this.save()
   }
 
-  async save(options) {
-    if (options === undefined) {
-      options = {}
-    }
-    // console.log(`CreateRotation.save: members.length=${this.state.members.length}`)
-    const createUpdatePayload = Object.assign(options, {
-      'memberIds': this.state.members.map(mem => mem.id),
+  async save() {
+    const createUpdatePayload = {
       'cycleDuration': this.state.cycleDuration,
       'cycleDurationUnit': this.state.cycleDurationUnit.toLowerCase(),
       'cycleAmount': this.state.cycleAmount,
       'nonPayingCycles': this.state.nonPayingCycles,
       'membersPerCycle': this.state.membersPerCycle,
       'name': this.state.name
-    })
+    }
 
     const userInfo = getTokenUserInfo()
     const createPayload = Object.assign({'managerId': userInfo.id}, createUpdatePayload)
