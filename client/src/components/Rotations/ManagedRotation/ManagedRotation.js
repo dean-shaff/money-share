@@ -4,7 +4,8 @@ import { DateTime } from 'luxon'
 
 import Dashboard from './Dashboard.js'
 import Configuration from './Configuration.js'
-import CreateUpdateRotation from './CreateUpdateRotation.js'
+import UpdateRotation from './UpdateRotation.js'
+import CreateRotation from './CreateRotation.js'
 import {
   deleteNote,
   createNote,
@@ -168,11 +169,6 @@ class ManagedRotation extends React.Component {
     let configuration = null
     let base = <Redirect to={`${this.props.match.url}/dashboard`}/>
 
-    if (this.props.match.params.rotationId === 'create') {
-      base = <CreateUpdateRotation rotation={null} onChange={this.props.onChange}/>
-    }
-
-
     if (this.state.rotation != null) {
       // console.log(`ManagedRotation.render: rotation.name=${this.state.rotation.name} rotation.started=${this.state.rotation.started}`)
       configuration = (
@@ -193,10 +189,15 @@ class ManagedRotation extends React.Component {
         console.log(`ManagedRotation.render: ${this.state.rotation.name} not started`)
         dashboard = <Redirect to={`${this.props.match.url}/update`}/>
         // update = props => <CreateUpdateRotation {...props} rotation={this.state.rotation} onChange={this.props.onChange}/>
-        update = <CreateUpdateRotation rotation={this.state.rotation} onChange={this.props.onChange}/>
+        update = <UpdateRotation rotation={this.state.rotation} onChange={this.props.onChange}/>
         base = <Redirect to={`${this.props.match.url}/update`}/>
       }
     }
+
+    if (this.props.match.params.rotationId === 'create') {
+      base = <CreateRotation onChange={this.props.onChange}/>
+    }
+
     // console.log(`ManagedRotation.render: ${JSON.stringify(base, null, 2)}`)
     return (
       <div>

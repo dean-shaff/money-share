@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { DateTime } from 'luxon'
 
 import InputField from './../../InputField.js'
+import CreateUpdateRotationForm from "./CreateUpdateRotationForm"
 import { authFetch, getDefault, getTokenUserInfo, createRotation, updateRotation } from "./../../../util.js"
 
 import "./CreateUpdateRotation.css"
@@ -397,35 +398,18 @@ class CreateUpdateRotation extends React.Component {
       <h4 className="title is-4">{titleText}</h4>
         <div className="columns">
           <div className="column is-one-quarter">
-            <InputField type="text" name="name" label="Name" value={this.state.name
-            } onChange={this.onInputChange} icon={faInfoCircle}></InputField>
-            <div className="field">
-              <label className="label">Duration</label>
-              <div className="field has-addons">
-                <div className="control is-expanded">
-                  <InputField type="text" onChange={this.onInputChange} name="cycleDuration" value={this.state.cycleDuration} icon={faClock}></InputField>
-                </div>
-                <div className="control">
-                  <span className="select" onChange={this.onSelect} value={this.state.cycleDurationUnit}>
-                    <select>
-                      {this.state.cycleDurationUnits.map(unit => <option key={unit} value={unit}>{unit}</option>)}
-                    </select>
-                  </span>
-                </div>
-              </div>
-            </div>
-            <InputField type="text" onChange={this.onInputChange} name="cycleAmount" value={this.state.cycleAmount} label="Cycle Payment" icon={faDollarSign}></InputField>
-            <InputField type="number" onChange={this.onInputChange} name="nonPayingCycles" value={this.state.nonPayingCycles} label="Nonpaying Cycles" icon={faInfoCircle}></InputField>
-            <InputField type="number" onChange={this.onInputChange} name="membersPerCycle" value={this.state.membersPerCycle} label="Members per Cycle" icon={faUser}></InputField>
-            <div className="field is-grouped is-expanded">
-              <div className="control">
-                <button className="button is-primary" onClick={this.onSaveClick}>Save</button>
-              </div>
-              <div className="control">
-                <button className="button is-warning" onClick={this.onStartClick}>Start Rotation!</button>
-              </div>
-            </div>
-            <div className='has-text-danger'>{this.state.errorMsg}</div>
+            <CreateUpdateRotationForm
+              cycleDurationUnits={this.state.cycleDurationUnits}
+              cycleDuration={this.state.cycleDuration}
+              cycleAmount={cycleAmount}
+              nonPayingCycles={nonPayingCycles}
+              membersPerCycle={membersPerCycle}
+              name={this.state.name}
+              errorMsg={this.state.errorMsg}
+              onInputChange={this.onInputChange}
+              onSaveClick={this.onSaveClick}
+              onStartClick={this.onStartClick}
+            />
           </div>
           <div className="column is-one-half">
             <h5 className="title is-5">Members</h5>
