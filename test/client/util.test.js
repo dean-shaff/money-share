@@ -20,7 +20,7 @@ describe('getRotationCycleInfo', () => {
 
     expect(obj.totalCycles).to.equal(12)
     expect(obj.cycleNumber).to.equal(3)
-    expect(obj.daysRemaining).to.equal(6)
+    expect(obj.daysRemaining).to.equal(7)
   })
 
   test('membersPerCycle equal to 5', () => {
@@ -36,7 +36,7 @@ describe('getRotationCycleInfo', () => {
 
     expect(obj.totalCycles).to.equal(12)
     expect(obj.cycleNumber).to.equal(1)
-    expect(obj.daysRemaining).to.equal(20)
+    expect(obj.daysRemaining).to.equal(7)
   })
 
   test('using months instead of days', () => {
@@ -51,7 +51,7 @@ describe('getRotationCycleInfo', () => {
     let obj = getRotationCycleInfo(rotation)
     expect(obj.totalCycles).to.equal(12)
     expect(obj.cycleNumber).to.equal(1)
-    expect(obj.daysRemaining).to.equal(17)
+    expect(obj.daysRemaining).to.equal(12)
   })
 
   test('using weeks instead of days', () => {
@@ -66,8 +66,22 @@ describe('getRotationCycleInfo', () => {
     let obj = getRotationCycleInfo(rotation)
     expect(obj.totalCycles).to.equal(12)
     expect(obj.cycleNumber).to.equal(3)
-    expect(obj.daysRemaining).to.equal(6)
+    expect(obj.daysRemaining).to.equal(7)
+  })
 
+  test('cycle starts today', () => {
+    let dateStarted = DateTime.local()
+    const rotation = {
+      'dateStarted': dateStarted,
+      'members': new Array(60),
+      'cycleDuration': 28,
+      'cycleDurationUnit': 'days',
+      'membersPerCycle': 5,
+    }
+    let obj = getRotationCycleInfo(rotation)
+    expect(obj.totalCycles).to.equal(12)
+    expect(obj.cycleNumber).to.equal(0)
+    expect(obj.daysRemaining).to.equal(27)
   })
 
 

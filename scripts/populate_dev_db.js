@@ -53,7 +53,7 @@ let rotationParams = [
     nonPayingCycles: 2,
     membersPerCycle: 1,
     started: true,
-    dateStarted: now.minus({days: 7})
+    dateStarted: now
   },
   {
     name: "My Second Rotation",

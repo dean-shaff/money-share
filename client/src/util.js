@@ -95,7 +95,8 @@ export const getRotationCycleInfo = function (rotation, todayFunction) {
 
   // let cycleNumber = Math.floor(daysSinceStart/cycleDuration)
   let cycleStartDate = dateStartedObj.plus({[cycleDurationUnit]: cycleNumber*cycleDuration})
-  let daysRemaining = Math.floor(today.diff(cycleStartDate, 'days').toObject().days)
+  let nextCycleStartDate = dateStartedObj.plus({[cycleDurationUnit]: (cycleNumber+1)*cycleDuration})
+  let daysRemaining = Math.floor(nextCycleStartDate.diff(today, 'days').toObject().days)
 
   console.log(`util.getRotationCycleInfo: cycleNumber=${cycleNumber}, totalCycles=${totalCycles}, daysRemaining=${daysRemaining}`)
 
