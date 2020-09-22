@@ -84,6 +84,21 @@ describe("rotation", () => {
     expect(newRotation.cycleDuration).to.equal(14)
   })
 
+  test('POST /api/rotation with existing details', async () => {
+    const res = await inject({
+      method: 'POST',
+      url: '/api/rotation',
+      payload: {
+        name: "My Rotation",
+        cycleAmount: 100,
+        cycleDuration: 14,
+        managerId: users[0].id,
+        memberIds: users.map(user => user.id)
+      }
+    })
+    expect(res.statusCode).to.equal(400)
+  })
+
   test("PUT /api/rotation/{id}", async () => {
     const res = await inject({
       method: 'PUT',

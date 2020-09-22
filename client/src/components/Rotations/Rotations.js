@@ -48,7 +48,7 @@ const RotationDropDown = ({match, managedRotations, memberRotations, currentRota
 
       if (rot.managed) {
         if (rot.started) {
-          return <Link className={className} key={rot.id} to={`${match.url}/managedRotation/${rot.id}/dashboard`} onClick={onClick}>{name}</Link>
+          return <Link className={className} key={rot.id} to={`${match.url}/managedRotation/${rot.id}`} onClick={onClick}>{name}</Link>
         } else {
           return <Link className={className} key={rot.id} to={`${match.url}/managedRotation/${rot.id}/update`} onClick={onClick}>{name}</Link>
         }

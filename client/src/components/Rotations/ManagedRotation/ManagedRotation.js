@@ -124,6 +124,10 @@ class ManagedRotation extends React.Component {
       }
     }
 
+    if (rotationId === 'create') {
+      base = <CreateRotation onChange={this.props.onChange}/>
+    }
+
     return (
       <div>
         <Route path={`${this.props.match.path}/dashboard`}>

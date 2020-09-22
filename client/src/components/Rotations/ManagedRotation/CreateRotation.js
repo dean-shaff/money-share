@@ -18,11 +18,11 @@ class CreateRotation extends React.Component {
     this.state = {
       'cycleDurationUnits': cycleDurationUnits,
       'cycleDurationUnit': cycleDurationUnits[0],
-      'cycleDuration': '14',
-      'cycleAmount': '100',
-      'nonPayingCycles': '1',
-      'membersPerCycle': '1',
-      'name': 'Created Rotation',
+      'cycleDuration': '',
+      'cycleAmount': '',
+      'nonPayingCycles': '',
+      'membersPerCycle': '',
+      'name': '',
       'errorMsg': ''
     }
     this.onSelect = this.onSelect.bind(this)
@@ -53,14 +53,17 @@ class CreateRotation extends React.Component {
     const userInfo = getTokenUserInfo()
     const createPayload = Object.assign({'managerId': userInfo.id}, createUpdatePayload)
     return createRotation(createPayload)
-      .then(resp => {
-        if (! resp.ok) {
-          this.setState({errorMsg: 'Error when creating new Rotation'})
-        } else {
-          return resp.json()
-        }
-      })
+      .then(resp => resp.json())
       .then(data => this.props.onChange(data))
+      .catch(err => {
+        let msg = err.message
+        if (err.message === '400') {
+          msg = 'A rotation with this name already exists!'
+        }
+        this.setState({
+          'errorMsg': msg
+        })
+      })
   }
 
   onSelect (evt) {

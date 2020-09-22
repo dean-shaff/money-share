@@ -35,6 +35,10 @@ const createUser = async (options) => {
   return (await axios.post(`${baseURL}/api/user`, options)).data
 }
 
+const createRotation = async (options) => {
+  return (await axios.post(`${baseURL}/api/rotation`, options)).data
+}
+
 const getOrCreateUser = async (options) => {
   const query = qs.stringify({usernames: [options.username]})
   let user = (await axios.get(`${baseURL}/api/user/?${query}`)).data
@@ -66,8 +70,25 @@ const main = async () => {
   })
   axios.defaults.headers.common['Authorization'] = token.data.id_token
 
-  let user = await getOrCreateUser(users[0])
-  console.log(user)
+  const members = await Promise.all(users.map(info => getOrCreateUser(info)))
+
+  const rotation = {
+    managerId: members[0].id,
+    memberIds: members.map(mem => mem.id),
+    name: "Brandi's Rotation",
+    cycleAmount: 100,
+    cycleDuration: 28,
+    cycleDurationUnit: 'days',
+    nonPayingCycles: 2,
+    membersPerCycle: 5,
+    started: false
+  }
+  try {
+    const managedRotation = await createRotation(rotation)
+    console.log(managedRotation)
+  } catch (err) {
+    console.log(`Error making rotation: ${JSON.stringify(err, null, 2)}`)
+  }
 
 
   // const query = qs.stringify({ usernames: ['deanshaff'] })
