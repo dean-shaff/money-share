@@ -5,6 +5,9 @@ const { DateTime } = require('luxon')
 
 const { init } = require("./../lib/server.js")
 const controllers = require("./../lib/controllers")
+const settings = require('./../settings.js')
+
+console.log(settings.env)
 
 const dbFilePath = path.join(__dirname, "..", "db", "db.sqlite")
 
