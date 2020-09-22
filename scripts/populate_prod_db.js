@@ -51,7 +51,7 @@ const main = async () => {
 
   const contents = fs.readFileSync(filePath, 'utf8')
   const parsed = parseNames(contents)
-  console.log(parsed.length)
+
   for (let idx=0; idx<parsed.length; idx++) {
     users.push({
       name: parsed[idx],
