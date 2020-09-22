@@ -225,7 +225,7 @@ class Rotations extends React.Component {
             </a>
           </div>
         </div>
-        <div className="navbar-menu">
+        <div className="navbar-menu is-active">
           <div className="navbar-end">
             <div className="navbar-item has-dropdown is-hoverable on-top">
               <a className="navbar-link">{this.state.username}</a>
