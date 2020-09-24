@@ -32,6 +32,7 @@ const HighlightedTab = (props) => {
   const getLiClassName = getLiClassNameFactory(relativePath)
   return (
     <div className="container">
+      <h3 className="title is-3">{props.name}</h3>
       <div className="tabs is-medium is-boxed">
         <ul>
           <li className={getLiClassName("dashboard")}><Link to={`${props.match.url}/dashboard`}>Dashboard</Link></li>
@@ -163,7 +164,7 @@ class ManagedRotation extends React.Component {
       let computed = computeMembersPaid(rotation)
       if (rotation.started) {
         configuration = (props) => (
-          <HighlightedTab match={this.props.match}>
+          <HighlightedTab match={this.props.match} name={rotation.name}>
             <Configuration
               totalCycles={computed.totalCycles}
               rotation={computed.rotation}
@@ -173,7 +174,7 @@ class ManagedRotation extends React.Component {
         )
 
         dashboard = (props) => (
-          <HighlightedTab match={this.props.match}>
+          <HighlightedTab match={this.props.match} name={rotation.name}>
             <Dashboard
               tilesPerRow={4}
               onUserPaidChange={this.onUserPaidChangeFactory(rotation)}
@@ -186,6 +187,7 @@ class ManagedRotation extends React.Component {
         configuration = (props) => (<Redirect to={`${this.props.match.url}/update`}/>)
         update = props => (
           <UpdateRotation
+            onSetCurrentRotation={this.props.onSetCurrentRotation}
             rotation={computed.rotation}
             onChange={this.props.onChange}
             onDelete={this.props.onDelete} {...props}/>

@@ -123,6 +123,9 @@ class Rotations extends React.Component {
   getCurrentRotation (_managedRotations, _memberRotations) {
     const managedRotations = _managedRotations === undefined ? this.state.managedRotations: _managedRotations
     const memberRotations = _memberRotations === undefined ? this.state.memberRotations: _memberRotations
+    console.log(`Rotations.getCurrentRotation: managedRotations=${stringify(managedRotations.map(mem => mem.name))}`)
+    console.log(`Rotations.getCurrentRotation: memberRotations=${stringify(memberRotations.map(mem => mem.name))}`)
+
     if (managedRotations.length > 0) {
       return managedRotations[0]
     }
@@ -133,8 +136,8 @@ class Rotations extends React.Component {
   }
 
   reDirect () {
-    console.log('Rotations.reDirect')
     const currentRotation = this.state.currentRotation
+    console.log(`Rotations.reDirect: currentRotation.name=${currentRotation.name}`)
     if (currentRotation === null) {
       this.props.history.push(`${this.props.match.url}/managedRotation/create`)
       return
@@ -177,9 +180,10 @@ class Rotations extends React.Component {
           [stateName]: rotations
         }, () => {
           let currentRotation = this.getCurrentRotation()
+          console.log(`onRotationDeleteFactory: currentRotation.name=${currentRotation.name}`)
           this.setState({
             'currentRotation': currentRotation
-          }, this.reDirect())
+          }, () => {this.reDirect()})
         })
       }
     }
@@ -192,15 +196,21 @@ class Rotations extends React.Component {
       let idx = rotations.findIndex(rot => rot.id === rotation.id)
       if (idx === -1) {
         // this means we've added a new rotation
+        if (rotation.members === undefined) {
+          rotation.members = []
+        }
+        rotation.managed = true
         rotations.unshift(rotation)
         this.setState({
-          [stateName]: rotations
+          [stateName]: rotations,
+          'currentRotation': rotation
         }, () => {this.reDirect()})
       } else {
         // this means we've updated an existing rotation
         rotations[idx] = rotation
         this.setState({
-          [stateName]: rotations
+          [stateName]: rotations,
+          'currentRotation': rotation
         }) //, () => {this.props.history.push(`${this.props.match.url}/managedRotation/${rotation.id}/dashboard`)})
       }
     }

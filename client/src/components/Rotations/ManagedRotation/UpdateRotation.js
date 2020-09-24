@@ -288,6 +288,7 @@ class UpdateRotation extends React.Component {
   componentDidMount(){
     // console.log(`UpdateRotation.componentDidMount`)
     this.setStateFromRotation(this.props.rotation)
+    this.props.onSetCurrentRotation(this.props.rotation)
   }
 
   componentDidUpdate(prevProps) {
@@ -349,8 +350,18 @@ class UpdateRotation extends React.Component {
 
   async onStartClick (evt) {
     console.log(`UpdateRotation.StartClick`)
-    let data = await this.save({started: true, dateStarted: DateTime.local()})
-    this.props.onChange(data)
+    let nMembers = this.state.members.length
+    if (nMembers === 0) {
+      this.setState({errorMsg: 'Need at least one member to start the rotation!'})
+    } else {
+      let membersPerCycle = this.state.membersPerCycle
+      if (nMembers % membersPerCycle !== 0) {
+        this.setState({errorMsg: 'Number of members in rotation needs to be an integer multiple of members per cycle'})
+      } else {
+        let data = await this.save({started: true, dateStarted: DateTime.local()})
+        this.props.onChange(data)
+      }
+    }
   }
 
   onDeleteClick (evt) {

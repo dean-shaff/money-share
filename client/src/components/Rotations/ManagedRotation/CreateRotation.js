@@ -18,11 +18,11 @@ class CreateRotation extends React.Component {
     this.state = {
       'cycleDurationUnits': cycleDurationUnits,
       'cycleDurationUnit': cycleDurationUnits[0],
-      'cycleDuration': '',
-      'cycleAmount': '',
+      'cycleDuration': '28',
+      'cycleAmount': '100',
       'nonPayingCycles': 0,
       'membersPerCycle': 1,
-      'name': '',
+      'name': 'Rotation 1',
       'errorMsg': ''
     }
     this.onSelect = this.onSelect.bind(this)
