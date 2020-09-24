@@ -4,7 +4,12 @@ const settings = require('./../../settings.js')
 
 const site = settings[process.env.NODE_ENV].baseURL
 
+const username = 'deanshaff'
+const password = 'deanshaffpassword'
+
+
 describe('Money Share', () => {
+
   beforeAll(async () => {
     await page.goto(site)
   })

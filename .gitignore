@@ -2,3 +2,5 @@ node_modules/
 db/
 notes.md
 scripts/names.txt
+scripts/populate_prod_db.js
+*.png

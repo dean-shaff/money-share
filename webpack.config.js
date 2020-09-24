@@ -1,9 +1,11 @@
 const path = require("path");
 const webpack = require("webpack");
 
+const mode = process.env.NODE_ENV === 'production' ? 'production': 'development'
+
 module.exports = {
   entry: "./client/src/index.js",
-  mode: "development",
+  mode: mode,
   module: {
     rules: [
       {
