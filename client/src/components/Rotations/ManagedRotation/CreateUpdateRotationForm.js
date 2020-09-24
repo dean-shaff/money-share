@@ -40,7 +40,7 @@ class CreateUpdateRotationForm extends React.Component {
           <label className="label">Duration</label>
           <div className="field has-addons">
             <div className="control is-expanded">
-              <InputField type="text" onChange={this.props.onInputChange} name="cycleDuration" value={this.props.cycleDuration} icon={faClock}></InputField>
+              <InputField type="number" min={0} onChange={this.props.onInputChange} name="cycleDuration" value={this.props.cycleDuration} icon={faClock}></InputField>
             </div>
             <div className="control">
               <span className="select" onChange={this.props.onSelect} value={this.props.cycleDurationUnit}>
@@ -51,9 +51,9 @@ class CreateUpdateRotationForm extends React.Component {
             </div>
           </div>
         </div>
-        <InputField type="text" onChange={this.props.onInputChange} name="cycleAmount" value={this.props.cycleAmount} label="Cycle Payment" icon={faDollarSign}></InputField>
-        <InputField type="number" onChange={this.props.onInputChange} name="nonPayingCycles" value={this.props.nonPayingCycles} label="Nonpaying Cycles" icon={faInfoCircle}></InputField>
-        <InputField type="number" onChange={this.props.onInputChange} name="membersPerCycle" value={this.props.membersPerCycle} label="Members per Cycle" icon={faUser}></InputField>
+        <InputField type="number" min={0} onChange={this.props.onInputChange} name="cycleAmount" value={this.props.cycleAmount} label="Cycle Payment" icon={faDollarSign}/>
+        <InputField type="number" min={0} onChange={this.props.onInputChange} name="nonPayingCycles" value={this.props.nonPayingCycles} label="Nonpaying Cycles" icon={faInfoCircle}/>
+        <InputField type="number" min={1} onChange={this.props.onInputChange} name="membersPerCycle" value={this.props.membersPerCycle} label="Members per Cycle" icon={faUser}/>
         <div className="field is-expanded">
           <div className="control">
             <button className="button is-primary is-fullwidth" onClick={this.props.onSaveClick}>Save</button>

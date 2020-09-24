@@ -20,8 +20,8 @@ class CreateRotation extends React.Component {
       'cycleDurationUnit': cycleDurationUnits[0],
       'cycleDuration': '',
       'cycleAmount': '',
-      'nonPayingCycles': '',
-      'membersPerCycle': '',
+      'nonPayingCycles': 0,
+      'membersPerCycle': 1,
       'name': '',
       'errorMsg': ''
     }
