@@ -155,10 +155,10 @@ describe("rotation", () => {
     expect(res.statusCode).to.equal(200)
     const rotations = res.result
     expect(rotations[0].managerId).to.equal(manager.id)
-    expect((await rotations[0].hasMember(users[1]))).to.equal(true)
+    expect(rotations[0].managedId).to.not.equal(users[1].id)
     let rotation = JSON.parse(JSON.stringify(rotations[0]))
-    expect(rotation.members.length).to.equal(5)
-    // console.log(`rotations[0].countMembers()=${(await rotations[0].countMembers())}`)
+    let idx = rotation.members.findIndex(mem => mem.id === users[1].id)
+    expect(idx).to.not.equal(-1)
   })
 
 })

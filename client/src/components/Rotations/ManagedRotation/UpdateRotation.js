@@ -57,7 +57,7 @@ class AddMember extends React.Component {
     queryObj[this.state.searchType.toLowerCase()] = this.state.searchText
     const query = qs.stringify(queryObj)
     console.log(`onClick: ${query}`)
-    authFetch(`/api/user/search/?${query}`)
+    authFetch(`/api/user/?${query}`)
       .then(resp => resp.json())
       .then(data => {
         if (data.length === 0) {

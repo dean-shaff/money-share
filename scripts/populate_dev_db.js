@@ -33,7 +33,8 @@ for (let idx=0; idx<10; idx++) {
     name: `name_${idx}`,
     username: `username_${idx}`,
     email: `${idx}@address.com`,
-    password: 'password'
+    password: 'password',
+    autoCreated: true
   })
 }
 

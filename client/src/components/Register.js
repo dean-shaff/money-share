@@ -1,53 +1,93 @@
 import React, { useState } from "react"
-import { faUser, faLock, faAt } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faLock, faAt, faPhone } from '@fortawesome/free-solid-svg-icons'
 
 import LoginRegisterContainer from "./LoginRegisterContainer.js"
 import InputField from "./InputField.js"
 
 
-const Register = ({ history }) => {
 
-  const [msg, setMsg] = useState('')
 
-  const onSubmitHandler = function (evt) {
-    evt.preventDefault()
-    const formData = new FormData(evt.target)
-    fetch('/register', {
-      method: "POST",
-      body: formData
-    })
-    .then(resp => resp.json())
-    .then(data => {
-      console.log(`Register.onSubmitHandler: `)
-      if ('message' in data) {
-        setMsg(data.message)
-        return
-      }
-      if (data.id_token !== undefined) {
-        console.log('Register.onSubmitHandler: settings localStorage, directing to /dashboard')
-        localStorage.setItem('token', data.id_token)
-        history.push('/rotations')
-      }
+class Register extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      username: 'username_0',
+      name: 'new name_0',
+      email: '0@address.com',
+      phone: '',
+      password: '',
+      msg: ''
+    }
+    this.onInputChange = this.onInputChange.bind(this)
+    this.onClick = this.onClick.bind(this)
+  }
+
+  onInputChange (evt) {
+    const name = evt.target.name
+    const value = evt.target.value
+    this.setState({
+      [name]: value
     })
   }
 
 
-  return (
-    <form onSubmit={onSubmitHandler}>
+  onClick (evt) {
+    if (this.state.username === '' && this.state.name === '') {
+      this.setState({
+        msg: 'Please specify either a name or a username'
+      })
+      return
+    }
+    if (this.state.password === '') {
+      this.setState({
+        msg: 'Please specify a password'
+      })
+      return
+    }
+    const {msg, ...body} = this.state
+    fetch('/register', {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(resp => resp.json())
+    .then(data => {
+      if (data.message !== undefined) {
+        this.setState({msg: data.message})
+        return
+      }
+      if (data.id_token !== undefined) {
+        console.log('Register.onSubmitHandler: settings localStorage, directing to /rotations')
+        localStorage.setItem('token', data.id_token)
+        this.props.history.push('/rotations')
+        return
+      }
+    })
+    .catch(err => {
+      this.setState({msg: err.message})
+    })
+  }
+
+
+  render() {
+    return (
       <LoginRegisterContainer title="Register">
-        <InputField type="text" name="username" placeholder="Username" icon={faUser}></InputField>
-        <InputField type="text" name="name" placeholder="Name" icon={faUser}></InputField>
-        <InputField type="email" name="email" placeholder="Email" icon={faAt}></InputField>
-        <InputField type="password" name="password" placeholder="Password" icon={faLock}></InputField>
+        <InputField value={this.state.username} onChange={this.onInputChange} type="text" name="username" placeholder="Username" icon={faUser}></InputField>
+        <InputField value={this.state.name} onChange={this.onInputChange} type="text" name="name" placeholder="Name" icon={faUser}></InputField>
+        <InputField value={this.state.email} onChange={this.onInputChange} type="email" name="email" placeholder="Email" icon={faAt}></InputField>
+        <InputField value={this.state.phone} onChange={this.onInputChange} type="tel" name="phone" placeholder="Phone Number" icon={faPhone}></InputField>
+        <InputField value={this.state.password} onChange={this.onInputChange} type="password" name="password" placeholder="Password" icon={faLock}></InputField>
         <div className="field">
           <div className="control">
-            <button className="button is-link is-fullwidth">Submit</button>
+            <button className="button is-link is-fullwidth" onClick={this.onClick}>Submit</button>
           </div>
         </div>
-        <div className='has-text-danger'>{msg}</div>
+        <div className='has-text-danger'>{this.state.msg}</div>
       </LoginRegisterContainer>
-    </form>
-  )
+    )
+  }
 }
 
 

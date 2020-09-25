@@ -62,15 +62,29 @@ const RotationDropDown = ({match, managedRotations, memberRotations, currentRota
     }
   }
 
-  let managedRotationElem = managedRotations.map(mapFactory(true))
-  let memberRotationElem = memberRotations.map(mapFactory(false))
+  let managed = null
+  if (managedRotations.length > 0) {
+    managed = (
+      <>
+        <label className="navbar-item"><strong>Managed Rotations</strong></label>
+        {managedRotations.map(mapFactory(true))}
+      </>
+    )
+  }
+  let member = null
+  if (memberRotations.length > 0) {
+    member = (
+      <>
+        <label className="navbar-item"><strong>Member Rotations</strong></label>
+        {memberRotations.map(mapFactory(false))}
+      </>
+    )
+  }
 
   return (
     <div>
-      <label className="navbar-item"><strong>Managed Rotations</strong></label>
-        {managedRotationElem}
-      <label className="navbar-item"><strong>Member Rotations</strong></label>
-        {memberRotationElem}
+      {managed}
+      {member}
     </div>
   )
 }
@@ -107,6 +121,7 @@ class Rotations extends React.Component {
     memberRotations = memberRotations.map(rot => {rot.managed = false; return rot})
     if (this.props.match.isExact) {
       let currentRotation = this.getCurrentRotation(managedRotations, memberRotations)
+      console.log(currentRotation)
       this.setState({
         'managedRotations': managedRotations,
         'memberRotations': memberRotations,
@@ -129,7 +144,7 @@ class Rotations extends React.Component {
     if (managedRotations.length > 0) {
       return managedRotations[0]
     }
-    if (memberRotations > 0) {
+    if (memberRotations.length > 0) {
       return memberRotations[0]
     }
     return null

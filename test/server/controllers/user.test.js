@@ -90,9 +90,10 @@ describe("user", () => {
     expect(res.result[0].name).to.equal("Dean Shaff")
   })
 
-  test("GET /api/user with query params", async () => {
+
+  test("GET /api/user with id query params", async () => {
     let ids = [newUser.id]
-    let query = qs.stringify({ids: ids})
+    let query = qs.stringify({id: ids})
     console.log(`GET /api/user with query params: query=${query}`)
     const res = await inject({
       method: "GET",
@@ -104,7 +105,7 @@ describe("user", () => {
 
   test("GET /api/user with username query params", async () => {
     let usernames = [newUser.username]
-    let query = qs.stringify({usernames: usernames})
+    let query = qs.stringify({username: usernames})
     console.log(`GET /api/user with query params: query=${query}`)
     const res = await inject({
       method: "GET",
@@ -114,12 +115,12 @@ describe("user", () => {
     expect(res.result[0].name).to.equal("Dean Shaff")
   })
 
-  test("GET /api/user/search", async () => {
-    let query = qs.stringify({'name': 'Dean Shaff'})
-    console.log(`GET /api/user/search: query=${query}`)
+  test("GET /api/user with name query params", async () => {
+    let query = qs.stringify({'name': ['Dean Shaff', 'dean shaff']})
+    console.log(`GET /api/user: query=${query}`)
     const res = await inject({
       method: "GET",
-      url: `/api/user/search/?${query}`
+      url: `/api/user/?${query}`
     })
     expect(res.statusCode).to.equal(200)
     expect(res.result[0].name).to.equal("Dean Shaff")
@@ -130,9 +131,11 @@ describe("user", () => {
       method: "PUT",
       url: `/api/user/${newUser.dataValues.id}`,
       payload: {
-        name: "sruti"
+        name: "sruti",
+        password: 'sruti1'
       }
     })
+    console.log(JSON.stringify(res.result, null, 2))
     expect(res.statusCode).to.equal(200)
     expect(res.result.name).to.equal("sruti")
   })
