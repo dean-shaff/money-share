@@ -101,11 +101,16 @@ export const getRotationCycleInfo = function (rotation, todayFunction) {
   console.log(`util.getRotationCycleInfo: cycleNumber=${cycleNumber}, totalCycles=${totalCycles}, daysRemaining=${daysRemaining}`)
 
 
-  return {cycleNumber, totalCycles, daysRemaining, cycleStartDate}
+  return {cycleNumber, totalCycles, daysRemaining, cycleStartDate, nextCycleStartDate}
 }
 
 export const computeMembersPaid = function (rotation) {
   console.log(`util.computeMembersPaid`)
+  if (! rotation.started) {
+    return rotation
+  }
+
+
   const dateCompare = (a, b) => {
     let dateA = DateTime.fromISO(a.datePaid)
     let dateB = DateTime.fromISO(b.datePaid)
@@ -131,7 +136,7 @@ export const computeMembersPaid = function (rotation) {
   }
 
   let dateStarted = DateTime.fromISO(rotation.dateStarted)
-  let {cycleNumber, totalCycles, daysRemaining, cycleStartDate} = getRotationCycleInfo(rotation)
+  let {cycleNumber, totalCycles, daysRemaining, cycleStartDate, nextCycleStartDate} = getRotationCycleInfo(rotation)
   rotation.members.sort(rotationIndexCompare)
   roll(rotation.members, cycleNumber*rotation.membersPerCycle)
 
@@ -167,7 +172,13 @@ export const computeMembersPaid = function (rotation) {
     }
   }
 
-  return {rotation, cycleNumber, totalCycles, daysRemaining, cycleStartDate}
+  rotation.cycleNumber = cycleNumber
+  rotation.totalCycles = totalCycles
+  rotation.daysRemaining = daysRemaining
+  rotation.cycleStartDate = cycleStartDate
+  rotation.nextCycleStartDate = nextCycleStartDate
+
+  return rotation
 }
 
 

@@ -1,6 +1,9 @@
 import React from 'react'
 import { useLocation, Route, Link, Redirect } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faHome, faAngleDown } from '@fortawesome/free-solid-svg-icons'
 import { DateTime } from 'luxon'
+
 
 import Dashboard from './Dashboard.js'
 import Configuration from './Configuration.js'
@@ -9,10 +12,10 @@ import CreateRotation from './CreateRotation.js'
 import {
   deleteNote,
   createNote,
-  computeMembersPaid,
-  getRotation,
   stringify
 } from "./../../../util.js"
+
+import './ManagedRotation.css'
 
 
 const getLiClassNameFactory = (highlightPathName) => {
@@ -30,9 +33,32 @@ const HighlightedTab = (props) => {
   const pathSplit = location.pathname.split('/')
   const relativePath = pathSplit[pathSplit.length - 1]
   const getLiClassName = getLiClassNameFactory(relativePath)
+  const filteredRotations = props.rotations.filter(rot => rot.id !== props.rotation.id)
   return (
     <div className="container">
-      <h3 className="title is-3">{props.name}</h3>
+      <nav className="navbar is-spaced is-below">
+        <div className="navbar-brand">
+          <Link to={'/rotations'} className="navbar-item">
+            <span className="icon is-small">
+              <FontAwesomeIcon icon={faHome} size="lg"/>
+            </span>
+          </Link>
+        </div>
+        <div className="navbar-menu is-active">
+          <div className="navbar-start">
+            <div className="navbar-item has-dropdown is-hoverable">
+                  <a className="navbar-link">
+                    {props.rotation.name}
+                  </a>
+                  <div className="navbar-dropdown">
+                    {filteredRotations.map(rot => (
+                      <Link key={rot.id} className="navbar-item" to={`/rotations/managedRotation/${rot.id}`}>{rot.name}</Link>
+                    ))}
+                  </div>
+            </div>
+          </div>
+        </div>
+      </nav>
       <div className="tabs is-medium is-boxed">
         <ul>
           <li className={getLiClassName("dashboard")}><Link to={`${props.match.url}/dashboard`}>Dashboard</Link></li>
@@ -161,24 +187,22 @@ class ManagedRotation extends React.Component {
     if (rotation != null) {
       console.log(`ManagedRotation.render: rotation.started=${rotation.started}`)
       // this.props.onSetCurrentRotation(rotation)
-      let computed = computeMembersPaid(rotation)
       if (rotation.started) {
         configuration = (props) => (
-          <HighlightedTab match={this.props.match} name={rotation.name}>
+          <HighlightedTab match={this.props.match} rotation={rotation} rotations={this.props.rotations}>
             <Configuration
-              totalCycles={computed.totalCycles}
-              rotation={computed.rotation}
+              rotation={rotation}
               onChange={this.props.onChange}
               onDelete={this.props.onDelete} {...props}/>
           </HighlightedTab>
         )
 
         dashboard = (props) => (
-          <HighlightedTab match={this.props.match} name={rotation.name}>
+          <HighlightedTab match={this.props.match} rotation={rotation} rotations={this.props.rotations}>
             <Dashboard
               tilesPerRow={4}
               onUserPaidChange={this.onUserPaidChangeFactory(rotation)}
-              onSetCurrentRotation={this.props.onSetCurrentRotation} {...props} {...computed}/>
+              onSetCurrentRotation={this.props.onSetCurrentRotation} {...props} rotation={rotation}/>
           </HighlightedTab>
         )
         update = (props) => (<Redirect to={`${this.props.match.url}/dashboard`}/>)
@@ -188,7 +212,7 @@ class ManagedRotation extends React.Component {
         update = props => (
           <UpdateRotation
             onSetCurrentRotation={this.props.onSetCurrentRotation}
-            rotation={computed.rotation}
+            rotation={rotation}
             onChange={this.props.onChange}
             onDelete={this.props.onDelete} {...props}/>
         )

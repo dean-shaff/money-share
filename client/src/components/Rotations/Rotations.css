@@ -8,13 +8,13 @@
 
 
 .section.top-section {
-  padding-top: 1rem;
+  padding-top: 0rem;
 }
 
 .container.top-container {
   padding-top: 1rem;
 }
 
-.on-top {
-  z-index: 30;
+.navbar-dropdown.on-top {
+  z-index: 100;
 }

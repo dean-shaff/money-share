@@ -1,3 +1,3 @@
 module.exports = {
-  dateFormat: "MMMM Do, YYYY"
+  dateFormat: "MMMM d, y"
 }

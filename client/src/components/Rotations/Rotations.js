@@ -32,61 +32,150 @@ import './Rotations.css'
 const dateFormat = settings.dateFormat
 
 
-const RotationDropDown = ({match, managedRotations, memberRotations, currentRotation, onClickFactory}) => {
-
-  const mapFactory = (flag) => {
+const ManagedRotationTable = (props) => {
+  console.log('ManagedRotationTable')
+  const mapFactory = (rot, idx) => {
     return (rot, idx) => {
       const name = rot.name
-      let className = 'navbar-item'
-      if (currentRotation !== null) {
-        let managed = flag ? currentRotation.managed: ! currentRotation.managed
-        if (name === currentRotation.name && managed) {
-          className = `${className} is-active`
-        }
-      }
-      const onClick = onClickFactory(rot)
-
-      if (rot.managed) {
-        if (rot.started) {
-          return <Link className={className} key={rot.id} to={`${match.url}/managedRotation/${rot.id}`} onClick={onClick}>{name}</Link>
-        } else {
-          return <Link className={className} key={rot.id} to={`${match.url}/managedRotation/${rot.id}/update`} onClick={onClick}>{name}</Link>
-        }
+      const onClick = props.onClickFactory(rot)
+      let toPath = null
+      let dateStartedText = null
+      let membersLen = 0
+      let membersPaid = null
+      if (rot.started) {
+        toPath = `${props.match.url}/managedRotation/${rot.id}`
+        dateStartedText = DateTime.fromISO(rot.dateStarted).toFormat(dateFormat)
+        membersLen = rot.members.length
+        let paidFiltered = rot.members.filter(mem => mem.paid)
+        let nonPaying = rot.members.filter(mem => mem.nonPaying)
+        membersPaid = `${paidFiltered.length}/${membersLen - nonPaying.length}`
       } else {
-        if (rot.started) {
-          return <Link className={className} key={rot.id} to={`${match.url}/memberRotation/${rot.id}`} onClick={onClick}>{name}</Link>
-        } else {
-          return null
+        toPath = `${props.match.url}/managedRotation/${rot.id}/update`
+        dateStartedText = 'Not Started'
+        if (rot.members !== undefined) {
+          membersLen = rot.members.length
         }
+        membersPaid = '-'
+      }
+
+      if (toPath === null) {
+        return null
+      } else {
+        return (
+          <tr key={rot.id}>
+            <td><Link to={toPath} onClick={onClick}>{name}</Link></td>
+            <td>{dateStartedText}</td>
+            <td>{membersPaid}</td>
+          </tr>
+        )
       }
     }
   }
 
-  let managed = null
-  if (managedRotations.length > 0) {
-    managed = (
-      <>
-        <label className="navbar-item"><strong>Managed Rotations</strong></label>
-        {managedRotations.map(mapFactory(true))}
-      </>
-    )
-  }
-  let member = null
-  if (memberRotations.length > 0) {
-    member = (
-      <>
-        <label className="navbar-item"><strong>Member Rotations</strong></label>
-        {memberRotations.map(mapFactory(false))}
-      </>
-    )
+  return (
+    <>
+    <div className="title">{props.title}</div>
+    <table className='table is-striped is-hoverable is-fullwidth'>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Date Started</th>
+          <th># of Paid Members</th>
+        </tr>
+      </thead>
+      <tbody>
+        {props.rotations.map(mapFactory())}
+      </tbody>
+    </table>
+    </>
+  )
+}
+
+const MemberRotationTable = (props) => {
+  console.log(`MemberRotationTable`)
+  const mapFactory = (rot, idx) => {
+    return (rot, idx) => {
+      const name = rot.name
+      const onClick = props.onClickFactory(rot)
+
+      if (rot.started) {
+        const user = rot.members.filter(mem => mem.id === props.userId)[0]
+        const toPath = `${props.match.url}/memberRotation/${rot.id}`
+        let dueDateText = rot.nextCycleStartDate.toFormat(dateFormat)
+        if (user.paid) {
+          dueDateText = 'Already paid up!'
+        }
+        if (user.nonPaying) {
+          dueDateText = 'Not paying this cycle!'
+        }
+
+        return (
+          <tr key={rot.id}>
+            <td><Link to={toPath} onClick={onClick}>{name}</Link></td>
+            <td>${rot.cycleAmount}</td>
+            <td>{dueDateText}</td>
+          </tr>
+        )
+      } else {
+        return null
+      }
+    }
   }
 
   return (
-    <div>
-      {managed}
-      {member}
-    </div>
+    <>
+      <div className="title">{props.title}</div>
+      <table className='table is-striped is-hoverable is-fullwidth'>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Amount Due</th>
+            <th>Due Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {props.rotations.map(mapFactory())}
+        </tbody>
+      </table>
+    </>
   )
+}
+
+const RotationTable = (props) => {
+  console.log(`RotationTable: managedRotations.length=${props.managedRotations.length}, memberRotations.length=${props.memberRotations.length}`)
+  let managed = null
+  if (props.managedRotations.length > 0) {
+    managed = (
+      <ManagedRotationTable
+        title={"Rotations you manage"}
+        rotations={props.managedRotations}
+        onClickFactory={props.onClickFactory}
+        match={props.match}/>
+    )
+  }
+
+  let member = null
+  if (props.memberRotations.length > 0) {
+    member = (
+      <MemberRotationTable
+        userId={props.userId}
+        title={"Rotations you're a member of"}
+        rotations={props.memberRotations}
+        onClickFactory={props.onClickFactory}
+        match={props.match}/>
+    )
+  }
+
+  let table = null
+  if (managed !== null || member !== null) {
+    table = (
+      <>
+        {managed}
+        {member}
+      </>
+    )
+  }
+  return table
 }
 
 
@@ -96,6 +185,7 @@ class Rotations extends React.Component {
     super(props)
     this.state = {
       username: null,
+      userId: null,
       managedRotations: [],
       memberRotations: [],
       currentRotation: null
@@ -111,14 +201,15 @@ class Rotations extends React.Component {
     console.log(`Rotations.componentDidMount: ${stringify(this.props.match)}`)
     const tokenUserInfo = getTokenUserInfo()
     this.setState({
-      'username': tokenUserInfo.username
+      'username': tokenUserInfo.username,
+      'userId': tokenUserInfo.id
     })
     let [managedRotations, memberRotations] = await Promise.all([
       authFetch(`/api/user/${tokenUserInfo.id}/managedRotations`).then(resp => resp.json()),
       authFetch(`/api/user/${tokenUserInfo.id}/memberRotations`).then(resp => resp.json())
     ])
-    managedRotations = managedRotations.map(rot => {rot.managed = true; return rot})
-    memberRotations = memberRotations.map(rot => {rot.managed = false; return rot})
+    managedRotations = managedRotations.map(rot => {rot.managed = true; return computeMembersPaid(rot)})
+    memberRotations = memberRotations.map(rot => {rot.managed = false; return computeMembersPaid(rot)})
     if (this.props.match.isExact) {
       let currentRotation = this.getCurrentRotation(managedRotations, memberRotations)
       console.log(currentRotation)
@@ -126,7 +217,7 @@ class Rotations extends React.Component {
         'managedRotations': managedRotations,
         'memberRotations': memberRotations,
         'currentRotation': currentRotation
-      }, () => {this.reDirect()})
+      })
     } else {
       this.setState({
         'managedRotations': managedRotations,
@@ -232,18 +323,6 @@ class Rotations extends React.Component {
   }
 
   render () {
-    let rotationDropDown = null
-    if (this.state.managedRotations.length > 0 || this.state.memberRotations.length > 0) {
-      rotationDropDown = (
-        <RotationDropDown
-          match={this.props.match}
-          managedRotations={this.state.managedRotations}
-          memberRotations={this.state.memberRotations}
-          currentRotation={this.state.currentRotation}
-          onClickFactory={this.onSelectRotationFactory}
-          />
-        )
-    }
 
     return (
       <div>
@@ -257,17 +336,14 @@ class Rotations extends React.Component {
         </div>
         <div className="navbar-menu is-active">
           <div className="navbar-end">
-            <div className="navbar-item has-dropdown is-hoverable on-top">
+            <div className="navbar-item has-dropdown is-hoverable">
               <a className="navbar-link">{this.state.username}</a>
-              <div className="navbar-dropdown is-right">
-                {rotationDropDown}
-                <hr className="navbar-divider"/>
+              <div className="navbar-dropdown is-right on-top">
                 <Link className="navbar-item" to={`${this.props.match.url}/managedRotation/create`}>Create New Rotation</Link>
                 <hr className="navbar-divider"/>
                 <Link to="/" className="navbar-item" onClick={this.onLogoutHandler}>Logout</Link>
                 <hr className="navbar-divider"/>
                 <Link to="/changePassword" className="navbar-item">Change Password</Link>
-                {/*<a className="navbar-item" onClick={this.onLogoutHandler}>Logout</a>*/}
               </div>
             </div>
           </div>
@@ -276,6 +352,19 @@ class Rotations extends React.Component {
 
       <section className="section top-section">
         <div className="container">
+          <Route
+            exact path={`${this.props.match.path}`}
+            render={
+              (props) => (
+                <RotationTable
+                  userId={this.state.userId}
+                  match={this.props.match}
+                  managedRotations={this.state.managedRotations}
+                  memberRotations={this.state.memberRotations}
+                  onClickFactory={this.onSelectRotationFactory}
+                  />
+              )
+            }/>
           <Route
             path={`${this.props.match.path}/managedRotation/:rotationId`}
             render={

@@ -3,3 +3,13 @@
 .app-title {
   font-family: 'Knewave', cursive;
 }
+
+.title.app-title {
+  font-size: 3rem;
+}
+
+@media screen and (max-width: 1024px) {
+  .title.app-title {
+    font-size: 1.5rem;
+  }
+}

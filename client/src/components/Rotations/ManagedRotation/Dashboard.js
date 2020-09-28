@@ -110,23 +110,6 @@ class Dashboard extends React.Component {
     this.props.onSetCurrentRotation(this.props.rotation)
   }
 
-  reOrderMembers (rotation, totalCycles, cycleNumber) {
-
-    let members = rotation.members.slice()
-    let membersPerCycle = rotation.membersPerCycle
-
-    let reOrderedMembers = []
-    for (let icycle=0; icycle<totalCycles; icycle++) {
-      let subArr = []
-      for (let imember=0; imember<membersPerCycle; imember++) {
-        subArr.push(members.shift())
-      }
-      reOrderedMembers.push(subArr)
-    }
-    roll(reOrderedMembers, cycleNumber)
-    return reOrderedMembers
-  }
-
   createMemberElements (members) {
     return members.map((mem, idx) => (<User onClick={this.props.onUserPaidChange} key={mem.name} user={mem}/>))
   }
@@ -142,33 +125,26 @@ class Dashboard extends React.Component {
   }
 
   render () {
-    console.log(`Dashboard.render: totalCycles=${this.props.totalCycles}, cycleNumber=${this.props.cycleNumber}, daysRemaining=${this.props.daysRemaining}`)
     const rotation = this.props.rotation
+    console.log(`Dashboard.render: totalCycles=${rotation.totalCycles}, cycleNumber=${rotation.cycleNumber}, daysRemaining=${rotation.daysRemaining}`)
     // console.log(`Dashboard.render: rotation=${JSON.stringify(rotation, null, 2)}`)
     const nonPayingCycles = rotation.nonPayingCycles
+    const membersPerCycle = rotation.membersPerCycle
 
-    let reOrderedMembers = this.reOrderMembers(
-      rotation,
-      this.props.totalCycles,
-      this.props.cycleNumber
-    )
-
-    let cycleRecipients = this.createMemberElements(reOrderedMembers[0])
-    let cycleNotPaying = this.createMemberElements(reOrderedMembers.slice(-nonPayingCycles).flat())
+    let cycleRecipients = this.createMemberElements(rotation.members.slice(0, membersPerCycle))
+    let cycleNotPaying = this.createMemberElements(rotation.members.slice(-nonPayingCycles*membersPerCycle))
     let filteredMembers = this.filterMembersBySearch(this.state.searchText, rotation.members)
     filteredMembers = this.filterMembersBySort(this.state.selectedSort, filteredMembers)
-    // let cycleRecipients = null
-    // let cycleNotPaying = null
 
     return (
       <div className="columns">
         <div className="column is-one-quarter">
           <div className="box">
             <h4 className="title is-4">
-              This is cycle <BlueHighlight text={this.props.cycleNumber + 1}/> of <BlueHighlight text={this.props.totalCycles}/>
+              This is cycle <BlueHighlight text={rotation.cycleNumber + 1}/> of <BlueHighlight text={rotation.totalCycles}/>
             </h4>
             <h4 className="title is-4">
-              There are <BlueHighlight text={this.props.daysRemaining}/> days left in this cycle
+              There are <BlueHighlight text={rotation.daysRemaining}/> days left in this cycle
             </h4>
           </div>
           <div className="box">

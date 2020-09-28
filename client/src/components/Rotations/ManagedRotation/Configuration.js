@@ -12,7 +12,7 @@ const Configuration = (props) => {
   const [errorMsg, setErrorMsg] = useState('')
 
   const rotation = props.rotation
-  const totalCycles = props.totalCycles
+  const totalCycles = rotation.totalCycles
   const nonPayingMembers = rotation.nonPayingCycles * rotation.membersPerCycle
 
   let cycleDurationUnit = rotation.cycleDurationUnit
