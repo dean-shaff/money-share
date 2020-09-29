@@ -7,7 +7,6 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
-import { DateTime } from 'luxon'
 
 import AppTitle from "./../AppTitle.js"
 import User from "./../User.js"
@@ -17,7 +16,6 @@ import {
   getRotationCycleInfo,
   deleteNote,
   createNote,
-  roll,
   computeMembersPaid,
   authFetch
 } from "./../../util.js"
@@ -25,158 +23,9 @@ import settings from './../../settings.js'
 
 import ManagedRotation from './ManagedRotation/ManagedRotation.js'
 import MemberRotation from './MemberRotation/MemberRotation.js'
+import RotationsTable from './RotationsTable.js'
 
 import './Rotations.css'
-
-
-const dateFormat = settings.dateFormat
-
-
-const ManagedRotationTable = (props) => {
-  console.log('ManagedRotationTable')
-  const mapFactory = (rot, idx) => {
-    return (rot, idx) => {
-      const name = rot.name
-      const onClick = props.onClickFactory(rot)
-      let toPath = null
-      let dateStartedText = null
-      let membersLen = 0
-      let membersPaid = null
-      if (rot.started) {
-        toPath = `${props.match.url}/managedRotation/${rot.id}`
-        dateStartedText = DateTime.fromISO(rot.dateStarted).toFormat(dateFormat)
-        membersLen = rot.members.length
-        let paidFiltered = rot.members.filter(mem => mem.paid)
-        let nonPaying = rot.members.filter(mem => mem.nonPaying)
-        membersPaid = `${paidFiltered.length}/${membersLen - nonPaying.length}`
-      } else {
-        toPath = `${props.match.url}/managedRotation/${rot.id}/update`
-        dateStartedText = 'Not Started'
-        if (rot.members !== undefined) {
-          membersLen = rot.members.length
-        }
-        membersPaid = '-'
-      }
-
-      if (toPath === null) {
-        return null
-      } else {
-        return (
-          <tr key={rot.id}>
-            <td><Link to={toPath} onClick={onClick}>{name}</Link></td>
-            <td>{dateStartedText}</td>
-            <td>{membersPaid}</td>
-          </tr>
-        )
-      }
-    }
-  }
-
-  return (
-    <>
-    <div className="title">{props.title}</div>
-    <table className='table is-striped is-hoverable is-fullwidth'>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Date Started</th>
-          <th># of Paid Members</th>
-        </tr>
-      </thead>
-      <tbody>
-        {props.rotations.map(mapFactory())}
-      </tbody>
-    </table>
-    </>
-  )
-}
-
-const MemberRotationTable = (props) => {
-  console.log(`MemberRotationTable`)
-  const mapFactory = (rot, idx) => {
-    return (rot, idx) => {
-      const name = rot.name
-      const onClick = props.onClickFactory(rot)
-
-      if (rot.started) {
-        const user = rot.members.filter(mem => mem.id === props.userId)[0]
-        const toPath = `${props.match.url}/memberRotation/${rot.id}`
-        let dueDateText = rot.nextCycleStartDate.toFormat(dateFormat)
-        if (user.paid) {
-          dueDateText = 'Already paid up!'
-        }
-        if (user.nonPaying) {
-          dueDateText = 'Not paying this cycle!'
-        }
-
-        return (
-          <tr key={rot.id}>
-            <td><Link to={toPath} onClick={onClick}>{name}</Link></td>
-            <td>${rot.cycleAmount}</td>
-            <td>{dueDateText}</td>
-          </tr>
-        )
-      } else {
-        return null
-      }
-    }
-  }
-
-  return (
-    <>
-      <div className="title">{props.title}</div>
-      <table className='table is-striped is-hoverable is-fullwidth'>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Amount Due</th>
-            <th>Due Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {props.rotations.map(mapFactory())}
-        </tbody>
-      </table>
-    </>
-  )
-}
-
-const RotationTable = (props) => {
-  console.log(`RotationTable: managedRotations.length=${props.managedRotations.length}, memberRotations.length=${props.memberRotations.length}`)
-  let managed = null
-  if (props.managedRotations.length > 0) {
-    managed = (
-      <ManagedRotationTable
-        title={"Rotations you manage"}
-        rotations={props.managedRotations}
-        onClickFactory={props.onClickFactory}
-        match={props.match}/>
-    )
-  }
-
-  let member = null
-  if (props.memberRotations.length > 0) {
-    member = (
-      <MemberRotationTable
-        userId={props.userId}
-        title={"Rotations you're a member of"}
-        rotations={props.memberRotations}
-        onClickFactory={props.onClickFactory}
-        match={props.match}/>
-    )
-  }
-
-  let table = null
-  if (managed !== null || member !== null) {
-    table = (
-      <>
-        {managed}
-        {member}
-      </>
-    )
-  }
-  return table
-}
 
 
 class Rotations extends React.Component {
@@ -209,7 +58,10 @@ class Rotations extends React.Component {
       authFetch(`/api/user/${tokenUserInfo.id}/memberRotations`).then(resp => resp.json())
     ])
     managedRotations = managedRotations.map(rot => {rot.managed = true; return computeMembersPaid(rot)})
-    memberRotations = memberRotations.map(rot => {rot.managed = false; return computeMembersPaid(rot)})
+    memberRotations = memberRotations
+      .map(rot => {rot.managed = false; return computeMembersPaid(rot)})
+      .filter(rot => rot.started)
+
     if (this.props.match.isExact) {
       let currentRotation = this.getCurrentRotation(managedRotations, memberRotations)
       console.log(currentRotation)
@@ -241,18 +93,34 @@ class Rotations extends React.Component {
     return null
   }
 
-  reDirect () {
+  getPathToRotation (rotation) {
+    let path = null
+    if (rotation.managed) {
+      if (rotation.started) {
+        path = `${this.props.match.url}/managedRotation/${rotation.id}`
+      } else {
+        path = `${this.props.match.url}/managedRotation/${rotation.id}/update`
+      }
+    } else {
+      path = `${this.props.match.url}/memberRotation/${rotation.id}`
+    }
+    return path
+  }
+
+  reDirectToCurrentRotation () {
     const currentRotation = this.state.currentRotation
     console.log(`Rotations.reDirect: currentRotation.name=${currentRotation.name}`)
+    let path = null
     if (currentRotation === null) {
-      this.props.history.push(`${this.props.match.url}/managedRotation/create`)
-      return
-    }
-    if (currentRotation.managed) {
-      this.props.history.push(`${this.props.match.url}/managedRotation/${currentRotation.id}`)
+      path = `${this.props.match.url}/managedRotation/create`
     } else {
-      this.props.history.push(`${this.props.match.url}/memberRotation/${currentRotation.id}`)
+      path = this.getPathToRotation(currentRotation)
     }
+    this.props.history.push(path)
+  }
+
+  reDirectToRotations () {
+    this.props.history.push('/rotations')
   }
 
   onLogoutHandler (evt) {
@@ -262,8 +130,13 @@ class Rotations extends React.Component {
   onSelectRotationFactory (rotation) {
     return (evt) => {
       console.log(`onSelectRotationFactory`)
+      let path = this.getPathToRotation(rotation)
       this.setState({
         'currentRotation': rotation
+      }, () => {
+        if (path !== null) {
+          this.props.history.push(path)
+        }
       })
     }
   }
@@ -289,7 +162,7 @@ class Rotations extends React.Component {
           console.log(`onRotationDeleteFactory: currentRotation.name=${currentRotation.name}`)
           this.setState({
             'currentRotation': currentRotation
-          }, () => {this.reDirect()})
+          }, () => {this.reDirectToRotations()})
         })
       }
     }
@@ -307,18 +180,16 @@ class Rotations extends React.Component {
         }
         rotation.managed = true
         rotations.unshift(rotation)
-        this.setState({
-          [stateName]: rotations,
-          'currentRotation': rotation
-        }, () => {this.reDirect()})
       } else {
         // this means we've updated an existing rotation
         rotations[idx] = rotation
-        this.setState({
-          [stateName]: rotations,
-          'currentRotation': rotation
-        }) //, () => {this.props.history.push(`${this.props.match.url}/managedRotation/${rotation.id}/dashboard`)})
       }
+
+      this.setState({
+        [stateName]: rotations,
+        'currentRotation': rotation
+      }, () => {this.reDirectToCurrentRotation()})
+
     }
   }
 
@@ -349,20 +220,20 @@ class Rotations extends React.Component {
           </div>
         </div>
       </nav>
-
-      <section className="section top-section">
-        <div className="container">
+      <div>
           <Route
             exact path={`${this.props.match.path}`}
             render={
               (props) => (
-                <RotationTable
-                  userId={this.state.userId}
-                  match={this.props.match}
-                  managedRotations={this.state.managedRotations}
-                  memberRotations={this.state.memberRotations}
-                  onClickFactory={this.onSelectRotationFactory}
-                  />
+                <div className="container top-container">
+                  <RotationsTable
+                    userId={this.state.userId}
+                    match={this.props.match}
+                    managedRotations={this.state.managedRotations}
+                    memberRotations={this.state.memberRotations}
+                    onClickFactory={this.onSelectRotationFactory}
+                    />
+                </div>
               )
             }/>
           <Route
@@ -381,26 +252,10 @@ class Rotations extends React.Component {
                 <MemberRotation {...props}
                   rotations={this.state.memberRotations}
                   onSetCurrentRotation={this.onSetCurrentRotation}/>)}/>
-        </div>
-      </section>
+      </div>
       </div>
     )
   }
 }
 
-
-
 export default Rotations
-
-// const Rotations = ({ match }) => {
-//   return (
-//     <div>
-//
-//
-//       <Route path={`${match.path}/memberRotation/:rotationId/dashboard`} component={ManagedRotationDashboard}/>
-//       <Route path={`${match.path}/memberRotation/:rotationId/configuration`} component={ManagedRotationConfiguration}/>
-//     </div>
-//   )
-// }
-//
-// export default Rotations

@@ -1,14 +1,17 @@
 import React from 'react'
 
 import Dashboard from './Dashboard.js'
-import { computeMembersPaid } from './../../../util.js'
+import RotationsNavigation from './../RotationsNavigation.js'
 
 const MemberRotation = (props) => {
   const rotationId = props.match.params.rotationId
   const rotation = props.rotations.find(rot => rot.id === rotationId)
   if (rotation !== undefined) {
-    let {cycleNumber, totalCycles, daysRemaining, cycleStartDate} = computeMembersPaid(rotation)
-    return <Dashboard rotation={rotation} daysRemaining={daysRemaining} onSetCurrentRotation={props.onSetCurrentRotation}/>
+    return (
+      <RotationsNavigation rotation={rotation} rotations={props.rotations}>
+        <Dashboard rotation={rotation} onSetCurrentRotation={props.onSetCurrentRotation}/>
+      </RotationsNavigation>
+    )
   } else {
     return null
   }

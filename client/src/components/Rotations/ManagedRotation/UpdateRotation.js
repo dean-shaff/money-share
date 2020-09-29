@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import qs from 'qs'
-import { faInfoCircle, faClock, faDollarSign, faUser, faTimesCircle, faChevronDown, faChevronUp, faAt } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faTimesCircle, faChevronDown, faChevronUp, faAt, faPhone } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { DateTime } from 'luxon'
 import slug from 'slug'
@@ -16,12 +16,14 @@ import "./../../User.css"
 
 
 const ManualEntry = (props) => {
+
   return (
     <div>
       <form onSubmit={props.onSubmit}>
       <InputField type="text" name="name" placeholder="Name" icon={faUser}></InputField>
       {/*<InputField type="text" name="username" placeholder="Username" icon={faUser}></InputField>*/}
       <InputField type="email" name="email" placeholder="Email" icon={faAt}></InputField>
+      <InputField type="tel" name="phone" placeholder="Phone Number" icon={faPhone}></InputField>
       <div className="field needs-bottom-margin">
         <div className="control">
           <button className="button is-primary is-fullwidth">Add</button>
@@ -48,13 +50,19 @@ class AddMember extends React.Component {
     this.onClick = this.onClick.bind(this)
     this.onSelect = this.onSelect.bind(this)
     this.onSearchType = this.onSearchType.bind(this)
+    this.onSearchKeyPress = this.onSearchKeyPress.bind(this)
     this.onToggleManualEntry = this.onToggleManualEntry.bind(this)
     this.onManualEntrySubmit = this.onManualEntrySubmit.bind(this)
   }
 
   onClick (evt) {
+    this.search()
+  }
+
+  search () {
     let queryObj = {}
-    queryObj[this.state.searchType.toLowerCase()] = this.state.searchText
+    let searchType = this.state.searchType.toLowerCase()
+    queryObj[searchType] = this.state.searchText
     const query = qs.stringify(queryObj)
     console.log(`onClick: ${query}`)
     authFetch(`/api/user/?${query}`)
@@ -62,7 +70,7 @@ class AddMember extends React.Component {
       .then(data => {
         if (data.length === 0) {
           this.setState({
-            'errorMsg': "Couldn't find that user!"
+            'errorMsg': `Couldn't find user with ${searchType} ${this.state.searchText}`
           })
         } else {
           this.props.onAdd(data)
@@ -90,19 +98,43 @@ class AddMember extends React.Component {
     })
   }
 
+  onSearchKeyPress (evt) {
+    if (evt.key === 'Enter') {
+      this.search()
+    }
+  }
+
+
   onManualEntrySubmit (evt) {
     evt.preventDefault()
     let formData = new FormData(evt.target)
     let name = formData.get('name')
+
     if (name === '') {
       this.setState({
         'errorMsg': 'Make sure to fill out the name field before hitting Add!'
       })
       return
     }
-    let username = slug(name)
+    let phone = formData.get('phone')
+    let email = formData.get('email')
 
-    formData.append('username', username)
+    if (phone === '' && email === '') {
+      this.setState({
+        'errorMsg': 'Make sure to provide either an email address or phone number before hitting Add!'
+      })
+      return
+    }
+    if (phone !== '' && phone.length !== 10) {
+      this.setState({
+        'errorMsg': 'Make sure to provide full 10 digit phone number!'
+      })
+      return
+    }
+
+
+    // let username = slug(name)
+    // formData.append('username', username)
     formData.append('autoCreated', true)
 
     authFetch('/api/user', {
@@ -150,7 +182,7 @@ class AddMember extends React.Component {
       <div className="box">
       <div className="field has-addons has-addons-centered">
         <div className="control is-expanded">
-          <InputField type="text" name="name" value={this.state.searchText} onChange={this.onSearchType} placeholder="Search" icon={faUser}></InputField>
+          <InputField type="text" name="name" value={this.state.searchText} onKeyPress={this.onSearchKeyPress} onChange={this.onSearchType} placeholder="Search" icon={faUser}></InputField>
         </div>
         <div className="control">
           <span className="select" onChange={this.onSelect} value={this.state.searchType}>
@@ -215,6 +247,15 @@ const MemberTable = (props) => {
 }
 
 const Member = (props) => {
+  const emailPhoneContents = ['email', 'phone'].map(name => {
+    let val = props.user[name]
+    if (val !== '' && val !== undefined) {
+      return <p className="title is-7">{val}</p>
+    } else {
+      return null
+    }
+  })
+
   return (
     <div className="box">
       <div className="level">
@@ -225,8 +266,9 @@ const Member = (props) => {
             </span>
           </div>
           <div className="level-item">
-            <div className="content">
-              <p className="title is-7">{props.user.name}</p>
+            <div className="content small-spacing">
+              <p className="title is-6">{props.user.name}</p>
+              {emailPhoneContents}
             </div>
           </div>
         </div>
@@ -445,7 +487,7 @@ class UpdateRotation extends React.Component {
 
     return (
       <div>
-      <h4 className="title is-4">{titleText}</h4>
+      {/*<h4 className="title is-4">{titleText}</h4>*/}
         <div className="columns">
           <div className="column is-one-quarter">
             <CreateUpdateRotationForm
@@ -463,7 +505,7 @@ class UpdateRotation extends React.Component {
             />
           </div>
           <div className="column is-one-half">
-            <h5 className="title is-5">Members</h5>
+            <p className="label">Members</p>
             {memberDisplay}
             <AddMember onAdd={this.onAdd}/>
           </div>

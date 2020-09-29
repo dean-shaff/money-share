@@ -22,12 +22,18 @@ const InputField = (props) => {
     labelElem=<label className="label">{propsCopy.label}</label>
     delete propsCopy.label
   }
+
+  let inputClassName = 'input'
+  if (propsCopy.inputClassName) {
+    inputClassName = `${inputClassName} ${propsCopy.inputClassName}`
+    delete propsCopy.inputClassName
+  }
   // console.log(`InputField: onChange=${propsCopy.onChange}`)
   return (
     <div className="field">
       {labelElem}
       <div className={className}>
-        <input className="input" {...propsCopy}></input>
+        <input className={inputClassName} {...propsCopy}></input>
         {iconElem}
       </div>
     </div>

@@ -167,34 +167,33 @@ class Dashboard extends React.Component {
         <div className="column">
           <div className="box">
             <nav className="navbar has-shadow on-bottom">
-              <div className="navbar-menu">
-                <div className="navbar-item">
-                  <h4 className="title is-4">Activity</h4>
+              <div className="navbar-menu is-active">
+                <div className="navbar-start">
+                  <div className="navbar-item">
+                    <h4 className="title is-4">Activity</h4>
+                  </div>
                 </div>
-              </div>
-              <div className="navbar-end">
-                <div className="navbar-item">
-                <p className="control has-icons-left">
-                  <input className="input is-rounded is-small" onChange={this.onSearch} type="text" placeholder="Search"/>
-                  <span className="icon is-left">
-                    <FontAwesomeIcon icon={faSearch}/>
-                  </span>
-                </p>
-                </div>
-                <div className="navbar-item">
-                  <div className="field is-horizontal">
-                    {/*<div className="field-label is-small">
-                      <label className="label is-small">Sort By</label>
-                    </div>*/}
-                    <div className="field-label is-small sort-by">
-                      <label className="label">Sort By:</label>
-                    </div>
-                    <div className="field-body">
-                      <div className="control">
-                        <div className="select is-small" onChange={this.onSort}>
-                          <select>
-                            {this.sortOptions.map(op => <option key={op}>{op}</option>)}
-                          </select>
+                <div className="navbar-end">
+                  <div className="navbar-item">
+                    <p className="control has-icons-left">
+                      <input className="input is-rounded is-small" onChange={this.onSearch} type="text" placeholder="Search"/>
+                      <span className="icon is-left">
+                        <FontAwesomeIcon icon={faSearch}/>
+                      </span>
+                    </p>
+                  </div>
+                  <div className="navbar-item">
+                    <div className="field is-horizontal">
+                      <div className="field-label is-small sort-by">
+                        <label className="label">Sort By:</label>
+                      </div>
+                      <div className="field-body">
+                        <div className="control">
+                          <div className="select is-small" onChange={this.onSort}>
+                            <select>
+                              {this.sortOptions.map(op => <option key={op}>{op}</option>)}
+                            </select>
+                          </div>
                         </div>
                       </div>
                     </div>

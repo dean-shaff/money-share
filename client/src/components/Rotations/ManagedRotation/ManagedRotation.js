@@ -9,6 +9,7 @@ import Dashboard from './Dashboard.js'
 import Configuration from './Configuration.js'
 import UpdateRotation from './UpdateRotation.js'
 import CreateRotation from './CreateRotation.js'
+import RotationsNavigation from './../RotationsNavigation.js'
 import {
   deleteNote,
   createNote,
@@ -33,32 +34,8 @@ const HighlightedTab = (props) => {
   const pathSplit = location.pathname.split('/')
   const relativePath = pathSplit[pathSplit.length - 1]
   const getLiClassName = getLiClassNameFactory(relativePath)
-  const filteredRotations = props.rotations.filter(rot => rot.id !== props.rotation.id)
   return (
-    <div className="container">
-      <nav className="navbar is-spaced is-below">
-        <div className="navbar-brand">
-          <Link to={'/rotations'} className="navbar-item">
-            <span className="icon is-small">
-              <FontAwesomeIcon icon={faHome} size="lg"/>
-            </span>
-          </Link>
-        </div>
-        <div className="navbar-menu is-active">
-          <div className="navbar-start">
-            <div className="navbar-item has-dropdown is-hoverable">
-                  <a className="navbar-link">
-                    {props.rotation.name}
-                  </a>
-                  <div className="navbar-dropdown">
-                    {filteredRotations.map(rot => (
-                      <Link key={rot.id} className="navbar-item" to={`/rotations/managedRotation/${rot.id}`}>{rot.name}</Link>
-                    ))}
-                  </div>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <>
       <div className="tabs is-medium is-boxed">
         <ul>
           <li className={getLiClassName("dashboard")}><Link to={`${props.match.url}/dashboard`}>Dashboard</Link></li>
@@ -66,7 +43,7 @@ const HighlightedTab = (props) => {
         </ul>
       </div>
       {props.children}
-    </div>
+    </>
   )
 }
 
@@ -189,32 +166,43 @@ class ManagedRotation extends React.Component {
       // this.props.onSetCurrentRotation(rotation)
       if (rotation.started) {
         configuration = (props) => (
-          <HighlightedTab match={this.props.match} rotation={rotation} rotations={this.props.rotations}>
-            <Configuration
-              rotation={rotation}
-              onChange={this.props.onChange}
-              onDelete={this.props.onDelete} {...props}/>
-          </HighlightedTab>
+          <RotationsNavigation rotation={rotation} rotations={this.props.rotations}>
+            <HighlightedTab match={this.props.match}>
+              <Configuration
+                rotation={rotation}
+                onChange={this.props.onChange}
+                onDelete={this.props.onDelete} {...props}/>
+            </HighlightedTab>
+          </RotationsNavigation>
         )
 
         dashboard = (props) => (
-          <HighlightedTab match={this.props.match} rotation={rotation} rotations={this.props.rotations}>
-            <Dashboard
-              tilesPerRow={4}
-              onUserPaidChange={this.onUserPaidChangeFactory(rotation)}
-              onSetCurrentRotation={this.props.onSetCurrentRotation} {...props} rotation={rotation}/>
-          </HighlightedTab>
+          <RotationsNavigation rotation={rotation} rotations={this.props.rotations}>
+            <HighlightedTab match={this.props.match} rotation={rotation} rotations={this.props.rotations}>
+              <Dashboard
+                tilesPerRow={4}
+                onUserPaidChange={this.onUserPaidChangeFactory(rotation)}
+                onSetCurrentRotation={this.props.onSetCurrentRotation} {...props} rotation={rotation}/>
+            </HighlightedTab>
+          </RotationsNavigation>
         )
         update = (props) => (<Redirect to={`${this.props.match.url}/dashboard`}/>)
       } else {
         dashboard = (props) => (<Redirect to={`${this.props.match.url}/update`}/>)
         configuration = (props) => (<Redirect to={`${this.props.match.url}/update`}/>)
         update = props => (
-          <UpdateRotation
-            onSetCurrentRotation={this.props.onSetCurrentRotation}
-            rotation={rotation}
-            onChange={this.props.onChange}
-            onDelete={this.props.onDelete} {...props}/>
+          <RotationsNavigation rotation={rotation} rotations={this.props.rotations}>
+              <div className="tabs is-medium is-boxed">
+                <ul>
+                  <li className='is-active'><Link to={`${this.props.match.url}/update`}>Update</Link></li>
+                </ul>
+              </div>
+              <UpdateRotation
+                onSetCurrentRotation={this.props.onSetCurrentRotation}
+                rotation={rotation}
+                onChange={this.props.onChange}
+                onDelete={this.props.onDelete} {...props}/>
+          </RotationsNavigation>
         )
         base = <Redirect to={`${this.props.match.url}/update`}/>
       }

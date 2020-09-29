@@ -101,6 +101,15 @@ class User extends React.Component  {
       userClass = ''
     }
 
+    const emailPhoneContents = ['email', 'phone'].map(name => {
+      let val = this.props.user[name]
+      if (val !== '' && val !== undefined) {
+        return <p key={name} className="title is-7">{val}</p>
+      } else {
+        return null
+      }
+    })
+
     let userButtons = null
     if (this.state.showButtons && ! this.props.user.nonPaying) {
       userButtons = <UserButtons paid={this.props.user.paid} waiting={this.state.waiting} onClick={this.onToggleClick} />
@@ -114,8 +123,9 @@ class User extends React.Component  {
               {isPaid}
             </div>
             <div className="level-item">
-              <div className="content">
-                <p className="title is-7">{this.props.user.name}</p>
+              <div className="content small-spacing">
+                <p className="title is-6">{this.props.user.name}</p>
+                {emailPhoneContents}
               </div>
             </div>
           </div>

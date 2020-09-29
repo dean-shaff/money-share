@@ -1,0 +1,47 @@
+tr:hover{
+  cursor: pointer;
+  cursor: hand;
+}
+
+.navbar .icon:last-child {
+  margin-left: 0.5em;
+}
+
+.navbar-brand:hover span {
+  color: #3273dc;
+}
+
+.navbar-link:hover span {  
+  color: #3273dc;
+}
+
+/* .navbar span:hover span {
+  color: #3273dc;
+} */
+
+.navbar .icon:first-child {
+  margin-right: 0.5em;
+}
+
+.navbar.is-below {
+  z-index: 0;
+}
+
+.navbar.is-spaced.left-justify {
+  padding-left: 0rem;
+}
+
+@media screen and (min-width: 1024px) {
+  .navbar.has-separator div + div::before {
+    display: flex;
+    align-items: center;
+    color: #b5b5b5;
+    content: "\0002f";
+  }
+}
+
+
+.container.is-spaced {
+  padding-left: 3rem;
+  padding-right: 3rem;
+}

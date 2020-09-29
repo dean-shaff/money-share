@@ -10,3 +10,7 @@
 .user.box:hover {
   box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px #d2d2d2;
 }
+
+.content.small-spacing p:not(:last-child) {
+  margin-bottom: 0.25em;
+}
