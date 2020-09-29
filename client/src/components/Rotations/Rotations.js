@@ -180,16 +180,18 @@ class Rotations extends React.Component {
         }
         rotation.managed = true
         rotations.unshift(rotation)
+        this.setState({
+          [stateName]: rotations,
+          'currentRotation': rotation
+        }, () => {this.reDirectToCurrentRotation()})
       } else {
         // this means we've updated an existing rotation
         rotations[idx] = rotation
+        this.setState({
+          [stateName]: rotations,
+          'currentRotation': rotation
+        })
       }
-
-      this.setState({
-        [stateName]: rotations,
-        'currentRotation': rotation
-      }, () => {this.reDirectToCurrentRotation()})
-
     }
   }
 

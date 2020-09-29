@@ -213,44 +213,44 @@ class AddMember extends React.Component {
   }
 }
 
-const MemberTable = (props) => {
-  const members = props.members
-
-  return (
-    <div className="table-container">
-      <table className="table">
-        <thead>
-         <tr>
-           <th><abbr title="Position">Pos</abbr></th>
-           <th>Username</th>
-           <th>Name</th>
-           <th></th>
-         </tr>
-        </thead>
-        <tbody>
-          {members.map((mem, idx) => (
-            <tr key={mem.name}>
-              <td>{idx + 1}</td>
-              <td>{mem.username}</td>
-              <td>{mem.name}</td>
-              <td>
-                <span className="icon is-small is-left has-text-danger" onClick={props.onRemoveFactory(mem)}>
-                  <FontAwesomeIcon icon={faTimesCircle} />
-                </span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  )
-}
+// const MemberTable = (props) => {
+//   const members = props.members
+//
+//   return (
+//     <div className="table-container">
+//       <table className="table">
+//         <thead>
+//          <tr>
+//            <th><abbr title="Position">Pos</abbr></th>
+//            <th>Username</th>
+//            <th>Name</th>
+//            <th></th>
+//          </tr>
+//         </thead>
+//         <tbody>
+//           {members.map((mem, idx) => (
+//             <tr key={mem.id}>
+//               <td>{idx + 1}</td>
+//               <td>{mem.username}</td>
+//               <td>{mem.name}</td>
+//               <td>
+//                 <span className="icon is-small is-left has-text-danger" onClick={props.onRemoveFactory(mem)}>
+//                   <FontAwesomeIcon icon={faTimesCircle} />
+//                 </span>
+//               </td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </table>
+//     </div>
+//   )
+// }
 
 const Member = (props) => {
   const emailPhoneContents = ['email', 'phone'].map(name => {
     let val = props.user[name]
     if (val !== '' && val !== undefined) {
-      return <p className="title is-7">{val}</p>
+      return <p key={name} className="title is-7">{val}</p>
     } else {
       return null
     }
@@ -290,7 +290,7 @@ const MemberGrid = (props) => {
         {slice.map(mem => (
           <div key={mem.id} className="tile is-parent is-3">
             <article className="tile is-child">
-              <Member user={mem}  onRemoveFactory={onRemoveFactory}/>
+              <Member user={mem} onRemoveFactory={onRemoveFactory}/>
             </article>
           </div>
         ))}
