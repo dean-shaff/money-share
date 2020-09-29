@@ -4,6 +4,7 @@ import { faSearch, faSort, faAngleDown } from '@fortawesome/free-solid-svg-icons
 
 import User from './../../User.js'
 import { roll, getTokenUserInfo, updateRotation, stringify } from './../../../util.js'
+import { dateFormat } from './../../../settings.js'
 
 import "./Dashboard.css"
 
@@ -59,7 +60,6 @@ class Dashboard extends React.Component {
     }
     this.onSearch = this.onSearch.bind(this)
     this.onSort = this.onSort.bind(this)
-    this.onStopDev = this.onStopDev.bind(this)
   }
 
   onSearch (evt) {
@@ -114,16 +114,6 @@ class Dashboard extends React.Component {
     return members.map((mem, idx) => (<User onClick={this.props.onUserPaidChange} key={mem.name} user={mem}/>))
   }
 
-  onStopDev(){
-    const rotation = this.props.rotation
-    let options = {
-      'memberIds': rotation.members.map(mem => mem.id),
-      'started': false,
-      'dateStarted': null
-    }
-    updateRotation(rotation.id, options)
-  }
-
   render () {
     const rotation = this.props.rotation
     console.log(`Dashboard.render: totalCycles=${rotation.totalCycles}, cycleNumber=${rotation.cycleNumber}, daysRemaining=${rotation.daysRemaining}`)
@@ -142,6 +132,12 @@ class Dashboard extends React.Component {
           <div className="box">
             <h4 className="title is-4">
               This is cycle <BlueHighlight text={rotation.cycleNumber + 1}/> of <BlueHighlight text={rotation.totalCycles}/>
+            </h4>
+            <h4 className="title is-4">
+              Today is <BlueHighlight text={rotation.today.toFormat(dateFormat)}/>
+            </h4>
+            <h4 className="title is-4">
+              This cycle ends on <BlueHighlight text={rotation.nextCycleStartDate.toFormat(dateFormat)}/>
             </h4>
             <h4 className="title is-4">
               There are <BlueHighlight text={rotation.daysRemaining}/> days left in this cycle
@@ -204,7 +200,6 @@ class Dashboard extends React.Component {
             <div className="container top-container">
               <ActivityGrid members={filteredMembers} tilesPerRow={this.props.tilesPerRow} onClick={this.props.onUserPaidChange}/>
             </div>
-            {/*<button className="button" onClick={this.onStopDev}>Stop</button>*/}
           </div>
         </div>
       </div>

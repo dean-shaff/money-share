@@ -7,6 +7,7 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
+import { DateTime } from 'luxon'
 
 import AppTitle from "./../AppTitle.js"
 import User from "./../User.js"
@@ -37,13 +38,16 @@ class Rotations extends React.Component {
       userId: null,
       managedRotations: [],
       memberRotations: [],
-      currentRotation: null
+      currentRotation: null,
+      devDay: 0,
+      today: null
     }
     this.onLogoutHandler = this.onLogoutHandler.bind(this)
     this.onSelectRotationFactory = this.onSelectRotationFactory.bind(this)
     this.onRotationChangeFactory = this.onRotationChangeFactory.bind(this)
     this.onRotationDeleteFactory = this.onRotationDeleteFactory.bind(this)
     this.onSetCurrentRotation = this.onSetCurrentRotation.bind(this)
+    this.onChangeDevDay = this.onChangeDevDay.bind(this)
   }
 
   async componentDidMount() {
@@ -168,12 +172,35 @@ class Rotations extends React.Component {
     }
   }
 
+  onChangeDevDay (evt) {
+    const val = parseInt(evt.target.value)
+    this.setDevDay(val)
+  }
+
+  setDevDay (day) {
+    const today = DateTime.local().plus({'days': day})
+    let managedRotations = this.state.managedRotations.map(rot => computeMembersPaid(rot, today))
+    let memberRotations = this.state.memberRotations.map(rot => computeMembersPaid(rot, today))
+    let currentRotation = computeMembersPaid(this.state.currentRotation, today)
+
+    this.setState({
+      'today': today,
+      'devDay': day,
+      'managedRotations': managedRotations,
+      'memberRotations': memberRotations,
+      'currentRotation': currentRotation
+    })
+  }
+
+
   onRotationChangeFactory (stateName) {
     return (rotation) => {
       console.log(`onRotationChangeFactory: ${stateName}: ${rotation.id}, ${rotation.name}`)
       let rotations = this.state[stateName].slice()
       let idx = rotations.findIndex(rot => rot.id === rotation.id)
+      rotation = computeMembersPaid(rotation)
       if (idx === -1) {
+        console.log(`onRotationChangeFactory: adding rotation`)
         // this means we've added a new rotation
         if (rotation.members === undefined) {
           rotation.members = []
@@ -185,6 +212,7 @@ class Rotations extends React.Component {
           'currentRotation': rotation
         }, () => {this.reDirectToCurrentRotation()})
       } else {
+        console.log(`onRotationChangeFactory: updating rotation`)
         // this means we've updated an existing rotation
         rotations[idx] = rotation
         this.setState({
@@ -222,6 +250,17 @@ class Rotations extends React.Component {
           </div>
         </div>
       </nav>
+      <div className="container">
+        <div className="level">
+          <div className="level-item">
+            <input className="slider is-fullwidth has-output" onChange={this.onChangeDevDay} step="1" min="0" max="400" value={this.state.devDay} type="range"/>
+            <output>{this.state.devDay}</output>
+          </div>
+          <div className="level-item">
+            <button className="button" onClick={() => {this.setDevDay(0)}}>Reset</button>
+          </div>
+        </div>
+      </div>
       <div>
           <Route
             exact path={`${this.props.match.path}`}

@@ -53,9 +53,11 @@ export const getTokenUserInfo = function () {
 
 export const roll = function (arr, places) {
   for (let idx = 0; idx < places; idx++) {
-    arr.unshift(arr.pop());
+    // arr.unshift(arr.pop());
+    arr.push(arr.shift())
   }
 }
+
 
 /**
  * Get the current cycle number, the total number of cycles in the rotation,
@@ -64,9 +66,9 @@ export const roll = function (arr, places) {
  * @param  {[type]} todayFunction function to generate today. Defaults to moment constructor
  * @return {[type]}          [description]
  */
-export const getRotationCycleInfo = function (rotation, todayFunction) {
-  if (todayFunction == null) {
-    todayFunction = DateTime.local
+export const getRotationCycleInfo = function (rotation, today) {
+  if (today == null) {
+    today = DateTime.local()
   }
   let dateStarted = rotation.dateStarted
   let membersPerCycle = rotation.membersPerCycle
@@ -85,7 +87,6 @@ export const getRotationCycleInfo = function (rotation, todayFunction) {
   let totalCycles = totalMembers / membersPerCycle
 
   let dateStartedObj = DateTime.fromISO(dateStarted)
-  let today = todayFunction()
 
   let unitsSinceStart = Math.floor(today.diff(dateStartedObj, cycleDurationUnit).toObject()[cycleDurationUnit])
   let cycleNumber = Math.floor(unitsSinceStart/cycleDuration)
@@ -101,16 +102,14 @@ export const getRotationCycleInfo = function (rotation, todayFunction) {
   console.log(`util.getRotationCycleInfo: cycleNumber=${cycleNumber}, totalCycles=${totalCycles}, daysRemaining=${daysRemaining}`)
 
 
-  return {cycleNumber, totalCycles, daysRemaining, cycleStartDate, nextCycleStartDate}
+  return {cycleNumber, totalCycles, daysRemaining, cycleStartDate, nextCycleStartDate, today}
 }
 
-export const computeMembersPaid = function (rotation) {
+export const computeMembersPaid = function (rotation, _today) {
   console.log(`util.computeMembersPaid`)
   if (! rotation.started) {
     return rotation
   }
-
-
   const dateCompare = (a, b) => {
     let dateA = DateTime.fromISO(a.datePaid)
     let dateB = DateTime.fromISO(b.datePaid)
@@ -136,7 +135,7 @@ export const computeMembersPaid = function (rotation) {
   }
 
   let dateStarted = DateTime.fromISO(rotation.dateStarted)
-  let {cycleNumber, totalCycles, daysRemaining, cycleStartDate, nextCycleStartDate} = getRotationCycleInfo(rotation)
+  let {cycleNumber, totalCycles, daysRemaining, cycleStartDate, nextCycleStartDate, today} = getRotationCycleInfo(rotation, _today)
   rotation.members.sort(rotationIndexCompare)
   roll(rotation.members, cycleNumber*rotation.membersPerCycle)
 
@@ -158,7 +157,7 @@ export const computeMembersPaid = function (rotation) {
       rotation.members[idx].receivingPayment = false
     }
 
-    let notes = rotation.members[idx].CycleNotes
+    let notes = rotation.members[idx].CycleNotes.filter(note => note.rotationId === rotation.id)
     rotation.members[idx].paid = false
 
     if (notes.length > 0) {
@@ -177,6 +176,7 @@ export const computeMembersPaid = function (rotation) {
   rotation.daysRemaining = daysRemaining
   rotation.cycleStartDate = cycleStartDate
   rotation.nextCycleStartDate = nextCycleStartDate
+  rotation.today = today
 
   return rotation
 }
