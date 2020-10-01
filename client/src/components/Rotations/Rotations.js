@@ -250,15 +250,22 @@ class Rotations extends React.Component {
           </div>
         </div>
       </nav>
-      <div className="container">
+      <div className="container top-container">
         <div className="level">
-          <div className="level-item">
+          <div className="buttons has-addons">
+            <button className="button" onClick={() => {this.setDevDay(this.state.devDay - this.state.currentRotation.cycleDuration)}}>--</button>
+            <button className="button" onClick={() => {this.setDevDay(this.state.devDay - 1)}}>-</button>
+            <button className="button" onClick={() => {this.setDevDay(0)}}>Reset</button>
+            <button className="button" onClick={() => {this.setDevDay(this.state.devDay + 1)}}>+</button>
+            <button className="button" onClick={() => {this.setDevDay(this.state.devDay + this.state.currentRotation.cycleDuration)}}>++</button>
+          </div>
+          {/*<div className="level-item">
             <input className="slider is-fullwidth has-output" onChange={this.onChangeDevDay} step="1" min="0" max="400" value={this.state.devDay} type="range"/>
             <output>{this.state.devDay}</output>
           </div>
           <div className="level-item">
             <button className="button" onClick={() => {this.setDevDay(0)}}>Reset</button>
-          </div>
+          </div>*/}
         </div>
       </div>
       <div>

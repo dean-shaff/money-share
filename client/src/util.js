@@ -86,23 +86,46 @@ export const getRotationCycleInfo = function (rotation, today) {
   console.log(`util.getRotationCycleInfo: dateStarted=${dateStarted}, membersPerCycle=${membersPerCycle}, cycleDuration=${cycleDuration}, cycleDurationUnit=${cycleDurationUnit}`)
   let totalCycles = totalMembers / membersPerCycle
 
-  let dateStartedObj = DateTime.fromISO(dateStarted)
+  const dateStartedObj = DateTime.fromISO(dateStarted)
 
-  let unitsSinceStart = Math.floor(today.diff(dateStartedObj, cycleDurationUnit).toObject()[cycleDurationUnit])
-  let cycleNumber = Math.floor(unitsSinceStart/cycleDuration)
+  let timeSinceStart = dateStartedObj
+  let absoluteCycleNumber = 0
 
-  // let daysSinceStart = Math.floor(today.diff(dateStartedObj, 'days').toObject().days)
-  // let daysRemaining = daysSinceStart % cycleDuration
+  console.log(`util.getRotationCycleInfo: today=${today.toISO()}`)
+  while (true) {
+    console.log(`util.getRotationCycleInfo: timeSinceStart=${timeSinceStart.toISO()}`)
+    timeSinceStart = timeSinceStart.plus({[cycleDurationUnit]: cycleDuration})
+    if (timeSinceStart >= today) {
+      console.log(`util.getRotationCycleInfo: exiting loop: timeSinceStart=${timeSinceStart.toISO()}`)
+      break
+    }
+    timeSinceStart = timeSinceStart.plus({'days': 1})
+    absoluteCycleNumber++
+  }
+  // let unitsSinceStart = Math.floor(today.diff(dateStartedObj, cycleDurationUnit).toObject()[cycleDurationUnit])
+  // console.log(`util.getRotationCycleInfo: ${Math.floor(unitsSinceStart/cycleDuration)}, ${absoluteCycleNumber}`)
+  // let absoluteCycleNumber = Math.floor(unitsSinceStart/cycleDuration)
+  let cycleNumber = absoluteCycleNumber % totalCycles
 
-  // let cycleNumber = Math.floor(daysSinceStart/cycleDuration)
-  let cycleStartDate = dateStartedObj.plus({[cycleDurationUnit]: cycleNumber*cycleDuration})
-  let nextCycleStartDate = dateStartedObj.plus({[cycleDurationUnit]: (cycleNumber+1)*cycleDuration})
-  let daysRemaining = Math.floor(nextCycleStartDate.diff(today, 'days').toObject().days)
+  let cycleStartDate = dateStartedObj.plus({[cycleDurationUnit]: absoluteCycleNumber*cycleDuration}).plus({'days': absoluteCycleNumber})
+  let cycleEndDate = cycleStartDate.plus({[cycleDurationUnit]: cycleDuration})
+  let nextCycleStartDate = cycleStartDate.plus({[cycleDurationUnit]: cycleDuration}).plus({'days': 1})
 
+  let daysRemaining = Math.floor(cycleEndDate.diff(today, 'days').toObject().days)
+
+  console.log(`util.getRotationCycleInfo: cycleStartDate=${cycleStartDate.toISO()}, cycleEndDate=${cycleEndDate.toISO()}, nextCycleStartDate=${nextCycleStartDate.toISO()}`)
   console.log(`util.getRotationCycleInfo: cycleNumber=${cycleNumber}, totalCycles=${totalCycles}, daysRemaining=${daysRemaining}`)
 
-
-  return {cycleNumber, totalCycles, daysRemaining, cycleStartDate, nextCycleStartDate, today}
+  return {
+    absoluteCycleNumber,
+    cycleNumber,
+    totalCycles,
+    daysRemaining,
+    cycleStartDate,
+    cycleEndDate,
+    nextCycleStartDate,
+    today
+  }
 }
 
 export const computeMembersPaid = function (rotation, _today) {
@@ -135,7 +158,7 @@ export const computeMembersPaid = function (rotation, _today) {
   }
 
   let dateStarted = DateTime.fromISO(rotation.dateStarted)
-  let {cycleNumber, totalCycles, daysRemaining, cycleStartDate, nextCycleStartDate, today} = getRotationCycleInfo(rotation, _today)
+  let {cycleNumber, totalCycles, daysRemaining, cycleStartDate, cycleEndDate, nextCycleStartDate, today} = getRotationCycleInfo(rotation, _today)
   rotation.members.sort(rotationIndexCompare)
   roll(rotation.members, cycleNumber*rotation.membersPerCycle)
 
@@ -175,6 +198,7 @@ export const computeMembersPaid = function (rotation, _today) {
   rotation.totalCycles = totalCycles
   rotation.daysRemaining = daysRemaining
   rotation.cycleStartDate = cycleStartDate
+  rotation.cycleEndDate = cycleEndDate
   rotation.nextCycleStartDate = nextCycleStartDate
   rotation.today = today
 

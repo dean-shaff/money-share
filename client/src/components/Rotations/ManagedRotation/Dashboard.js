@@ -126,6 +126,22 @@ class Dashboard extends React.Component {
     let filteredMembers = this.filterMembersBySearch(this.state.searchText, rotation.members)
     filteredMembers = this.filterMembersBySort(this.state.selectedSort, filteredMembers)
 
+    let daysRemainingText = <p>There are <BlueHighlight text={rotation.daysRemaining}/> days left in this cycle</p>
+
+    if (rotation.daysRemaining === 1) {
+      daysRemainingText = <p>There is <BlueHighlight text={rotation.daysRemaining}/> day left in this cycle</p>
+
+    } else if (rotation.daysRemaining === 0) {
+      daysRemainingText = <p>This is the last day of the cycle!</p>
+    }
+
+    let cycleStartedText = <p>This cycle started on <BlueHighlight text={rotation.cycleStartDate.toFormat(dateFormat)}/></p>
+
+    if (rotation.today.ordinal === rotation.cycleStartDate.ordinal) {
+      cycleStartedText = <p>This cycle started today</p>
+    }
+
+
     return (
       <div className="columns">
         <div className="column is-one-quarter">
@@ -137,10 +153,13 @@ class Dashboard extends React.Component {
               Today is <BlueHighlight text={rotation.today.toFormat(dateFormat)}/>
             </h4>
             <h4 className="title is-4">
-              This cycle ends on <BlueHighlight text={rotation.nextCycleStartDate.toFormat(dateFormat)}/>
+              {cycleStartedText}
             </h4>
             <h4 className="title is-4">
-              There are <BlueHighlight text={rotation.daysRemaining}/> days left in this cycle
+              This cycle ends on <BlueHighlight text={rotation.cycleEndDate.toFormat(dateFormat)}/>
+            </h4>
+            <h4 className="title is-4">
+              {daysRemainingText}
             </h4>
           </div>
           <div className="box">
