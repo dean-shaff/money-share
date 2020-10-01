@@ -12,6 +12,14 @@ const BlueHighlight = ({text}) => {
   return <span className="has-text-primary">{text}</span>
 }
 
+const YellowHighlight = ({text}) => {
+  return <span className="has-text-warning">{text}</span>
+}
+
+const RedHighlight = ({text}) => {
+  return <span className="has-text-danger">{text}</span>
+}
+
 const ActivityGridElement = (props) => {
   return (
     <div className="tile is-parent is-3">
@@ -120,11 +128,21 @@ class Dashboard extends React.Component {
     // console.log(`Dashboard.render: rotation=${JSON.stringify(rotation, null, 2)}`)
     const nonPayingCycles = rotation.nonPayingCycles
     const membersPerCycle = rotation.membersPerCycle
-
     let cycleRecipients = this.createMemberElements(rotation.members.slice(0, membersPerCycle))
     let cycleNotPaying = this.createMemberElements(rotation.members.slice(-nonPayingCycles*membersPerCycle))
     let filteredMembers = this.filterMembersBySearch(this.state.searchText, rotation.members)
     filteredMembers = this.filterMembersBySort(this.state.selectedSort, filteredMembers)
+
+
+    let payingMembersLen = rotation.members.length - (nonPayingCycles*membersPerCycle)
+    let paidMembersLen = rotation.members.filter(mem => mem.paid && ! mem.nonPaying).length
+    let percentPaid = paidMembersLen/payingMembersLen
+    let paidMembersText = <RedHighlight text={paidMembersLen}/>
+    if (percentPaid === 1.0) {
+      paidMembersText = <BlueHighlight text={paidMembersLen}/>
+    } else if (percentPaid < 1.0 && percentPaid >= 0.5) {
+      paidMembersText = <YellowHighlight text={paidMembersLen}/>
+    }
 
     let daysRemainingText = <p>There are <BlueHighlight text={rotation.daysRemaining}/> days left in this cycle</p>
 
@@ -140,6 +158,8 @@ class Dashboard extends React.Component {
     if (rotation.today.ordinal === rotation.cycleStartDate.ordinal) {
       cycleStartedText = <p>This cycle started today</p>
     }
+
+
 
 
     return (
@@ -160,6 +180,9 @@ class Dashboard extends React.Component {
             </h4>
             <h4 className="title is-4">
               {daysRemainingText}
+            </h4>
+            <h4 className="title is-4">
+              So far, {paidMembersText} out of <BlueHighlight text={payingMembersLen}/> paying members are settled up
             </h4>
           </div>
           <div className="box">
