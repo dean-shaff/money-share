@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { DateTime } from 'luxon'
 
 import settings from './../../settings.js'
+import { computeTotalMembersPaid } from './../../util.js'
 
 const dateFormat = settings.dateFormat
 
@@ -16,13 +17,14 @@ const ManagedRotationsTable = (props) => {
       let dateStartedText = null
       let membersLen = 0
       let membersPaid = null
+      let cycleNumber = null
       if (rot.started) {
         // toPath = `${props.match.url}/managedRotation/${rot.id}`
         dateStartedText = DateTime.fromISO(rot.dateStarted).toFormat(dateFormat)
         membersLen = rot.members.length
-        let paidFiltered = rot.members.filter(mem => mem.paid)
-        let nonPaying = rot.members.filter(mem => mem.nonPaying)
-        membersPaid = `${paidFiltered.length}/${membersLen - nonPaying.length}`
+        let { paidLen, payingLen } = computeTotalMembersPaid(rot)
+        membersPaid = `${paidLen}/${payingLen}`
+        cycleNumber = `${rot.cycleNumber + 1}/${rot.totalCycles}`
       } else {
         // toPath = `${props.match.url}/managedRotation/${rot.id}/update`
         dateStartedText = 'Not Started'
@@ -30,12 +32,14 @@ const ManagedRotationsTable = (props) => {
           membersLen = rot.members.length
         }
         membersPaid = '-'
+        cycleNumber = '-'
       }
 
       return (
         <tr key={rot.id} onClick={onClick}>
           <td>{name}</td>
           <td>{dateStartedText}</td>
+          <td>{cycleNumber}</td>
           <td>{membersPaid}</td>
         </tr>
       )
@@ -50,6 +54,7 @@ const ManagedRotationsTable = (props) => {
         <tr>
           <th>Name</th>
           <th>Date Started</th>
+          <th>Cycle Number</th>
           <th># of Paid Members</th>
         </tr>
       </thead>

@@ -205,6 +205,12 @@ export const computeMembersPaid = function (rotation, _today) {
   return rotation
 }
 
+export const computeTotalMembersPaid = function (rotation) {
+  let paidLen = rotation.members.filter(mem => mem.paid && ! mem.nonPaying).length
+  let payingLen = rotation.members.length - (rotation.membersPerCycle * rotation.nonPayingCycles)
+  return { paidLen, payingLen }
+}
+
 
 export const deleteNote = function (userId, noteId) {
   console.log(`util.deleteNote: userId=${userId}, noteId=${noteId}`)

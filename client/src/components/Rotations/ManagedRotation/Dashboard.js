@@ -3,22 +3,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faSort, faAngleDown } from '@fortawesome/free-solid-svg-icons'
 
 import User from './../../User.js'
-import { roll, getTokenUserInfo, updateRotation, stringify } from './../../../util.js'
+import { LinkHighlight, WarningHighlight, DangerHighlight } from './../../Highlight.js'
+import { roll, getTokenUserInfo, updateRotation, stringify, computeTotalMembersPaid } from './../../../util.js'
 import { dateFormat } from './../../../settings.js'
 
+
 import "./Dashboard.css"
-
-const BlueHighlight = ({text}) => {
-  return <span className="has-text-primary">{text}</span>
-}
-
-const YellowHighlight = ({text}) => {
-  return <span className="has-text-warning">{text}</span>
-}
-
-const RedHighlight = ({text}) => {
-  return <span className="has-text-danger">{text}</span>
-}
 
 const ActivityGridElement = (props) => {
   return (
@@ -133,27 +123,26 @@ class Dashboard extends React.Component {
     let filteredMembers = this.filterMembersBySearch(this.state.searchText, rotation.members)
     filteredMembers = this.filterMembersBySort(this.state.selectedSort, filteredMembers)
 
+    let { paidLen, payingLen } = computeTotalMembersPaid(rotation)
+    let percentPaid = paidLen/payingLen
 
-    let payingMembersLen = rotation.members.length - (nonPayingCycles*membersPerCycle)
-    let paidMembersLen = rotation.members.filter(mem => mem.paid && ! mem.nonPaying).length
-    let percentPaid = paidMembersLen/payingMembersLen
-    let paidMembersText = <RedHighlight text={paidMembersLen}/>
+    let paidMembersText = <DangerHighlight text={paidLen}/>
     if (percentPaid === 1.0) {
-      paidMembersText = <BlueHighlight text={paidMembersLen}/>
+      paidMembersText = <LinkHighlight text={paidLen}/>
     } else if (percentPaid < 1.0 && percentPaid >= 0.5) {
-      paidMembersText = <YellowHighlight text={paidMembersLen}/>
+      paidMembersText = <WarningHighlight text={paidLen}/>
     }
 
-    let daysRemainingText = <p>There are <BlueHighlight text={rotation.daysRemaining}/> days left in this cycle</p>
+    let daysRemainingText = <p>There are <LinkHighlight text={rotation.daysRemaining}/> days left in this cycle</p>
 
     if (rotation.daysRemaining === 1) {
-      daysRemainingText = <p>There is <BlueHighlight text={rotation.daysRemaining}/> day left in this cycle</p>
+      daysRemainingText = <p>There is <LinkHighlight text={rotation.daysRemaining}/> day left in this cycle</p>
 
     } else if (rotation.daysRemaining === 0) {
       daysRemainingText = <p>This is the last day of the cycle!</p>
     }
 
-    let cycleStartedText = <p>This cycle started on <BlueHighlight text={rotation.cycleStartDate.toFormat(dateFormat)}/></p>
+    let cycleStartedText = <p>This cycle started on <LinkHighlight text={rotation.cycleStartDate.toFormat(dateFormat)}/></p>
 
     if (rotation.today.ordinal === rotation.cycleStartDate.ordinal) {
       cycleStartedText = <p>This cycle started today</p>
@@ -167,22 +156,22 @@ class Dashboard extends React.Component {
         <div className="column is-one-quarter">
           <div className="box">
             <h4 className="title is-4">
-              This is cycle <BlueHighlight text={rotation.cycleNumber + 1}/> of <BlueHighlight text={rotation.totalCycles}/>
+              This is cycle <LinkHighlight text={rotation.cycleNumber + 1}/> of <LinkHighlight text={rotation.totalCycles}/>
             </h4>
             <h4 className="title is-4">
-              Today is <BlueHighlight text={rotation.today.toFormat(dateFormat)}/>
+              Today is <LinkHighlight text={rotation.today.toFormat(dateFormat)}/>
             </h4>
             <h4 className="title is-4">
               {cycleStartedText}
             </h4>
             <h4 className="title is-4">
-              This cycle ends on <BlueHighlight text={rotation.cycleEndDate.toFormat(dateFormat)}/>
+              This cycle ends on <LinkHighlight text={rotation.cycleEndDate.toFormat(dateFormat)}/>
             </h4>
             <h4 className="title is-4">
               {daysRemainingText}
             </h4>
             <h4 className="title is-4">
-              So far, {paidMembersText} out of <BlueHighlight text={payingMembersLen}/> paying members are settled up
+              So far, {paidMembersText} out of <LinkHighlight text={payingLen}/> paying members are settled up
             </h4>
           </div>
           <div className="box">

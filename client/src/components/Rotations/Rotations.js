@@ -28,6 +28,25 @@ import RotationsTable from './RotationsTable.js'
 
 import './Rotations.css'
 
+const DevTimeAdvancer = (props) => {
+
+  const setDevDay = props.setDevDay
+
+  return (
+    <div className="container top-container">
+      <div className="level">
+        <div className="buttons has-addons">
+          {/*<button className="button" onClick={() => {setDevDay(this.state.devDay - this.state.currentRotation.cycleDuration)}}>--</button>*/}
+          <button className="button" onClick={() => {setDevDay(this.props.devDay - 1)}}>-</button>
+          <button className="button" onClick={() => {setDevDay(0)}}>Reset</button>
+          <button className="button" onClick={() => {setDevDay(this.props.devDay + 1)}}>+</button>
+          {/*<button className="button" onClick={() => {setDevDay(this.state.devDay + this.state.currentRotation.cycleDuration)}}>++</button>*/}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 
 class Rotations extends React.Component {
 
@@ -224,7 +243,7 @@ class Rotations extends React.Component {
   }
 
   render () {
-
+    console.log(`Rotations.render: process.env.NODE_ENV=${process.env.NODE_ENV}`)
     return (
       <div>
       <nav className="navbar is-spaced has-shadow" role="navigation" aria-label="main navigation">
@@ -250,24 +269,7 @@ class Rotations extends React.Component {
           </div>
         </div>
       </nav>
-      <div className="container top-container">
-        <div className="level">
-          <div className="buttons has-addons">
-            <button className="button" onClick={() => {this.setDevDay(this.state.devDay - this.state.currentRotation.cycleDuration)}}>--</button>
-            <button className="button" onClick={() => {this.setDevDay(this.state.devDay - 1)}}>-</button>
-            <button className="button" onClick={() => {this.setDevDay(0)}}>Reset</button>
-            <button className="button" onClick={() => {this.setDevDay(this.state.devDay + 1)}}>+</button>
-            <button className="button" onClick={() => {this.setDevDay(this.state.devDay + this.state.currentRotation.cycleDuration)}}>++</button>
-          </div>
-          {/*<div className="level-item">
-            <input className="slider is-fullwidth has-output" onChange={this.onChangeDevDay} step="1" min="0" max="400" value={this.state.devDay} type="range"/>
-            <output>{this.state.devDay}</output>
-          </div>
-          <div className="level-item">
-            <button className="button" onClick={() => {this.setDevDay(0)}}>Reset</button>
-          </div>*/}
-        </div>
-      </div>
+      {/*{process.env.NODE_ENV === 'development' ? <DevTimeAdvancer devDay={this.state.devDay} setDevDay={this.setDevDay}/> : null}*/}
       <div>
           <Route
             exact path={`${this.props.match.path}`}
