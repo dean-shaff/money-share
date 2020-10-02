@@ -29,7 +29,7 @@ const NavbarLoggedIn = () => {
           <div className="navbar-item has-dropdown is-hoverable">
             <a className="navbar-link">{username}</a>
             <div className="navbar-dropdown is-right on-top">
-              <Link className="navbar-item" to={`rotations/managedRotation/create`}>Create New Rotation</Link>
+              <Link className="navbar-item" to={`/rotations/managedRotation/create`}>Create New Rotation</Link>
               <hr className="navbar-divider"/>
               <Link to="/account" className="navbar-item">Account</Link>
               <hr className="navbar-divider"/>
