@@ -9,7 +9,20 @@ import './RotationsNavigation.css'
 
 const RotationsNavigation = (props) => {
   const filteredRotations = props.rotations.filter(rot => rot.id !== props.rotation.id)
-  const basePath = filteredRotations[0].managed ? '/rotations/managedRotation' : '/rotations/memberRotation'
+  const basePath = props.rotation.managed ? '/rotations/managedRotation' : '/rotations/memberRotation'
+
+  let dropDownContents = null
+  if (filteredRotations.length > 0) {
+    dropDownContents = (
+      <div className="navbar-dropdown">
+        {filteredRotations.map(rot => (
+          <Link key={rot.id} className="navbar-item" to={`${basePath}/${rot.id}`}>
+            <span className="subtitle">{rot.name}</span>
+          </Link>
+        ))}
+      </div>
+    )
+  }
 
   return (
     <>
@@ -57,13 +70,7 @@ const RotationsNavigation = (props) => {
                 {props.rotation.name}
               </span>
             </a>
-            <div className="navbar-dropdown">
-              {filteredRotations.map(rot => (
-                <Link key={rot.id} className="navbar-item" to={`${basePath}/${rot.id}`}>
-                  <span className="subtitle">{rot.name}</span>
-                </Link>
-              ))}
-            </div>
+            {dropDownContents}
           </div>
         </div>
       </div>

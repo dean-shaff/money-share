@@ -5,8 +5,6 @@ import LoginRegisterContainer from "./LoginRegisterContainer.js"
 import InputField from "./InputField.js"
 
 
-
-
 class Register extends React.Component {
   constructor(props) {
     super(props)
