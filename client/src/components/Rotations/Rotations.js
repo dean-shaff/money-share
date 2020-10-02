@@ -247,7 +247,11 @@ class Rotations extends React.Component {
         'managedRotations': managedRotations
       }, () => {
         let currentRotation = this.getCurrentRotation()
-        console.log(`onManagedRotationDelete: currentRotation.name=${currentRotation.name}`)
+        if (currentRotation !== null) {
+          console.log(`onManagedRotationDelete: currentRotation.name=${currentRotation.name}`)
+        } else {
+          console.log(`onManagedRotationDelete: currentRotation is null`)          
+        }
         this.setState({
           'currentRotation': currentRotation
         }, () => {this.reDirectToRotations()})
