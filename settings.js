@@ -7,7 +7,7 @@ module.exports = {
   dateFormat: "MMMM Do, YYYY",
   port: process.env.PORT || 8000,
   env: process.env.NODE_ENV || "development",
-  jwt_key: process.env.JWT_KEY || null,
+  jwt_key: process.env.JWT_KEY || 'hello',
   development: {
     db: {
       dialect: "sqlite",
