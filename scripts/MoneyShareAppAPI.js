@@ -12,6 +12,7 @@ class MoneyShareAppAPI {
     const token = await axios.post(`${baseURL}/login`, {
       username, password
     })
+    console.log(`MoneyShareAppAPI.constructor: token=${token}`)
     axios.defaults.headers.common['Authorization'] = token.data.id_token
     return this
   }
@@ -27,7 +28,6 @@ class MoneyShareAppAPI {
 
   put(endpoint, options) {
     return axios.put(`${baseURL}${endpoint}`, options)
-
   }
 
   delete(endpoint) {
@@ -43,6 +43,10 @@ class MoneyShareAppAPI {
     } else {
       return user[0]
     }
+  }
+
+  async getUsers (options) {
+    return (await this.get(`/api/user`)).data
   }
 
   async createUser (options) {

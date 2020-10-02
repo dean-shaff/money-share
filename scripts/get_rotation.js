@@ -11,24 +11,26 @@ const me = {
 }
 
 
+
 const main = async () => {
   const api = await MoneyShareAppAPI.create(me.username, me.password)
-  let user = await api.getUser({username: 'brandi-best'})
-  let rotations = await api.getManagedRotations(user.id)
-  console.log(rotations)
-
-  let rotation = rotations.filter(rot => rot.name === 'levar Holston')[0]
-  await api.updateRotation(rotation.id, {
-    nonPayingCycles: 0,
-    started: false,
-    dateStarted: null
-  })
-
-  rotation = rotations.filter(rot => rot.name === 'Charles best')[0]
-  await api.updateRotation(rotation.id, {
-    started: false,
-    dateStarted: null
-  })
+  console.log(await api.getUsers())
+  // let user = await api.getUser({username: 'brandi-best'})
+  // let rotations = await api.getManagedRotations(user.id)
+  // console.log(rotations)
+  //
+  // let rotation = rotations.filter(rot => rot.name === 'levar Holston')[0]
+  // await api.updateRotation(rotation.id, {
+  //   nonPayingCycles: 0,
+  //   started: false,
+  //   dateStarted: null
+  // })
+  //
+  // rotation = rotations.filter(rot => rot.name === 'Charles best')[0]
+  // await api.updateRotation(rotation.id, {
+  //   started: false,
+  //   dateStarted: null
+  // })
 
 
 }

@@ -11,9 +11,9 @@ class Register extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      username: 'username_0',
-      name: 'new name_0',
-      email: '0@address.com',
+      username: '',
+      name: '',
+      email: '',
       phone: '',
       password: '',
       msg: ''
