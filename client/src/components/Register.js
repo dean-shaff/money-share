@@ -32,9 +32,10 @@ class Register extends React.Component {
 
 
   onClick (evt) {
-    if (this.state.username === '' && this.state.name === '') {
+
+    if (this.state.username === '') {
       this.setState({
-        msg: 'Please specify either a name or a username'
+        msg: 'Please specify a username'
       })
       return
     }
@@ -44,6 +45,13 @@ class Register extends React.Component {
       })
       return
     }
+    if (this.state.email === '' && this.state.phone === '') {
+      this.setState({
+        msg: 'Please specify either an email address or a phone number'
+      })
+      return
+    }
+
     const {msg, ...body} = this.state
     fetch('/register', {
       method: "POST",
