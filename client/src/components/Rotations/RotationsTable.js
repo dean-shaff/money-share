@@ -148,6 +148,17 @@ const RotationsTable = (props) => {
         {member}
       </>
     )
+  } else {
+    table = (
+      <div className="container top-container has-text-centered">
+        <div className="block">
+          <p className="title">Looks like you're not managing any rotations, nor are you a member of any rotations</p>
+        </div>
+        <div className="block">
+          <p className="subtitle">Click 'Create New Rotation' in the dropdown under your username if you want to manage your own rotation</p>
+        </div>
+      </div>
+    )
   }
   return table
 }
