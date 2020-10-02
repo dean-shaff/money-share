@@ -4,6 +4,7 @@ import { faSearch, faSort, faAngleDown } from '@fortawesome/free-solid-svg-icons
 
 import User from './../../User.js'
 import { LinkHighlight, WarningHighlight, DangerHighlight } from './../../Highlight.js'
+import DaysRemaining from './../DaysRemaining.js'
 import { roll, getTokenUserInfo, updateRotation, stringify, computeTotalMembersPaid } from './../../../util.js'
 import { dateFormat } from './../../../settings.js'
 
@@ -133,23 +134,11 @@ class Dashboard extends React.Component {
       paidMembersText = <WarningHighlight text={paidLen}/>
     }
 
-    let daysRemainingText = <p>There are <LinkHighlight text={rotation.daysRemaining}/> days left in this cycle</p>
-
-    if (rotation.daysRemaining === 1) {
-      daysRemainingText = <p>There is <LinkHighlight text={rotation.daysRemaining}/> day left in this cycle</p>
-
-    } else if (rotation.daysRemaining === 0) {
-      daysRemainingText = <p>This is the last day of the cycle!</p>
-    }
-
     let cycleStartedText = <p>This cycle started on <LinkHighlight text={rotation.cycleStartDate.toFormat(dateFormat)}/></p>
 
     if (rotation.today.ordinal === rotation.cycleStartDate.ordinal) {
       cycleStartedText = <p>This cycle started today</p>
     }
-
-
-
 
     return (
       <div className="columns">
@@ -168,7 +157,7 @@ class Dashboard extends React.Component {
               This cycle ends on <LinkHighlight text={rotation.cycleEndDate.toFormat(dateFormat)}/>
             </h4>
             <h4 className="title is-4">
-              {daysRemainingText}
+              <DaysRemaining daysRemaining={rotation.daysRemaining}/>
             </h4>
             <h4 className="title is-4">
               So far, {paidMembersText} out of <LinkHighlight text={payingLen}/> paying members are settled up
