@@ -12,7 +12,7 @@ class MoneyShareAppAPI {
     const token = await axios.post(`${baseURL}/login`, {
       username, password
     })
-    console.log(`MoneyShareAppAPI.constructor: token=${token}`)
+    console.log(`MoneyShareAppAPI.constructor: token=${token.data.id_token}`)
     axios.defaults.headers.common['Authorization'] = token.data.id_token
     return this
   }

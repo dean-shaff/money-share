@@ -2,6 +2,9 @@ import jwtDecode from 'jwt-decode'
 
 import { DateTime } from 'luxon'
 
+export const capitalize = function (str) {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
 
 export const isLoggedIn = function () {
   const token = localStorage.getItem('token')
@@ -19,14 +22,12 @@ export const isLoggedIn = function () {
 
 const handleErrors = (resp) => {
   if (! resp.ok) {
-    // resp.json().then(data => {
     throw Error(resp.status)
-    // })
   }
   return resp
 }
 
-export const authFetch = async function (url, options) {
+export const authFetch = async function (url, options, err) {
   const token = localStorage.getItem('token')
   const authOptions = {
     'Authorization': token
@@ -39,9 +40,12 @@ export const authFetch = async function (url, options) {
   } else {
     options.headers = authOptions
   }
-  options = Object.assign(options)
-  // console.log(`authFetch: options.headers=${JSON.stringify(options.headers, null, 2)}`)
-  return fetch(url, Object.assign(authOptions, options)).then(handleErrors)
+  if (err == null) {
+    err = handleErrors
+  }
+
+  console.log(`authFetch: options=${JSON.stringify(options, null, 2)}`)
+  return fetch(url, options).then(err)
 }
 
 export const getTokenUserInfo = function () {

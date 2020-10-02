@@ -17,6 +17,7 @@ const InputField = (props) => {
     )
     delete propsCopy.icon
   }
+  
   let labelElem = null
   if (propsCopy.label) {
     labelElem=<label className="label">{propsCopy.label}</label>
@@ -28,14 +29,24 @@ const InputField = (props) => {
     inputClassName = `${inputClassName} ${propsCopy.inputClassName}`
     delete propsCopy.inputClassName
   }
-  // console.log(`InputField: onChange=${propsCopy.onChange}`)
+
+  let divClassName = 'field'
+  let children = null
+
+  if (propsCopy.children !== undefined) {
+    divClassName = 'field has-addons'
+    children = propsCopy.children
+    delete propsCopy.children
+  }
+
   return (
-    <div className="field">
+    <div className={divClassName}>
       {labelElem}
       <div className={className}>
-        <input className={inputClassName} {...propsCopy}></input>
+        <input className={inputClassName} {...propsCopy}/>
         {iconElem}
       </div>
+      {children}
     </div>
   )
 }

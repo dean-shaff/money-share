@@ -9,7 +9,7 @@ import {
 } from "react-router-dom";
 import { DateTime } from 'luxon'
 
-import AppTitle from "./../AppTitle.js"
+import NavbarLoggedIn from './../NavbarLoggedIn.js'
 import User from "./../User.js"
 import {
   stringify,
@@ -61,7 +61,6 @@ class Rotations extends React.Component {
       devDay: 0,
       today: null
     }
-    this.onLogoutHandler = this.onLogoutHandler.bind(this)
     this.onSelectRotationFactory = this.onSelectRotationFactory.bind(this)
     this.onManagedRotationAdd = this.onManagedRotationAdd.bind(this)
     this.onManagedRotationChange = this.onManagedRotationChange.bind(this)
@@ -145,10 +144,6 @@ class Rotations extends React.Component {
 
   reDirectToRotations () {
     this.props.history.push('/rotations')
-  }
-
-  onLogoutHandler (evt) {
-    localStorage.removeItem('token')
   }
 
   onSelectRotationFactory (rotation) {
@@ -264,29 +259,7 @@ class Rotations extends React.Component {
     console.log(`Rotations.render: process.env.NODE_ENV=${process.env.NODE_ENV}`)
     return (
       <div>
-      <nav className="navbar is-spaced has-shadow" role="navigation" aria-label="main navigation">
-        <div className="container">
-          <div className="navbar-brand">
-            <a href="/" className="navbar-item">
-              <AppTitle/>
-            </a>
-          </div>
-        </div>
-        <div className="navbar-menu is-active">
-          <div className="navbar-end">
-            <div className="navbar-item has-dropdown is-hoverable">
-              <a className="navbar-link">{this.state.username}</a>
-              <div className="navbar-dropdown is-right on-top">
-                <Link className="navbar-item" to={`${this.props.match.url}/managedRotation/create`}>Create New Rotation</Link>
-                <hr className="navbar-divider"/>
-                <Link to="/" className="navbar-item" onClick={this.onLogoutHandler}>Logout</Link>
-                <hr className="navbar-divider"/>
-                <Link to="/changePassword" className="navbar-item">Change Password</Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <NavbarLoggedIn/>
       {/*{process.env.NODE_ENV === 'development' ? <DevTimeAdvancer devDay={this.state.devDay} setDevDay={this.setDevDay}/> : null}*/}
       <div>
           <Route

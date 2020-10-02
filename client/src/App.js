@@ -12,7 +12,7 @@ import Home from "./components/Home.js"
 import Login from "./components/Login.js"
 import Register from "./components/Register.js"
 import { Rotations } from "./components/Rotations/"
-import ChangePassword from './components/ChangePassword.js'
+import { Account } from './components/Account/'
 import PrivateRoute from "./components/PrivateRoute.js"
 import { isLoggedIn } from "./util.js"
 
@@ -30,7 +30,7 @@ const App = () => (
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
       <PrivateRoute path="/rotations" component={Rotations} to="/"/>
-      <PrivateRoute path="/changePassword" component={ChangePassword} to="/"/>
+      <PrivateRoute path="/account" component={Account} to="/"/>
       {/*<PrivateRoute path="/dashboard" component={DashboardContainer} to="/"/>
       <PrivateRoute path="/configuration" component={DashboardContainer} to="/"/>
       <PrivateRoute path="/members" component={DashboardContainer} to="/"/>
