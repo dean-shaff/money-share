@@ -1,0 +1,20 @@
+name: CI
+on: [push]
+
+jobs:
+  test:
+    name: test server-side code
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [ '12' ]
+    steps:
+      # - name: install system dependencies
+      #   run: sudo apt-get install libsndfile1-dev ffmpeg
+      - uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm install
+      - run: npm run test-server
