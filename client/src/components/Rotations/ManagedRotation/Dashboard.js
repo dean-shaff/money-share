@@ -120,7 +120,20 @@ class Dashboard extends React.Component {
     const nonPayingCycles = rotation.nonPayingCycles
     const membersPerCycle = rotation.membersPerCycle
     let cycleRecipients = this.createMemberElements(rotation.members.slice(0, membersPerCycle))
-    let cycleNotPaying = this.createMemberElements(rotation.members.slice(-nonPayingCycles*membersPerCycle))
+    let cycleNotPaying = null
+    if (nonPayingCycles !== 0) {
+      cycleNotPaying = (
+        <div className="box">
+          <div>
+            <h4 className="title is-4">Not Paying this cycle</h4>
+            <div>
+              {this.createMemberElements(rotation.members.slice(-nonPayingCycles*membersPerCycle))}
+            </div>
+          </div>
+        </div>
+      )
+    }
+
     let filteredMembers = this.filterMembersBySearch(this.state.searchText, rotation.members)
     filteredMembers = this.filterMembersBySort(this.state.selectedSort, filteredMembers)
 
@@ -171,14 +184,7 @@ class Dashboard extends React.Component {
               </div>
             </div>
           </div>
-          <div className="box">
-            <div>
-              <h4 className="title is-4">Not Paying this cycle</h4>
-              <div>
-                {cycleNotPaying}
-              </div>
-            </div>
-          </div>
+          {cycleNotPaying}
         </div>
         <div className="column">
           <div className="box">

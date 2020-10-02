@@ -85,10 +85,10 @@ class CreateRotation extends React.Component {
     let titleText = `Create a new Rotation!`
 
     return (
-      <div>
+      <div className="container top-container">
         <div className="columns">
-          <div className="column is-one-third is-offset-one-third ">
-            <h4 className="title is-4">{titleText}</h4>
+          <div className="column is-half is-offset-one-quarter ">
+            <div className="title">{titleText}</div>
             <CreateUpdateRotationForm
               cycleDurationUnits={this.state.cycleDurationUnits}
               cycleDuration={this.state.cycleDuration}

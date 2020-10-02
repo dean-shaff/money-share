@@ -63,8 +63,9 @@ class Rotations extends React.Component {
     }
     this.onLogoutHandler = this.onLogoutHandler.bind(this)
     this.onSelectRotationFactory = this.onSelectRotationFactory.bind(this)
-    this.onRotationChangeFactory = this.onRotationChangeFactory.bind(this)
-    this.onRotationDeleteFactory = this.onRotationDeleteFactory.bind(this)
+    this.onManagedRotationAdd = this.onManagedRotationAdd.bind(this)
+    this.onManagedRotationChange = this.onManagedRotationChange.bind(this)
+    this.onManagedRotationDelete = this.onManagedRotationDelete.bind(this)
     this.onSetCurrentRotation = this.onSetCurrentRotation.bind(this)
     this.onChangeDevDay = this.onChangeDevDay.bind(this)
   }
@@ -171,26 +172,6 @@ class Rotations extends React.Component {
     })
   }
 
-  onRotationDeleteFactory (stateName) {
-    return (rotation) => {
-      console.log(`onRotationDeleteFactory: ${stateName}: deleting ${rotation.id}`)
-      let rotations = this.state[stateName].slice()
-      let idx = rotations.findIndex(rot => rot.id === rotation.id)
-      if (idx !== -1) {
-        rotations.splice(idx, 1)
-        this.setState({
-          [stateName]: rotations
-        }, () => {
-          let currentRotation = this.getCurrentRotation()
-          console.log(`onRotationDeleteFactory: currentRotation.name=${currentRotation.name}`)
-          this.setState({
-            'currentRotation': currentRotation
-          }, () => {this.reDirectToRotations()})
-        })
-      }
-    }
-  }
-
   onChangeDevDay (evt) {
     const val = parseInt(evt.target.value)
     this.setDevDay(val)
@@ -211,34 +192,71 @@ class Rotations extends React.Component {
     })
   }
 
+  onManagedRotationAdd (rotation) {
+    console.log(`onManagedRotationAdd: ${rotation.id}, ${rotation.name}`)
+    let managedRotations = this.state.managedRotations.slice()
+    if (rotation.members === undefined) {
+      rotation.members = []
+    }
+    rotation.managed = true
+    managedRotations.unshift(rotation)
+    this.setState({
+      'managedRotations': managedRotations,
+      'currentRotation': rotation
+    }, () => {this.reDirectToCurrentRotation()})
+  }
 
-  onRotationChangeFactory (stateName) {
-    return (rotation) => {
-      console.log(`onRotationChangeFactory: ${stateName}: ${rotation.id}, ${rotation.name}`)
-      let rotations = this.state[stateName].slice()
-      let idx = rotations.findIndex(rot => rot.id === rotation.id)
-      rotation = computeMembersPaid(rotation)
-      if (idx === -1) {
-        console.log(`onRotationChangeFactory: adding rotation`)
-        // this means we've added a new rotation
-        if (rotation.members === undefined) {
-          rotation.members = []
-        }
-        rotation.managed = true
-        rotations.unshift(rotation)
-        this.setState({
-          [stateName]: rotations,
-          'currentRotation': rotation
-        }, () => {this.reDirectToCurrentRotation()})
-      } else {
-        console.log(`onRotationChangeFactory: updating rotation`)
-        // this means we've updated an existing rotation
-        rotations[idx] = rotation
-        this.setState({
-          [stateName]: rotations,
-          'currentRotation': rotation
-        })
+  onManagedRotationChange (rotation) {
+    console.log(`onManagedRotationChange:  ${rotation.id}, ${rotation.name}`)
+    let managedRotations = this.state.managedRotations.slice()
+    let memberRotations = this.state.memberRotations.slice()
+    rotation = computeMembersPaid(rotation)
+    let idx = managedRotations.findIndex(rot => rot.id === rotation.id)
+    // this means we've updated an existing rotation
+    managedRotations[idx] = rotation
+    let idxMember = memberRotations.findIndex(rot => rot.id === rotation.id)
+    if (idxMember !== -1) {
+      // means we need to update our member rotations as well!
+      memberRotations[idxMember] = Object.assign({}, rotation)
+      memberRotations[idxMember].managed = false
+    } else {
+      // it could be that we've added ourselves as a member, in which case we need to add to memberRotations list
+      const user = getTokenUserInfo()
+      let userIdx = rotation.members.findIndex(mem => mem.id === user.id)
+      if (userIdx !== -1) {
+        let rotationCopy = Object.assign({}, rotation)
+        rotationCopy.managed = false
+        memberRotations.unshift(rotationCopy)
       }
+    }
+    this.setState({
+      'memberRotations': memberRotations,
+      'managedRotations': managedRotations,
+      'currentRotation': rotation
+    })
+  }
+
+  onManagedRotationDelete (rotation) {
+    console.log(`onManagedRotationDelete: deleting ${rotation.id}`)
+    let managedRotations = this.state.managedRotations.slice()
+    let memberRotations = this.state.memberRotations.slice()
+    let idx = managedRotations.findIndex(rot => rot.id === rotation.id)
+    if (idx !== -1) {
+      managedRotations.splice(idx, 1)
+      let idxMember = memberRotations.findIndex(rot => rot.id === rotation.id)
+      if (idxMember !== -1) {
+        memberRotations.splice(idxMember, 1)
+      }
+      this.setState({
+        'memberRotations': memberRotations,
+        'managedRotations': managedRotations
+      }, () => {
+        let currentRotation = this.getCurrentRotation()
+        console.log(`onManagedRotationDelete: currentRotation.name=${currentRotation.name}`)
+        this.setState({
+          'currentRotation': currentRotation
+        }, () => {this.reDirectToRotations()})
+      })
     }
   }
 
@@ -293,8 +311,9 @@ class Rotations extends React.Component {
                 <ManagedRotation {...props}
                   rotations={this.state.managedRotations}
                   onSetCurrentRotation={this.onSetCurrentRotation}
-                  onChange={this.onRotationChangeFactory('managedRotations')}
-                  onDelete={this.onRotationDeleteFactory('managedRotations')}/>)}/>
+                  onAdd={this.onManagedRotationAdd}
+                  onChange={this.onManagedRotationChange}
+                  onDelete={this.onManagedRotationDelete}/>)}/>
           <Route
             path={`${this.props.match.path}/memberRotation/:rotationId`}
             render={

@@ -209,7 +209,7 @@ class ManagedRotation extends React.Component {
     }
 
     if (rotationId === 'create') {
-      base = <CreateRotation onChange={this.props.onChange}/>
+      base = <CreateRotation onChange={this.props.onAdd}/>
     }
 
     return (

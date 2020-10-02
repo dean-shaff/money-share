@@ -2,6 +2,7 @@ import React, {useState} from "react"
 
 import { DateTime } from 'luxon'
 import DeleteModal from './DeleteModal.js'
+import { LinkHighlight } from './../../Highlight.js'
 
 import { deleteRotation, updateRotation } from './../../../util.js'
 
@@ -56,13 +57,13 @@ const Configuration = (props) => {
   return (
     <div>
     <div className="content is-large">
-      <p className="title">Rotation Name: <span className="has-text-primary">{rotation.name}</span></p>
-      <p className="title">Rotation Start Date: <span className="has-text-primary">{startDateFormatted}</span></p>
-      <p className="title">Cycle Duration: <span className="has-text-primary">{rotation.cycleDuration}</span> {cycleDurationUnit}</p>
-      <p className="title">Cycle Amount: <span className="has-text-primary">${rotation.cycleAmount}</span></p>
-      <p className="title">Number of members getting paid per cycle: <span className="has-text-primary">{rotation.membersPerCycle}</span></p>
-      <p className="title">Nonpaying Members per cycle: <span className="has-text-primary">{nonPayingMembers}</span></p>
-      <p className="title">Number of Cycles per Rotation: <span className="has-text-primary">{totalCycles}</span></p>
+      <p className="title">Rotation Name: <LinkHighlight text={rotation.name}/></p>
+      <p className="title">Rotation Start Date: <LinkHighlight text={startDateFormatted}/></p>
+      <p className="title">Cycle Duration: <LinkHighlight text={rotation.cycleDuration}/> {cycleDurationUnit}</p>
+      <p className="title">Cycle Amount: <LinkHighlight text={`$${rotation.cycleAmount}`}/></p>
+      <p className="title">Number of members getting paid per cycle: <LinkHighlight text={rotation.membersPerCycle}/></p>
+      <p className="title">Nonpaying Members per cycle: <LinkHighlight text={nonPayingMembers}/></p>
+      <p className="title">Number of Cycles per Rotation: <LinkHighlight text={totalCycles}/></p>
       <div className="field is-grouped">
         <div className="control">
           <button className="button is-warning" onClick={() => {setStopVisible(true)}}>Stop Rotation</button>
