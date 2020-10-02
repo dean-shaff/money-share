@@ -4,6 +4,10 @@
   font-family: 'Knewave', cursive;
 }
 
+.app-title:hover {
+  color: #3273dc;
+}
+
 .title.app-title {
   font-size: 3rem;
 }
