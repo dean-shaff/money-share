@@ -19,7 +19,9 @@ export const isLoggedIn = function () {
 
 const handleErrors = (resp) => {
   if (! resp.ok) {
+    // resp.json().then(data => {
     throw Error(resp.status)
+    // })
   }
   return resp
 }
