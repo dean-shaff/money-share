@@ -206,14 +206,16 @@ class Rotations extends React.Component {
     let managedRotations = this.state.managedRotations.slice()
     let memberRotations = this.state.memberRotations.slice()
     rotation = computeMembersPaid(rotation)
+    rotation.managed = true
     let idx = managedRotations.findIndex(rot => rot.id === rotation.id)
     // this means we've updated an existing rotation
     managedRotations[idx] = rotation
     let idxMember = memberRotations.findIndex(rot => rot.id === rotation.id)
     if (idxMember !== -1) {
       // means we need to update our member rotations as well!
-      memberRotations[idxMember] = Object.assign({}, rotation)
-      memberRotations[idxMember].managed = false
+      let rotationCopy = Object.assign({}, rotation)
+      rotationCopy.managed = false
+      memberRotations[idxMember] = rotationCopy
     } else {
       // it could be that we've added ourselves as a member, in which case we need to add to memberRotations list
       const user = getTokenUserInfo()
@@ -224,6 +226,7 @@ class Rotations extends React.Component {
         memberRotations.unshift(rotationCopy)
       }
     }
+    console.log(`onManagedRotationChange: rotation.managed=${rotation.managed}`)
     this.setState({
       'memberRotations': memberRotations,
       'managedRotations': managedRotations,
@@ -250,7 +253,7 @@ class Rotations extends React.Component {
         if (currentRotation !== null) {
           console.log(`onManagedRotationDelete: currentRotation.name=${currentRotation.name}`)
         } else {
-          console.log(`onManagedRotationDelete: currentRotation is null`)          
+          console.log(`onManagedRotationDelete: currentRotation is null`)
         }
         this.setState({
           'currentRotation': currentRotation
