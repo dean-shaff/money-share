@@ -11,7 +11,7 @@ tr:hover{
   color: #3273dc;
 }
 
-.navbar-link:hover span {  
+.navbar-link:hover span {
   color: #3273dc;
 }
 
@@ -40,6 +40,11 @@ tr:hover{
   }
 }
 
+@media screen and (max-width: 1024px) {
+  .navbar-menu.no-box-shadow {
+    box-shadow: none;
+  }
+}
 
 .container.is-spaced {
   padding-left: 3rem;

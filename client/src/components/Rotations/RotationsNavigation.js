@@ -4,10 +4,14 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHome } from '@fortawesome/free-solid-svg-icons'
 
+import useHamburgerToggle from './../../hooks/useHamburgerToggle.js'
 import './RotationsNavigation.css'
 
 
 const RotationsNavigation = (props) => {
+
+  const [onHamburgerClick, className] = useHamburgerToggle()
+
   const filteredRotations = props.rotations.filter(rot => rot.id !== props.rotation.id)
   const basePath = props.rotation.managed ? '/rotations/managedRotation' : '/rotations/memberRotation'
 
@@ -62,7 +66,7 @@ const RotationsNavigation = (props) => {
           </span>
         </Link>
       </div>
-      <div className="navbar-menu is-active">
+      <div className="navbar-menu no-box-shadow is-active">
         <div className="navbar-start">
           <div className="navbar-item has-dropdown is-hoverable">
             <a className="navbar-link">

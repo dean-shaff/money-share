@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import AppTitle from "./AppTitle.js"
 import { getTokenUserInfo } from './../util.js'
+import useHamburgerToggle from './../hooks/useHamburgerToggle.js'
 
 
 const NavbarLoggedIn = () => {
@@ -14,6 +15,7 @@ const NavbarLoggedIn = () => {
     localStorage.removeItem('token')
   }
 
+  const [onHamburgerClick, className] = useHamburgerToggle()
 
   return (
     <nav className="navbar is-spaced has-shadow" role="navigation" aria-label="main navigation">
@@ -22,9 +24,16 @@ const NavbarLoggedIn = () => {
           <a href="/" className="navbar-item">
             <AppTitle/>
           </a>
+          <a role="button"
+            className={`navbar-burger burger ${className}`}
+            onClick={onHamburgerClick}>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
         </div>
       </div>
-      <div className="navbar-menu is-active">
+      <div className={`navbar-menu ${className}`}>
         <div className="navbar-end">
           <div className="navbar-item has-dropdown is-hoverable">
             <a className="navbar-link">{username}</a>
