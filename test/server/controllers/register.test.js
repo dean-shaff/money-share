@@ -67,6 +67,7 @@ describe("register", () => {
       method: "POST",
       url: "/register",
       payload: {
+        username: newUser.username,
         email: newUser.email
       }
     })
