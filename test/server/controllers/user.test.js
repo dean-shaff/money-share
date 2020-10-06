@@ -20,7 +20,8 @@ describe("user", () => {
         name: "Dean Shaff",
         username: "deanshaff",
         email: "me@address.com",
-        password: "deanshaffpassword"
+        password: "deanshaffpassword",
+        phone: '6516453822'
       }
     })
     inject = authInject(server, newUser)
@@ -66,10 +67,12 @@ describe("user", () => {
         username: "deanshaff",
         name: "first last",
         email: "first.last@address.com",
-        password: "firstlastpassword"
+        password: "firstlastpassword",
+        phone: '7-7-9-0000-989'
       }
     })
     expect(res.statusCode).to.equal(400);
+    expect(res.result.phone).to.equal('7790000989')
   })
 
   test("GET /api/user/{id}", async () => {
@@ -126,18 +129,31 @@ describe("user", () => {
     expect(res.result[0].name).to.equal("Dean Shaff")
   })
 
+  test("GET /api/user with phone query params", async () => {
+    let query = qs.stringify({'phone': ['651-645-3822']})
+    console.log(`GET /api/user: query=${query}`)
+    const res = await inject({
+      method: "GET",
+      url: `/api/user/?${query}`
+    })
+    expect(res.statusCode).to.equal(200)
+    expect(res.result[0].name).to.equal("Dean Shaff")
+  })
+
   test("PUT /api/user/{id}", async () => {
     const res = await inject({
       method: "PUT",
       url: `/api/user/${newUser.dataValues.id}`,
       payload: {
         name: "sruti",
+        phone: '651-659-0920',
         password: 'sruti1'
       }
     })
     console.log(JSON.stringify(res.result, null, 2))
     expect(res.statusCode).to.equal(200)
     expect(res.result.name).to.equal("sruti")
+    expect(res.result.phone).to.equal('6516590920')
   })
 
   test("DELETE /api/user/{id}", async () => {
