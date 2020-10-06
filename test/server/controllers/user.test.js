@@ -39,10 +39,13 @@ describe("user", () => {
         username: "firstlast",
         name: "first last",
         email: "first.last@address.com",
-        password: "firstlastpassword"
+        password: "firstlastpassword",
+        phone: '7-7-9-0000-989'
       }
     })
     expect(res.statusCode).to.equal(200)
+    expect(res.result.phone).to.equal('7790000989')
+
   })
 
   test("POST /api/user with same email", async () => {
@@ -67,12 +70,10 @@ describe("user", () => {
         username: "deanshaff",
         name: "first last",
         email: "first.last@address.com",
-        password: "firstlastpassword",
-        phone: '7-7-9-0000-989'
+        password: "firstlastpassword"
       }
     })
     expect(res.statusCode).to.equal(400);
-    expect(res.result.phone).to.equal('7790000989')
   })
 
   test("GET /api/user/{id}", async () => {
