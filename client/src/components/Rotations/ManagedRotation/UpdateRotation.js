@@ -8,7 +8,15 @@ import slug from 'slug'
 import InputField from './../../InputField.js'
 import CreateUpdateRotationForm from "./CreateUpdateRotationForm"
 import DeleteModal from './DeleteModal.js'
-import { authFetch, getDefault, getTokenUserInfo, createRotation, updateRotation, deleteRotation } from "./../../../util.js"
+import {
+  authFetch,
+  getDefault,
+  getTokenUserInfo,
+  createRotation,
+  updateRotation,
+  deleteRotation,
+  cleanPhone
+} from "./../../../util.js"
 
 import "./UpdateRotation.css"
 import "./../../User.css"
@@ -116,7 +124,14 @@ class AddMember extends React.Component {
       })
       return
     }
-    let phone = formData.get('phone')
+    let phone = cleanPhone(formData.get('phone'))
+    if (phone.length !== 10) {
+      this.setState({
+        'errorMsg': 'Make sure to include area code in phone number'
+      })
+      return
+    }
+
     let email = formData.get('email')
 
     if (phone === '' && email === '') {

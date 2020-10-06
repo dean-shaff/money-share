@@ -2,6 +2,10 @@ import jwtDecode from 'jwt-decode'
 
 import { DateTime } from 'luxon'
 
+export const cleanPhone = function (str) {
+  return str.replace(/-| |\(|\)/g, '')
+}
+
 export const capitalize = function (str) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }

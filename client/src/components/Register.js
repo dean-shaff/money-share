@@ -3,7 +3,7 @@ import { faUser, faLock, faAt, faPhone } from '@fortawesome/free-solid-svg-icons
 
 import LoginRegisterContainer from "./LoginRegisterContainer.js"
 import InputField from "./InputField.js"
-
+import { cleanPhone } from './../util.js'
 
 class Register extends React.Component {
   constructor(props) {
@@ -46,6 +46,13 @@ class Register extends React.Component {
     if (this.state.email === '' && this.state.phone === '') {
       this.setState({
         msg: 'Please specify either an email address or a phone number'
+      })
+      return
+    }
+
+    if (cleanPhone(this.state.phone).length !== 10) {
+      this.setState({
+        msg: 'Please include area code in phone number'
       })
       return
     }
