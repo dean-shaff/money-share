@@ -40,7 +40,7 @@ describe("user", () => {
         name: "first last",
         email: "first.last@address.com",
         password: "firstlastpassword",
-        phone: '7-7-9-0000-989'
+        phone: '(7-7)-9 -0000- (989)'
       }
     })
     expect(res.statusCode).to.equal(200)
@@ -131,7 +131,7 @@ describe("user", () => {
   })
 
   test("GET /api/user with phone query params", async () => {
-    let query = qs.stringify({'phone': ['651-645-3822']})
+    let query = qs.stringify({'phone': ['(651) 645-3822']})
     console.log(`GET /api/user: query=${query}`)
     const res = await inject({
       method: "GET",
