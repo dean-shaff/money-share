@@ -21,3 +21,11 @@ functions:
           path: /{proxy+}
           method: ANY
           cors: true
+
+plugins:
+  - serverless-finch
+  - serverless-offline
+
+custom:
+  client:
+    bucketName: money-share-app

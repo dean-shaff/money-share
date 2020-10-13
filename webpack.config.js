@@ -1,5 +1,7 @@
 const path = require("path");
+
 const webpack = require("webpack");
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 const mode = process.env.NODE_ENV === 'production' ? 'production': 'development'
 
@@ -23,10 +25,15 @@ module.exports = {
   resolve: { extensions: ["*", ".js", ".jsx"] },
   output: {
     path: path.resolve(__dirname, "client", "dist"),
-    publicPath: "/dist/",
+    // publicPath: "/dist/",
     filename: "bundle.js"
   },
   plugins: [
+    new HtmlWebpackPlugin({
+      title: 'Money Share App',
+      template: 'client/index.html',
+      favicon: 'client/favicon.ico'
+    }),
     new webpack.DefinePlugin({ 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV) })
   ]
 };

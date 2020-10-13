@@ -6,3 +6,8 @@ scripts/names.txt
 scripts/populate_prod_db.js
 *.png
 .env
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
