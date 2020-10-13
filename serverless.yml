@@ -1,0 +1,23 @@
+org: deanshaff
+app: money-share-app
+service: money-share-app
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: us-east-1
+  memorySize: 128
+# package:
+#   individually: true
+functions:
+  app:
+    handler: aws.handler
+    events:
+      - http:
+          path: /
+          method: ANY
+          cors: true
+      - http:
+          path: /{proxy+}
+          method: ANY
+          cors: true
