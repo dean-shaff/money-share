@@ -133,10 +133,9 @@ class AddMember extends React.Component {
     }
 
     let email = formData.get('email')
-
-    if (phone === '' && email === '') {
+    if (email === '') {
       this.setState({
-        'errorMsg': 'Make sure to provide either an email address or phone number before hitting Add!'
+        'errorMsg': 'Make sure to provide an email address before hitting Add!'
       })
       return
     }

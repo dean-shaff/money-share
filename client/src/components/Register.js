@@ -43,18 +43,19 @@ class Register extends React.Component {
       })
       return
     }
-    if (this.state.email === '' && this.state.phone === '') {
+    if (this.state.email === '') {
       this.setState({
-        msg: 'Please specify either an email address or a phone number'
+        msg: 'Please specify either an email address'
       })
-      return
     }
 
-    if (cleanPhone(this.state.phone).length !== 10) {
-      this.setState({
-        msg: 'Please include area code in phone number'
-      })
-      return
+    if (this.state.phone !== '') {
+      if (cleanPhone(this.state.phone).length !== 10) {
+        this.setState({
+          msg: 'Please include area code in phone number'
+        })
+        return
+      }      
     }
 
     const {msg, ...body} = this.state
