@@ -23,10 +23,18 @@ module.exports = {
     },
     baseURL: 'http://localhost:8000'
   },
-  production: {
+  staging: {
     db: {
       url: process.env.DATABASE_URL,
       dialect: "postgres",
+    }
+  },
+  production: {
+    db: {
+      host: process.env.RDS_HOSTNAME,
+      user: process.env.RDS_USERNAME,
+      password: process.env.RDS_PASSWORD,
+      port: process.env.RDS_PORT 
     }
   }
 };
