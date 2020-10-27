@@ -18,7 +18,8 @@ let users = [
     name: "Dean Shaff",
     username: "deanshaff",
     email: "dean.shaff@gmail.com",
-    password: "deanshaffpassword"
+    password: "deanshaffpassword",
+    admin: true
   },
   {
     name: "Jose Velazquez de la Cruz Montero",
