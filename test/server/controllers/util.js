@@ -1,10 +1,10 @@
 
-const { createToken } = require('./../../../lib/services/token.js')
+const { createJwtToken } = require('./../../../lib/services/token.js')
 
 
 module.exports = {
   authInject: function (server, user) {
-    const token = createToken(user)
+    const token = createJwtToken(user)
     const headers = {
       'Authorization': token
     }
