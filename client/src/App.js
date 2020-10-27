@@ -11,6 +11,7 @@ import {
 import Home from "./components/Home.js"
 import Login from "./components/Login.js"
 import Register from "./components/Register.js"
+import Admin from './components/Admin.js'
 import { Rotations } from "./components/Rotations/"
 import { Account } from './components/Account/'
 import PrivateRoute from "./components/PrivateRoute.js"
@@ -29,6 +30,7 @@ const App = () => (
       )}/>
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
+      <PrivateRoute path="/admin" component={Admin} to="/"/>
       <PrivateRoute path="/rotations" component={Rotations} to="/"/>
       <PrivateRoute path="/account" component={Account} to="/"/>
       {/*<PrivateRoute path="/dashboard" component={DashboardContainer} to="/"/>

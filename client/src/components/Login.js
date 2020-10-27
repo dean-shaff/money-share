@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import { Link } from 'react-router-dom'
 
 import { faUser, faLock } from '@fortawesome/free-solid-svg-icons'
 
@@ -41,6 +42,7 @@ const Login = ({ history }) => {
           <button type="submit" className="button is-link is-fullwidth">Login</button>
         </div>
       </div>
+      <Link to="/forgot">Forgot Password</Link>
       <div className='has-text-danger'>{msg}</div>
       </form>
     </LoginRegisterContainer>
