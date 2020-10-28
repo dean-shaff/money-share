@@ -49,6 +49,11 @@ class MoneyShareAppAPI {
     return (await this.get(`/api/user`)).data
   }
 
+  async getRotations (options) {
+    return (await this.get(`/api/rotation`)).data
+  }
+
+
   async createUser (options) {
     const _createUser = async (options) => {
       return (await this.post(`/api/user`, options)).data
