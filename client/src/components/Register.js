@@ -3,6 +3,7 @@ import { faUser, faLock, faAt, faPhone } from '@fortawesome/free-solid-svg-icons
 
 import LoginRegisterContainer from "./LoginRegisterContainer.js"
 import InputField from "./InputField.js"
+import NavbarLoggedOut from './NavbarLoggedOut.js'
 import { cleanPhone } from './../util.js'
 
 class Register extends React.Component {
@@ -55,7 +56,7 @@ class Register extends React.Component {
           msg: 'Please include area code in phone number'
         })
         return
-      }      
+      }
     }
 
     const {msg, ...body} = this.state
@@ -87,6 +88,8 @@ class Register extends React.Component {
 
   render() {
     return (
+      <div>
+      <NavbarLoggedOut/>
       <LoginRegisterContainer title="Register">
         <InputField value={this.state.username} onChange={this.onInputChange} type="text" name="username" placeholder="Username" icon={faUser}></InputField>
         <InputField value={this.state.name} onChange={this.onInputChange} type="text" name="name" placeholder="Name" icon={faUser}></InputField>
@@ -100,6 +103,7 @@ class Register extends React.Component {
         </div>
         <div className='has-text-danger'>{this.state.msg}</div>
       </LoginRegisterContainer>
+      </div>
     )
   }
 }
