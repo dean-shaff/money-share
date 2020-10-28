@@ -29,9 +29,6 @@ const RotationPage = (props) => {
   const onChange = (evt) => {
     const name = evt.target.name
     let value = evt.target.value
-    if (evt.target.checked !== undefined) {
-      value = evt.target.checked
-    }
 
     setRotation(rotation => {
       const newRotation = { ...rotation }
@@ -75,9 +72,10 @@ const RotationPage = (props) => {
           <div className="column is-4 is-offset-4">
             <CreateUpdateRotationForm
               { ...rotation }
+              readOnly={true}
               errorMsg={msg}
               onInputChange={onChange}
-              onSaveClick={onClick}
+              // onSaveClick={onClick}
             />
           </div>
         </div>

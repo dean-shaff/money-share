@@ -1,7 +1,8 @@
 const axios = require('axios')
 const qs = require('qs')
 
-const baseURL = 'https://money-share-app.herokuapp.com'
+// const baseURL = 'https://money-share-app.herokuapp.com'
+const baseURL = 'https://eternalsharing.com'
 
 
 class MoneyShareAppAPI {
@@ -24,7 +25,6 @@ class MoneyShareAppAPI {
   post(endpoint, options) {
     return axios.post(`${baseURL}${endpoint}`, options)
   }
-
 
   put(endpoint, options) {
     return axios.put(`${baseURL}${endpoint}`, options)
