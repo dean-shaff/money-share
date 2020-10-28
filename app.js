@@ -5,10 +5,4 @@ const main = async function () {
   await start(server)
 }
 
-process.on('unhandledRejection', (err) => {
-  console.log("Encountered an error:")
-  console.log(err)
-  process.exit(1)
-})
-
 main()
