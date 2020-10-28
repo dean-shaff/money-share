@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 const Modal = (props) => {
 
   const modalClass = props.visible ? 'is-active' : ''
-  const triggerClass = props.triggerClass ? props.triggerClass : 'is-danger'
+  const triggerClass = props.triggerClass ? props.triggerClass : 'is-primary'
 
 
   return (

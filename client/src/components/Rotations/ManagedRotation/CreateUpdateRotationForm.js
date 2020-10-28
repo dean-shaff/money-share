@@ -33,6 +33,12 @@ class CreateUpdateRotationForm extends React.Component {
       )
     }
 
+    let cycleDurationUnits = ['days', 'weeks', 'months']
+    if (this.props.cycleDurationUnits !== undefined) {
+      cycleDurationUnits = this.props.cycleDurationUnits
+    }
+
+
     return (
       <div>
         <InputField type="text" name="name" label="Name" value={this.props.name} onChange={this.props.onInputChange} icon={faInfoCircle}></InputField>
@@ -45,7 +51,7 @@ class CreateUpdateRotationForm extends React.Component {
             <div className="control">
               <span className="select" onChange={this.props.onSelect} value={this.props.cycleDurationUnit}>
                 <select>
-                  {this.props.cycleDurationUnits.map(unit => <option key={unit} value={unit}>{unit}</option>)}
+                  {cycleDurationUnits.map(unit => <option key={unit} value={unit}>{unit}</option>)}
                 </select>
               </span>
             </div>

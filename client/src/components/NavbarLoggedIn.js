@@ -1,14 +1,26 @@
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Link } from "react-router-dom";
 
 
 import AppTitle from "./AppTitle.js"
-import { getTokenUserInfo } from './../util.js'
+import { getTokenUserInfo, authFetch } from './../util.js'
 import useHamburgerToggle from './../hooks/useHamburgerToggle.js'
+import LoggedInUserContext from './../context/LoggedInUserContext.js'
 
 
 const NavbarLoggedIn = () => {
-  const username = getTokenUserInfo().username
+
+  const { loggedInUser, setLoggedInUser } = useContext(LoggedInUserContext)
+
+  useEffect(() => {
+    if (loggedInUser === null) {
+      const id = getTokenUserInfo().id
+      authFetch(`/api/user/${id}`)
+        .then(resp => resp.json())
+        .then(data => setLoggedInUser(data))
+    }
+  }, [])
+
 
   const onLogoutHandler = (evt) => {
     console.log('NavbarLoggedIn.onLogoutHandler')
@@ -16,6 +28,22 @@ const NavbarLoggedIn = () => {
   }
 
   const [onHamburgerClick, className] = useHamburgerToggle()
+
+  let username = ''
+  let adminLink = null
+
+  if (loggedInUser !== null) {
+    username = loggedInUser.username
+    if (loggedInUser.admin) {
+      adminLink = (
+        <>
+        <Link to="/admin" className="navbar-item">Admin</Link>
+        <hr className="navbar-divider"/>
+        </>
+      )
+    }
+  }
+
 
   return (
     <nav className="navbar is-spaced has-shadow" role="navigation" aria-label="main navigation">
@@ -42,6 +70,7 @@ const NavbarLoggedIn = () => {
               <hr className="navbar-divider"/>
               <Link to="/account" className="navbar-item">Account</Link>
               <hr className="navbar-divider"/>
+              {adminLink}
               <Link to="/" className="navbar-item" onClick={onLogoutHandler}>Logout</Link>
             </div>
           </div>

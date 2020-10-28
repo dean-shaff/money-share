@@ -2,6 +2,35 @@ import jwtDecode from 'jwt-decode'
 
 import { DateTime } from 'luxon'
 
+
+/**
+ * Given some user data, clean it up. Throw an error if there is something wrong
+ * @param  {[type]} user [description]
+ * @return {[type]}      [description]
+ */
+export const checkUser = function (user) {
+  if (user.phone !== '' && user.phone != null) {
+    if (cleanPhone(user.phone).length !== 10) {
+      throw new Error("Please provide 10 digit phone number")
+    }
+  }
+
+  if (user.email === '' || ! user.email.includes('@')) {
+    throw new Error("Please provide a valid email address")
+  }
+
+  if (user.username === '') {
+    throw new Error("Username cannot be empty")
+  }
+
+  if (user.password !== undefined) {
+    if (user.password === '') {
+      throw new Error("Password cannot be empty")
+    }
+  }
+}
+
+
 export const cleanPhone = function (str) {
   return str.replace(/-| |\(|\)/g, '')
 }

@@ -1,14 +1,16 @@
-import React, { useState } from "react"
+import React, { useState, useContext } from "react"
 import { Link } from 'react-router-dom'
 
 import { faUser, faLock } from '@fortawesome/free-solid-svg-icons'
 
 import InputField from "./InputField.js"
 import LoginRegisterContainer from "./LoginRegisterContainer.js"
-
+import LoggedInUserContext from './../context/LoggedInUserContext.js'
+import { getTokenUserInfo, authFetch } from './../util.js'
 
 const Login = ({ history }) => {
 
+  const { loggedInUser, setLoggedInUser } = useContext(LoggedInUserContext)
   const [msg, setMsg] = useState('')
 
   const onSubmitHandler = (evt) => {
