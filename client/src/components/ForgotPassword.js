@@ -22,6 +22,11 @@ const ForgotPassword = ({ history }) => {
     })
     .then(resp => resp.json())
     .then(data => {
+      if (data.message) {
+        setMsgClassName('has-text-danger')
+        setMsg(data.message)
+        return
+      }
       if (data.success) {
         setMsgClassName('has-text-primary')
         setMsg(`Successfully sent link to ${formData.get('email')}`)
