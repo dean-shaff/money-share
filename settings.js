@@ -4,6 +4,12 @@ require("dotenv").config()
 
 
 module.exports = {
+  aws: {
+    region: 'us-west-2',
+    fromAddress: 'help@eternalsharing.com',
+    accessKeyId: process.env.AWSAccessKeyId,
+    secretAccessKey: process.env.AWSSecretKey
+  },
   dateFormat: "MMMM Do, YYYY",
   port: process.env.PORT || 8000,
   env: process.env.NODE_ENV || "development",

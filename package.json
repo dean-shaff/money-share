@@ -30,6 +30,7 @@
     "@hapi/cookie": "^11.0.2",
     "@hapi/hapi": "^20.0.1",
     "@hapi/inert": "^6.0.3",
+    "aws-sdk": "^2.782.0",
     "bcrypt": "^5.0.0",
     "dotenv": "^8.2.0",
     "hapi-auth-jwt2": "^10.2.0",

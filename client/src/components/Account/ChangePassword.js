@@ -9,6 +9,8 @@ import { authFetch, getTokenUserInfo} from "./../../util.js"
 const ChangePassword = ({ history }) => {
 
   const [msg, setMsg] = useState('')
+  const [msgClassName, setMsgClassName] = useState('has-text-danger')
+  
   const [password, setPassword] = useState('')
   const [oldPassword, setOldPassword] = useState('')
 
@@ -32,11 +34,14 @@ const ChangePassword = ({ history }) => {
     .then(resp => resp.json())
     .then(data => {
       if (data.message !== undefined) {
+        setMsgClassName('has-text-danger')
         setMsg(data.message)
         return
       }
       if (data.id_token !== undefined) {
         console.log('ChangePassword.onSubmitHandler: settings localStorage')
+        setMsgClassName('has-text-primary')
+        setMsg('Successfully updated password!')
         localStorage.setItem('token', data.id_token)
       }
     })
@@ -63,7 +68,7 @@ const ChangePassword = ({ history }) => {
           <button className="button is-link is-fullwidth " onClick={onClick} disabled={disabled}>Update</button>
         </div>
       </div>
-      <div className='has-text-danger'>{msg}</div>
+      <div className={msgClassName}>{msg}</div>
     </LoginRegisterContainer>
   )
 }
