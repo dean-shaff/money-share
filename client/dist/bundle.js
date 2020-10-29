@@ -720,7 +720,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\nvar version = '1.0.0';\n/* harmony default export */ __webpack_exports__[\"default\"] = (version);\n\n//# sourceURL=webpack:///./client/src/version.js?");
+eval("__webpack_require__.r(__webpack_exports__);\nvar version = '1.1.0';\n/* harmony default export */ __webpack_exports__[\"default\"] = (version);\n\n//# sourceURL=webpack:///./client/src/version.js?");
 
 /***/ }),
 
