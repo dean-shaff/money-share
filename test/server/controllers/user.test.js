@@ -141,6 +141,17 @@ describe("user", () => {
     expect(res.result[0].name).to.equal("Dean Shaff")
   })
 
+  test("GET /api/user with regex query", async () => {
+    let query = qs.stringify({'username': ['/^d/']})
+    console.log(`GET /api/user: query=${query}`)
+    const res = await inject({
+      method: "GET",
+      url: `/api/user/?${query}`
+    })
+    expect(res.statusCode).to.equal(200)
+    expect(res.result[0].name).to.equal("Dean Shaff")
+  })
+
   test("PUT /api/user/{id}", async () => {
     const res = await inject({
       method: "PUT",
