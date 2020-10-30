@@ -1,7 +1,5 @@
 import React from 'react'
 
-import AdminTable from './AdminTable.js'
-
 const userRow = (user) => {
   let phone = user.phone
   if (phone == null) {
@@ -21,8 +19,9 @@ const labels = [
 
 
 const UsersTable = (props) => {
+  const Component = props.component
   return (
-    <AdminTable
+    <Component
       title={props.title}
       getRow={userRow}
       labels={labels}

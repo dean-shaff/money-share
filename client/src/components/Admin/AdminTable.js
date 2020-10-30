@@ -1,8 +1,7 @@
 import React from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { Link, useHistory, useLocation } from 'react-router-dom'
 
-
-const AdminTable = (props) => {
+const AdminTableBase = (props) => {
 
   const { labels, getRow, data, title, subDomain } = props
 
@@ -27,7 +26,7 @@ const AdminTable = (props) => {
 
   return (
     <>
-      <div className="title">{title}</div>
+      {props.title}
       <table className='table is-striped is-hoverable is-fullwidth'>
         <thead>
           <tr>
@@ -42,4 +41,25 @@ const AdminTable = (props) => {
   )
 }
 
-export default AdminTable
+export const AdminTable = (props) => {
+  let { title, ...rest } = props
+  title = (
+    <div className="title">{props.title}</div>
+  )
+  return <AdminTableBase title={title} {...rest}/>
+}
+
+export const AdminTableWithNew = (props) => {
+  let { title, ...rest } = props
+  title = (
+    <div className="columns">
+      <div className="column">
+        <div className="title">{props.title}</div>
+      </div>
+      <div className="column is-narrow">
+        <Link className="button is-primary" to={`/admin/${props.subDomain}/create`}>New</Link>
+      </div>
+    </div>
+  )
+  return <AdminTableBase title={title} {...rest}/>
+}

@@ -2,11 +2,7 @@ import React from "react"
 import render from "react-dom"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlusCircle, faAngleDown } from '@fortawesome/free-solid-svg-icons'
-import {
-  Link,
-  Switch,
-  Route,
-} from "react-router-dom";
+import { Link, Route } from "react-router-dom";
 import { DateTime } from 'luxon'
 
 import NavbarLoggedIn from './../NavbarLoggedIn.js'

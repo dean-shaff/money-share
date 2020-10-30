@@ -5,6 +5,7 @@ import { authFetch, checkUser } from './../../util.js'
 import InputField from './../InputField.js'
 import LoginRegisterContainer from './../LoginRegisterContainer.js'
 import UsersTable from './UsersTable.js'
+import { AdminTable } from './AdminTable.js'
 import CreateUpdateRotationForm from './../Rotations/ManagedRotation/CreateUpdateRotationForm.js'
 
 
@@ -68,19 +69,20 @@ const RotationPage = (props) => {
     console.log(rotation)
     form = (
       <div className="container top-container">
+        <h2 className="title is-2 has-text-centered">{`${rotation.name}`}</h2>
         <div className="columns">
           <div className="column is-4 is-offset-4">
-            <CreateUpdateRotationForm
-              { ...rotation }
-              readOnly={true}
-              errorMsg={msg}
-              onInputChange={onChange}
-              // onSaveClick={onClick}
-            />
+              <CreateUpdateRotationForm
+                { ...rotation }
+                readOnly={true}
+                errorMsg={msg}
+                onInputChange={onChange}
+                // onSaveClick={onClick}
+              />
           </div>
         </div>
-        <UsersTable title="Manager" users={[rotation.manager]}/>
-        <UsersTable title="Members" users={rotation.members}/>
+        <UsersTable title="Manager" users={[rotation.manager]} component={AdminTable}/>
+        <UsersTable title="Members" users={rotation.members} component={AdminTable}/>
       </div>
     )
   }

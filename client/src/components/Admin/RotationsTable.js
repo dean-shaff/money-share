@@ -40,9 +40,9 @@ const labels = [
 
 
 const RotationsTable = (props) => {
-
+  const Component = props.component
   return (
-    <AdminTable
+    <Component
       title={props.title}
       getRow={rotationRow}
       labels={labels}
