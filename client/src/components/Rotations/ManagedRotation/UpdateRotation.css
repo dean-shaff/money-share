@@ -9,3 +9,15 @@
 .field.needs-bottom-margin {
   margin-bottom: 0.75rem;
 }
+
+.dropdown.dropdown-is-fullwidth {
+  width: 100%;
+}
+
+.dropdown-trigger.dropdown-is-fullwidth {
+  width: 100%;
+}
+
+.dropdown-menu.dropdown-is-fullwidth {
+  width: 100%;
+}

@@ -21,17 +21,18 @@ module.exports = {
       username: 'postgres',
       password: 'postgres'
     }
-    // db: {
-    //   dialect: "sqlite",
-    //   storage: path.join(__dirname, "db", "db.sqlite"),
-    //   logging: false
-    // }
   },
   test: {
+    // db: {
+    //   dialect: 'postgres',
+    //   database: 'money-share',
+    //   username: 'postgres',
+    //   password: 'postgres'
+    // },
     db: {
       dialect: "sqlite",
       storage: ":memory:",
-      logging: false
+      logging: true
     },
     baseURL: 'http://localhost:8000'
   },

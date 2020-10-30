@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import qs from 'qs'
-import { faUser, faTimesCircle, faChevronDown, faChevronUp, faAt, faPhone } from '@fortawesome/free-solid-svg-icons'
+import { faSearch, faUser, faTimesCircle, faChevronDown, faChevronUp, faAt, faPhone } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { DateTime } from 'luxon'
 import slug from 'slug'
@@ -15,7 +15,8 @@ import {
   createRotation,
   updateRotation,
   deleteRotation,
-  cleanPhone
+  cleanPhone,
+  checkUser
 } from "./../../../util.js"
 
 import "./UpdateRotation.css"
@@ -47,20 +48,23 @@ const ManualEntry = (props) => {
 class AddMember extends React.Component {
   constructor (props) {
     super(props)
-    const searchTypes = ['Username', 'Name']
+    const searchTypes = ['Name', 'Email', 'Username']
     this.state = {
       'searchTypes': searchTypes,
       'searchType': searchTypes[0],
       'searchText': '',
       'displayManualAdd': false,
-      'errorMsg': ''
+      'errorMsg': '',
+      'searchResults': [],
+      'searchBoxHighlighted': false,
     }
     this.onClick = this.onClick.bind(this)
     this.onSelect = this.onSelect.bind(this)
     this.onSearchType = this.onSearchType.bind(this)
-    this.onSearchKeyPress = this.onSearchKeyPress.bind(this)
     this.onToggleManualEntry = this.onToggleManualEntry.bind(this)
     this.onManualEntrySubmit = this.onManualEntrySubmit.bind(this)
+    this.onSearchInputFocusBlur = this.onSearchInputFocusBlur.bind(this)
+    this.onDropdownItemClick = this.onDropdownItemClick.bind(this)
   }
 
   onClick (evt) {
@@ -68,22 +72,26 @@ class AddMember extends React.Component {
   }
 
   search () {
+
+    if (this.state.searchText === '') {
+      this.setState({
+        'searchResults': []
+      })
+      return
+    }
+
     let queryObj = {}
     let searchType = this.state.searchType.toLowerCase()
-    queryObj[searchType] = this.state.searchText
+
+    queryObj[searchType] = `/^${this.state.searchText}/`
     const query = qs.stringify(queryObj)
     console.log(`onClick: ${query}`)
     authFetch(`/api/user/?${query}`)
       .then(resp => resp.json())
       .then(data => {
-        if (data.length === 0) {
-          this.setState({
-            'errorMsg': `Couldn't find user with ${searchType} ${this.state.searchText}`
-          })
-        } else {
-          this.props.onAdd(data)
-          this.setState({'errorMsg': ''})
-        }
+        this.setState({
+          'searchResults': data
+        })
       })
       .catch(err => {
         this.setState({
@@ -103,50 +111,26 @@ class AddMember extends React.Component {
     let val = evt.target.value
     this.setState({
       'searchText': val
+    }, () => {
+      this.search()
     })
   }
-
-  onSearchKeyPress (evt) {
-    if (evt.key === 'Enter') {
-      this.search()
-    }
-  }
-
 
   onManualEntrySubmit (evt) {
     evt.preventDefault()
     let formData = new FormData(evt.target)
     let name = formData.get('name')
 
-    if (name === '') {
+    try {
+      let user = {}
+      formData.forEach((value, key) => user[key] = value)
+      checkUser(user)
+    } catch (err) {
       this.setState({
-        'errorMsg': 'Make sure to fill out the name field before hitting Add!'
+        'errorMsg': err.message
       })
       return
     }
-    let phone = cleanPhone(formData.get('phone'))
-    if (phone.length !== 10) {
-      this.setState({
-        'errorMsg': 'Make sure to include area code in phone number'
-      })
-      return
-    }
-
-    let email = formData.get('email')
-    if (email === '') {
-      this.setState({
-        'errorMsg': 'Make sure to provide an email address before hitting Add!'
-      })
-      return
-    }
-    if (phone !== '' && phone.length !== 10) {
-      this.setState({
-        'errorMsg': 'Make sure to provide full 10 digit phone number!'
-      })
-      return
-    }
-
-
     // let username = slug(name)
     // formData.append('username', username)
     formData.append('autoCreated', true)
@@ -176,9 +160,28 @@ class AddMember extends React.Component {
     })
   }
 
+  onSearchInputFocusBlur (evt) {
+    this.setState({
+      'searchBoxHighlighted': evt.type === 'focus'
+    })
+  }
+
+  onDropdownItemClick (user) {
+    return (evt) => {
+      console.log(`onDropdownItemClick: ${user.name}`)
+      try {
+        this.props.onAdd([user])
+      } catch (err) {
+        console.log(err)
+        this.setState({
+          'errorMsg': err.message
+        })
+      }
+    }
+  }
+
 
   render () {
-
     let manualEntryIcon = this.state.displayManualAdd ? (
       <FontAwesomeIcon icon={faChevronUp} />
     ) : (
@@ -192,25 +195,55 @@ class AddMember extends React.Component {
       )
     }
 
+    let dropdownClass = ''
+    if (this.state.searchBoxHighlighted && this.state.searchResults.length > 0) {
+      dropdownClass = 'is-active'
+    }
+
     return (
       <div className="box">
-      <div className="field has-addons has-addons-centered">
-        <div className="control is-expanded">
-          <InputField type="text" name="name" value={this.state.searchText} onKeyPress={this.onSearchKeyPress} onChange={this.onSearchType} placeholder="Search" icon={faUser}></InputField>
+        <div className="field has-addons has-addons-centered">
+          <div className="control is-expanded">
+            <div className={`dropdown dropdown-is-fullwidth ${dropdownClass}`}>
+              <div className="dropdown-trigger dropdown-is-fullwidth">
+                <InputField
+                  type="text"
+                  name="name"
+                  value={this.state.searchText}
+                  // onKeyPress={this.onSearchKeyPress}
+                  onChange={this.onSearchType}
+                  onFocus={this.onSearchInputFocusBlur}
+                  onBlur={this.onSearchInputFocusBlur}
+                  placeholder="Search"
+                  autoComplete="off"
+                  icon={faSearch}/>
+              </div>
+
+              <div className="dropdown-menu dropdown-is-fullwidth" role="menu">
+                <div className="dropdown-content">
+                  {this.state.searchResults.map(user => (
+                    <a
+                      key={`dropdown-${user.id}`}
+                      href="#"
+                      className="dropdown-item"
+                      onMouseDown={this.onDropdownItemClick(user)}
+                    >
+                      {user.name}
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+            </div>
+            <div className="control">
+              <span className="select" onChange={this.onSelect} value={this.state.searchType}>
+                <select>
+                  {this.state.searchTypes.map(type => <option key={type} value={type}>{type}</option>)}
+                </select>
+              </span>
+            </div>
         </div>
-        <div className="control">
-          <span className="select" onChange={this.onSelect} value={this.state.searchType}>
-            <select>
-              {this.state.searchTypes.map(type => <option key={type} value={type}>{type}</option>)}
-            </select>
-          </span>
-        </div>
-        <div className="control">
-          <a className="button is-primary" onClick={this.onClick}>
-            Search
-          </a>
-        </div>
-      </div>
       {manualEntry}
       <div className='has-text-danger is-centered'>{this.state.errorMsg}</div>
       <div className="field">

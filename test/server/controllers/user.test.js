@@ -3,6 +3,7 @@
 const { expect } = require('@hapi/code');
 const qs = require('qs')
 
+const settings = require('./../../../settings.js')
 const { init } = require("./../../../lib/server.js")
 const user = require("./../../../lib/controllers/user.js")
 const { authInject } = require('./util.js')
@@ -142,7 +143,11 @@ describe("user", () => {
   })
 
   test("GET /api/user with regex query", async () => {
-    let query = qs.stringify({'username': ['/^d/']})
+    if (settings[settings.env].db.dialect !== 'postgres') {
+      return
+    }
+
+    let query = qs.stringify({'username': '/^d/'})
     console.log(`GET /api/user: query=${query}`)
     const res = await inject({
       method: "GET",
