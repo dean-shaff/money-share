@@ -15,15 +15,17 @@ module.exports = {
   env: process.env.NODE_ENV || "development",
   jwt_key: process.env.JWT_KEY || 'hello',
   development: {
-    // db: {
-    //   dialect: 'postgres',
-    //   url: 'postgres://root:root@localhost/postgres'
-    // }
     db: {
-      dialect: "sqlite",
-      storage: path.join(__dirname, "db", "db.sqlite"),
-      logging: false
+      dialect: 'postgres',
+      database: 'money-share',
+      username: 'postgres',
+      password: 'postgres'
     }
+    // db: {
+    //   dialect: "sqlite",
+    //   storage: path.join(__dirname, "db", "db.sqlite"),
+    //   logging: false
+    // }
   },
   test: {
     db: {
